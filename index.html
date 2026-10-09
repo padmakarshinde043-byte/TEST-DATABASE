@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>सराव चाचणी गुण संकलन व डॅशबोर्ड | जिल्हा परिषद बीड</title>
   
-  <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700&family=Yatra+One&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -34,7 +34,7 @@
     header {
       background: #ffffff;
       border-bottom: 2px solid var(--primary-light);
-      padding: 16px 24px;
+      padding: 14px 24px;
       box-shadow: var(--shadow);
       position: sticky;
       top: 0;
@@ -50,17 +50,17 @@
       gap: 12px;
     }
     .brand-title { display: flex; align-items: center; gap: 14px; }
-    .brand-title i { font-size: 2.2rem; color: var(--primary); }
+    .brand-logo { width: 52px; height: 52px; object-fit: contain; border-radius: 8px; }
     .brand-title h1 { font-size: 1.35rem; font-weight: 700; color: var(--text-main); line-height: 1.2; }
     .brand-title p { font-size: 0.85rem; color: var(--text-muted); }
 
     .nav-actions { display: flex; gap: 10px; }
     .btn {
-      padding: 9px 18px;
+      padding: 8px 16px;
       border-radius: 8px;
       font-weight: 600;
       cursor: pointer;
-      font-size: 0.95rem;
+      font-size: 0.92rem;
       border: 1px solid transparent;
       display: inline-flex;
       align-items: center;
@@ -145,12 +145,7 @@
     .cat-card h3 { font-size: 1.05rem; font-weight: 700; }
     .cat-card span { font-size: 0.8rem; color: var(--text-muted); display: block; margin-top: 4px; }
 
-    .test-pill-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 20px;
-    }
+    .test-pill-container { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
     .test-pill {
       background: white;
       border: 1px solid var(--border);
@@ -160,11 +155,7 @@
       font-weight: 600;
       cursor: pointer;
     }
-    .test-pill.active {
-      background: var(--primary);
-      color: white;
-      border-color: var(--primary);
-    }
+    .test-pill.active { background: var(--primary); color: white; border-color: var(--primary); }
 
     .stats-grid {
       display: grid;
@@ -220,9 +211,7 @@
       border-bottom: 1px solid #f1f5f9;
       font-size: 0.9rem;
     }
-    .udise-item:hover {
-      background: var(--primary-light);
-    }
+    .udise-item:hover { background: var(--primary-light); }
 
     .table-responsive { overflow-x: auto; margin-top: 12px; }
     table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
@@ -234,7 +223,7 @@
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.6);
+      background: rgba(0,0,0,0.65);
       z-index: 1000;
       justify-content: center;
       align-items: center;
@@ -245,33 +234,92 @@
       background: white;
       padding: 24px;
       border-radius: 14px;
-      max-width: 750px;
+      max-width: 820px;
       width: 100%;
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     }
 
-    .cert-preview {
-      border: 8px double #d97706;
-      padding: 30px;
-      background: #fffdfa;
-      text-align: center;
-      margin: 15px 0;
+    /* प्रमाणपत्राची मांडणी (cert.jpeg बॅकग्राउंडवर) */
+    .cert-container-box {
+      position: relative;
+      width: 740px;
+      height: 520px;
+      margin: 10px auto;
+      background-image: url('cert.jpeg');
+      background-size: 100% 100%;
+      background-position: center;
+      background-repeat: no-repeat;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+      border-radius: 6px;
+      overflow: hidden;
     }
-    .cert-preview h2 { color: #b45309; font-size: 1.8rem; font-weight: 800; margin-bottom: 4px; }
-    .cert-preview h3 { font-size: 1.2rem; color: #0284c7; margin-bottom: 14px; }
-    .cert-text { font-size: 1.05rem; line-height: 1.8; margin: 16px 0; color: #334155; }
+    .cert-overlay-content {
+      position: absolute;
+      top: 180px;
+      left: 55px;
+      right: 55px;
+      text-align: center;
+    }
+    .cert-student-title {
+      font-family: 'Yatra One', cursive, sans-serif;
+      font-size: 1.65rem;
+      color: #991b1b;
+      margin-bottom: 14px;
+      text-decoration: underline;
+    }
+    .cert-para {
+      font-size: 1.08rem;
+      line-height: 1.85;
+      color: #1e293b;
+      font-weight: 500;
+    }
+    .cert-badges {
+      margin-top: 18px;
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+    }
+    .cert-badge {
+      background: rgba(2, 132, 199, 0.1);
+      border: 1px solid #0284c7;
+      color: #0369a1;
+      font-weight: 700;
+      padding: 4px 16px;
+      border-radius: 20px;
+    }
 
+    /* बॅनर मांडणी (flower1, flower2 व logo सह) */
     .banner-preview {
-      background: linear-gradient(135deg, #e0f2fe 0%, #ffffff 100%);
+      background: linear-gradient(135deg, #f0f9ff 0%, #ffffff 100%);
       border: 3px solid var(--primary);
       border-radius: 12px;
       padding: 24px;
       text-align: center;
+      position: relative;
       margin: 15px 0;
+      overflow: hidden;
     }
-    .banner-preview h2 { color: var(--primary-dark); font-size: 1.6rem; }
-    .banner-list { list-style: none; margin: 15px 0; display: grid; gap: 8px; }
-    .banner-item { background: white; padding: 8px 12px; border-radius: 6px; border: 1px solid #bae6fd; font-weight: 600; display: flex; justify-content: space-between; }
+    .banner-header-decor {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .banner-flower { width: 75px; height: 75px; object-fit: contain; }
+    .banner-center-logo { width: 68px; height: 68px; object-fit: contain; }
+    .banner-preview h2 { color: var(--primary-dark); font-size: 1.65rem; font-weight: 800; }
+    .banner-list { list-style: none; margin: 16px 0; display: grid; gap: 8px; }
+    .banner-item {
+      background: white;
+      padding: 10px 16px;
+      border-radius: 8px;
+      border: 1px solid #bae6fd;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
 
     .toast {
       position: fixed;
@@ -288,13 +336,14 @@
 </head>
 <body>
 
+  <!-- Header -->
   <header>
     <div class="header-container">
       <div class="brand-title">
-        <i class="fa-solid fa-graduation-cap"></i>
+        <img src="logo.jpeg" alt="Logo" class="brand-logo" onerror="this.style.display='none'">
         <div>
           <h1>जिल्हा परिषद, बीड - सराव चाचणी पोर्टल</h1>
-          <p>गुण संकलन, विश्लेषण, लाइव्ह गुणवत्ता डॅशबोर्ड व प्रमाणपत्र</p>
+          <p>गुण संकलन, विश्लेषण, लाइव्ह गुणवत्ता डॅशबोर्ड व डिजिटल प्रमाणपत्र</p>
         </div>
       </div>
       <div class="nav-actions">
@@ -432,7 +481,7 @@
         
         <div class="form-group" style="margin-bottom: 18px;">
           <label><i class="fa-solid fa-magnifying-glass"></i> UDISE कोड टाकून शाळा शोधा (काही अंक टाकले तरी चालेल):</label>
-          <input type="text" id="udise-search-input" class="form-control" placeholder="उदा. 272701 किंवा कोडचे काही अंक..." oninput="searchSchoolsByUdise(this.value)">
+          <input type="text" id="udise-search-input" class="form-control" placeholder="उदा. 2727 किंवा कोडचे काही अंक..." oninput="searchSchoolsByUdise(this.value)">
           <div class="udise-suggestions" id="udise-results-box"></div>
         </div>
 
@@ -518,67 +567,65 @@
     </div>
   </div>
 
-  <!-- Certificate Modal -->
+  <!-- Certificate Modal (cert.jpeg वर मजकूर) -->
   <div class="modal" id="certModal">
     <div class="modal-content">
       <div style="display: flex; justify-content: space-between; align-items: center;">
         <h3>गुणवत्ता सन्मान प्रमाणपत्र</h3>
-        <button onclick="closeModal('certModal')" style="border:none; background:none; font-size:1.3rem; cursor:pointer;">&times;</button>
+        <button onclick="closeModal('certModal')" style="border:none; background:none; font-size:1.4rem; cursor:pointer;">&times;</button>
       </div>
 
-      <div class="cert-preview" id="cert-card-render">
-        <div style="text-align: center; margin-bottom: 8px;">
-          <i class="fa-solid fa-award" style="font-size: 2.5rem; color:#d97706;"></i>
-        </div>
-        <h2>जिल्हा परिषद, बीड</h2>
-        <h3>शिक्षण विभाग (प्राथमिक) - गुणवत्ता सन्मान प्रमाणपत्र</h3>
-        
-        <p class="cert-text">
-          प्रमाणित करण्यात येते की, कुमार/कुमारी <strong id="cert-std-name" style="color:#0369a1; text-decoration: underline;">---</strong>, 
-          शाळा: <span id="cert-school-name">---</span> (UDISE: <span id="cert-udise-code">---</span>), तालुका: <span id="cert-taluka-name">---</span> यांनी 
-          जिल्हा परिषद बीड अंतर्गत आयोजित <strong><span id="cert-exam-title">---</span></strong> अंतर्गत 
-          चाचणी क्र. <span id="cert-test-no">-</span> मध्ये उत्कृष्ट कामगिरी करून 
-          <strong id="cert-marks">---</strong> गुणांसह <strong id="cert-rank-text">---</strong> पटकावला आहे.<br>
-          त्यांच्या या उज्ज्वल यशाबद्दल हार्दिक अभिनंदन व पुढील वाटचालीस मनःपूर्वक शुभेच्छा!
-        </p>
-
-        <div style="display: flex; justify-content: space-between; margin-top: 35px; padding: 0 20px;">
-          <div style="text-align: center;">
-            <p><strong>गटशिक्षणाधिकारी</strong></p>
-            <p style="font-size:0.85rem; color:#64748b;">पंचायत समिती</p>
-          </div>
-          <div style="text-align: center;">
-            <p><strong>शिक्षणाधिकारी (प्राथमिक)</strong></p>
-            <p style="font-size:0.85rem; color:#64748b;">जिल्हा परिषद, बीड</p>
+      <div class="cert-container-box" id="cert-card-render">
+        <div class="cert-overlay-content">
+          <h2 class="cert-student-title" id="cert-std-name">---</h2>
+          <p class="cert-para">
+            यांनी जिल्हा परिषद, बीड अंतर्गत आयोजित <strong><span id="cert-exam-title">---</span></strong> अंतर्गत 
+            चाचणी क्र. <strong id="cert-test-no">-</strong> मध्ये उत्कृष्ट यश संपादन केले आहे.<br>
+            शाळा: <strong><span id="cert-school-name">---</span></strong> (UDISE: <span id="cert-udise-code">---</span>), 
+            तालुका: <strong><span id="cert-taluka-name">---</span></strong>.
+          </p>
+          <div class="cert-badges">
+            <span class="cert-badge" id="cert-marks">प्राप्त गुण: ---</span>
+            <span class="cert-badge" id="cert-rank-text">गुणवत्ता क्रमांक: ---</span>
           </div>
         </div>
       </div>
 
-      <div style="text-align: right; display:flex; gap:10px; justify-content:flex-end;">
+      <div style="text-align: right; display:flex; gap:10px; justify-content:flex-end; margin-top:10px;">
         <button class="btn btn-outline" onclick="closeModal('certModal')">बंद करा</button>
         <button class="btn btn-success" onclick="downloadCertificatePDF()"><i class="fa-solid fa-download"></i> प्रमाणपत्र PDF डाउनलोड करा</button>
       </div>
     </div>
   </div>
 
-  <!-- Share Banner Modal -->
+  <!-- Share Banner Modal (logo, flower1, flower2 सह) -->
   <div class="modal" id="shareModal">
     <div class="modal-content">
       <div style="display: flex; justify-content: space-between; align-items: center;">
         <h3 id="banner-modal-title">अभिनंदन गौरव बॅनर</h3>
-        <button onclick="closeModal('shareModal')" style="border:none; background:none; font-size:1.3rem; cursor:pointer;">&times;</button>
+        <button onclick="closeModal('shareModal')" style="border:none; background:none; font-size:1.4rem; cursor:pointer;">&times;</button>
       </div>
 
       <div class="banner-preview" id="banner-card-render">
-        <p style="font-weight:700; color:#d97706; letter-spacing: 1px;">💐 हार्दिक अभिनंदन ! हार्दिक अभिनंदन ! 💐</p>
+        <div class="banner-header-decor">
+          <img src="flower1.jpg" alt="Flower 1" class="banner-flower" onerror="this.style.display='none'">
+          <img src="logo.jpeg" alt="Logo" class="banner-center-logo" onerror="this.style.display='none'">
+          <img src="flower2.jpg" alt="Flower 2" class="banner-flower" onerror="this.style.display='none'">
+        </div>
+        <p style="font-weight:700; color:#d97706; letter-spacing: 1px; font-size:1.05rem;">💐 हार्दिक अभिनंदन ! हार्दिक अभिनंदन ! 💐</p>
         <h2 id="banner-heading">बीड जिल्हा सराव परीक्षा टॉपर्स</h2>
-        <p id="banner-sub" style="color:var(--text-muted); font-size:0.95rem; margin-bottom: 10px;">गुणवत्ता यादी</p>
+        <p id="banner-sub" style="color:var(--text-muted); font-size:0.95rem; margin-bottom: 12px;">गुणवत्ता यादी</p>
         
         <ul class="banner-list" id="banner-top-list"></ul>
 
-        <p style="font-size:0.85rem; color:#475569; margin-top:8px;">
-          🎯 प्रेरणा व मार्गदर्शक: शिक्षणाधिकारी (प्राथमिक), जिल्हा परिषद बीड
-        </p>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px; padding-top:8px; border-top:1px dashed #bae6fd;">
+          <p style="font-size:0.85rem; color:#475569;">
+            🎯 प्रेरणा: शिक्षणाधिकारी (प्राथमिक), जिल्हा परिषद बीड
+          </p>
+          <p style="font-size:0.85rem; color:#475569; font-weight:600;">
+            समस्त शिक्षण विभाग, बीड
+          </p>
+        </div>
       </div>
 
       <div style="text-align: right; display:flex; gap:10px; justify-content:flex-end;">
@@ -605,11 +652,34 @@
 
   <div class="toast" id="toastMsg">माहिती सेव्ह झाली!</div>
 
-  <!-- डेटा फाईल लोड करण्यासाठी (जर लोकलमध्ये फाईल उपलब्ध असेल तर) -->
-  <script src="schools_data.js"></script>
-
   <script>
-    /* ================= FIREBASE CONFIG ================= */
+    /* ================= 1. शाळांचा डेटा JSON द्वारे लोड करणे ================= */
+    let BEED_SCHOOLS = [];
+
+    function loadSchoolsDataFromJson() {
+      fetch('schools.json')
+        .then(res => {
+          if (!res.ok) throw new Error("schools.json फाईल सापडली नाही: " + res.status);
+          return res.json();
+        })
+        .then(data => {
+          BEED_SCHOOLS = data.map(s => ({
+            c: s.udise,
+            n: s.name,
+            t: s.taluka,
+            l: parseInt(s.lowest_class, 10) || 1,
+            h: parseInt(s.highest_class, 10) || 7
+          }));
+          console.log("सर्व शाळा यशस्वीरित्या लोड झाल्या! संख्या:", BEED_SCHOOLS.length);
+          onTalukaSelected();
+        })
+        .catch(err => {
+          console.error("त्रुटी:", err);
+          showToast("शाळा डेटा लोड करताना अडचण आली: " + err.message);
+        });
+    }
+
+    /* ================= 2. FIREBASE CONFIG ================= */
     const firebaseConfig = {
       apiKey: "AIzaSyBrKGEMc9uxBoZ4VIcNfOXq7xt_IZmluDE",
       authDomain: "test-database-34c8a.firebaseapp.com",
@@ -638,6 +708,7 @@
     let currentFetchedToppers = [];
 
     window.addEventListener('DOMContentLoaded', () => {
+      loadSchoolsDataFromJson();
       buildDashboardTestPills();
       buildTalukaTabs();
       initTalukaDropdown();
@@ -660,8 +731,8 @@
     }
 
     function isSchoolEligible(school, examType) {
-      const low = parseInt(school.l, 10);
-      const high = parseInt(school.h, 10);
+      const low = school.l;
+      const high = school.h;
       let targetClass = 0;
 
       if (examType === '4th') targetClass = 4;
@@ -741,7 +812,7 @@
       const schoolSelect = document.getElementById('entry-school');
       
       schoolSelect.innerHTML = '<option value="">-- शाळा निवडा --</option>';
-      if (!taluka || typeof BEED_SCHOOLS === 'undefined') return;
+      if (!taluka || BEED_SCHOOLS.length === 0) return;
 
       const filtered = BEED_SCHOOLS.filter(s => s.t === taluka && isSchoolEligible(s, currentEntryCategory));
       
@@ -759,7 +830,7 @@
       const box = document.getElementById('udise-results-box');
       const q = query.trim();
       
-      if (q.length < 2 || typeof BEED_SCHOOLS === 'undefined') {
+      if (q.length < 2 || BEED_SCHOOLS.length === 0) {
         box.style.display = 'none';
         return;
       }
@@ -1019,8 +1090,8 @@
       document.getElementById('cert-school-name').innerText = school;
       document.getElementById('cert-udise-code').innerText = udise;
       document.getElementById('cert-taluka-name').innerText = taluka;
-      document.getElementById('cert-marks').innerText = marks + "/100";
-      document.getElementById('cert-rank-text').innerText = `${currentSelectedTaluka==='all'?'जिल्ह्यात':'तालुक्यात'} गुणवत्ता क्रमांक #${rank}`;
+      document.getElementById('cert-marks').innerText = `प्राप्त गुण: ${marks} / 100`;
+      document.getElementById('cert-rank-text').innerText = `${currentSelectedTaluka==='all'?'जिल्ह्यात':'तालुक्यात'} क्रमांक #${rank}`;
       document.getElementById('cert-test-no').innerText = currentSelectedTest;
       
       const examNames = {
@@ -1036,7 +1107,7 @@
     function downloadCertificatePDF() {
       const { jsPDF } = window.jspdf;
       const card = document.getElementById('cert-card-render');
-      html2canvas(card, { scale: 2 }).then(canvas => {
+      html2canvas(card, { scale: 2, useCORS: true }).then(canvas => {
         const imgData = canvas.toDataURL('image/png');
         const pdf = new jsPDF('landscape', 'mm', 'a4');
         const imgWidth = 277;
@@ -1060,7 +1131,7 @@
           listEl.innerHTML += `
             <li class="banner-item">
               <span>🏅 #${idx+1} ${st.name} (${st.school})</span>
-              <span style="color:#0284c7;">${st.marks} गुण</span>
+              <span style="color:#0284c7; font-weight:700;">${st.marks} गुण</span>
             </li>
           `;
         });
@@ -1072,12 +1143,12 @@
     function downloadBannerPDF() {
       const { jsPDF } = window.jspdf;
       const card = document.getElementById('banner-card-render');
-      html2canvas(card, { scale: 2 }).then(canvas => {
+      html2canvas(card, { scale: 2, useCORS: true }).then(canvas => {
         const imgData = canvas.toDataURL('image/png');
         const pdf = new jsPDF('portrait', 'mm', 'a4');
         const imgWidth = 190;
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
-        pdf.addImage(imgData, 'PNG', 10, 20, imgWidth, imgHeight);
+        pdf.addImage(imgData, 'PNG', 10, 15, imgWidth, imgHeight);
         pdf.save('Abhinandan_Banner.pdf');
       });
     }
