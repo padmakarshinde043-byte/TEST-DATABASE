@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>सराव चाचणी गुण संकलन व डॅशबोर्ड | जिल्हा परिषद बीड</title>
   
-  <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700&family=Yatra+One&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&family=Yatra+One&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -239,7 +239,7 @@
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     }
 
-    /* प्रमाणपत्राची मांडणी (cert.jpeg बॅकग्राउंडवर) */
+    /* प्रमाणपत्राची अद्ययावत मांडणी (cert.jpeg बॅकग्राउंडवर) */
     .cert-container-box {
       position: relative;
       width: 740px;
@@ -249,46 +249,77 @@
       background-size: 100% 100%;
       background-position: center;
       background-repeat: no-repeat;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.18);
       border-radius: 6px;
       overflow: hidden;
     }
+
+    /* उजव्या लोगोच्या खाली इंग्रजी दिनांक */
+    .cert-date-badge {
+      position: absolute;
+      top: 118px;
+      right: 48px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #78350f;
+      font-family: 'Poppins', sans-serif;
+      background: rgba(254, 243, 199, 0.9);
+      padding: 2px 12px;
+      border-radius: 12px;
+      border: 1.5px solid #f59e0b;
+      letter-spacing: 0.5px;
+    }
+
+    /* वर सरकवलेला मजकूर */
     .cert-overlay-content {
       position: absolute;
-      top: 180px;
+      top: 136px;
       left: 55px;
       right: 55px;
       text-align: center;
     }
+
     .cert-student-title {
       font-family: 'Yatra One', cursive, sans-serif;
-      font-size: 1.65rem;
+      font-size: 1.7rem;
       color: #991b1b;
-      margin-bottom: 14px;
+      margin-bottom: 6px;
       text-decoration: underline;
-    }
-    .cert-para {
-      font-size: 1.08rem;
-      line-height: 1.85;
-      color: #1e293b;
-      font-weight: 500;
-    }
-    .cert-badges {
-      margin-top: 18px;
-      display: flex;
-      justify-content: center;
-      gap: 16px;
-    }
-    .cert-badge {
-      background: rgba(2, 132, 199, 0.1);
-      border: 1px solid #0284c7;
-      color: #0369a1;
-      font-weight: 700;
-      padding: 4px 16px;
-      border-radius: 20px;
+      letter-spacing: 0.5px;
     }
 
-    /* बॅनर मांडणी (flower1, flower2 व logo सह) */
+    .cert-para {
+      font-size: 1.05rem;
+      line-height: 1.7;
+      color: #1e293b;
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+
+    /* ठळक Golden आकारात प्राप्त गुण आणि रँक */
+    .cert-badges {
+      margin-top: 12px;
+      display: flex;
+      justify-content: center;
+      gap: 18px;
+    }
+
+    .cert-badge-gold {
+      background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 50%, #fde68a 100%);
+      border: 2px solid #d97706;
+      color: #78350f;
+      font-weight: 800;
+      font-size: 1.05rem;
+      padding: 6px 22px;
+      border-radius: 30px;
+      box-shadow: 0 3px 8px rgba(217, 119, 6, 0.28), inset 0 1px 0 rgba(255,255,255,0.8);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-shadow: 0 1px 0 rgba(255,255,255,0.8);
+      font-family: 'Mukta', 'Poppins', sans-serif;
+    }
+
     .banner-preview {
       background: linear-gradient(135deg, #f0f9ff 0%, #ffffff 100%);
       border: 3px solid var(--primary);
@@ -370,22 +401,22 @@
         <div class="cat-card active" onclick="selectDashboardCategory('4th', this)">
           <i class="fa-solid fa-book-open"></i>
           <h3>इयत्ता चौथी शिष्यवृत्ती</h3>
-          <span>(वर्ग ४ असणाऱ्या सर्व शाळा)</span>
+          <span>(Class 4th असणाऱ्या सर्व शाळा)</span>
         </div>
         <div class="cat-card" onclick="selectDashboardCategory('7th', this)">
           <i class="fa-solid fa-award"></i>
           <h3>इयत्ता सातवी शिष्यवृत्ती</h3>
-          <span>(वर्ग ७ असणाऱ्या सर्व शाळा)</span>
+          <span>(Class 7th असणाऱ्या सर्व शाळा)</span>
         </div>
         <div class="cat-card" onclick="selectDashboardCategory('nmms', this)">
           <i class="fa-solid fa-medal"></i>
           <h3>NMMS शिष्यवृत्ती</h3>
-          <span>(वर्ग ८ असणाऱ्या सर्व शाळा)</span>
+          <span>(Class 8th असणाऱ्या सर्व शाळा)</span>
         </div>
         <div class="cat-card" onclick="selectDashboardCategory('navodaya', this)">
           <i class="fa-solid fa-school-flag"></i>
           <h3>नवोदय प्रवेश पात्रता परीक्षा</h3>
-          <span>(वर्ग ५ असणाऱ्या सर्व शाळा)</span>
+          <span>(Class 5th असणाऱ्या सर्व शाळा)</span>
         </div>
       </div>
 
@@ -416,7 +447,7 @@
       <div class="card">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
           <div class="card-title" style="margin: 0; border: none; padding: 0;">
-            <i class="fa-solid fa-trophy" style="color: #f59e0b;"></i> <span id="toppers-table-title">बीड जिल्हा - टॉप १० गुणवत्ता यादी</span>
+            <i class="fa-solid fa-trophy" style="color: #f59e0b;"></i> <span id="toppers-table-title">बीड जिल्हा - टॉप 10 गुणवत्ता यादी</span>
           </div>
           <div style="display: flex; gap: 8px;">
             <button class="btn btn-outline" onclick="openShareModal('district')"><i class="fa-solid fa-share-nodes"></i> जिल्हा टॉपर्स बॅनर शेअर</button>
@@ -456,22 +487,22 @@
           <div class="cat-card active" id="entry-cat-4th" onclick="selectEntryCategory('4th')">
             <i class="fa-solid fa-book-open"></i>
             <h3>इयत्ता चौथी शिष्यवृत्ती</h3>
-            <span>(वर्ग ४ उपलब्ध असलेल्या सर्व शाळा)</span>
+            <span>(Class 4th उपलब्ध असलेल्या सर्व शाळा)</span>
           </div>
           <div class="cat-card" id="entry-cat-7th" onclick="selectEntryCategory('7th')">
             <i class="fa-solid fa-award"></i>
             <h3>इयत्ता सातवी शिष्यवृत्ती</h3>
-            <span>(वर्ग ७ उपलब्ध असलेल्या सर्व शाळा)</span>
+            <span>(Class 7th उपलब्ध असलेल्या सर्व शाळा)</span>
           </div>
           <div class="cat-card" id="entry-cat-nmms" onclick="selectEntryCategory('nmms')">
             <i class="fa-solid fa-medal"></i>
             <h3>NMMS शिष्यवृत्ती</h3>
-            <span>(वर्ग ८ उपलब्ध असलेल्या सर्व शाळा)</span>
+            <span>(Class 8th उपलब्ध असलेल्या सर्व शाळा)</span>
           </div>
           <div class="cat-card" id="entry-cat-navodaya" onclick="selectEntryCategory('navodaya')">
             <i class="fa-solid fa-school-flag"></i>
             <h3>नवोदय प्रवेश पात्रता परीक्षा</h3>
-            <span>(वर्ग ५ उपलब्ध असलेल्या सर्व शाळा)</span>
+            <span>(Class 5th उपलब्ध असलेल्या सर्व शाळा)</span>
           </div>
         </div>
       </div>
@@ -512,7 +543,7 @@
       <div class="card">
         <div class="card-title"><i class="fa-solid fa-user-plus"></i> २. नवीन विद्यार्थी जोडा (फक्त एकदाच जोडावे)</div>
         <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:12px;">
-          * सूचना: एकदा जोडलेले विद्यार्थी सर्व १० चाचण्यांसाठी कायम उपलब्ध राहतील. वारंवार नाव भरण्याची गरज नाही.
+          * सूचना: एकदा जोडलेले विद्यार्थी सर्व 10 चाचण्यांसाठी कायम उपलब्ध राहतील. वारंवार नाव भरण्याची गरज नाही.
         </p>
         <div class="form-grid">
           <div class="form-group">
@@ -551,7 +582,7 @@
                 <th style="width: 60px;">अ.क्र.</th>
                 <th>विद्यार्थ्याचे संपूर्ण नाव</th>
                 <th>लिंग</th>
-                <th style="width: 180px;">मिळालेले गुण (पैकी १००)</th>
+                <th style="width: 180px;">मिळालेले गुण (पैकी 100)</th>
               </tr>
             </thead>
             <tbody id="student-marks-entry-body">
@@ -567,38 +598,49 @@
     </div>
   </div>
 
-  <!-- Certificate Modal (cert.jpeg वर मजकूर) -->
+  <!-- Certificate Modal -->
   <div class="modal" id="certModal">
     <div class="modal-content">
       <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h3>गुणवत्ता सन्मान प्रमाणपत्र</h3>
+        <h3 style="color: var(--primary-dark);"><i class="fa-solid fa-award"></i> गुणवत्ता सन्मान प्रमाणपत्र</h3>
         <button onclick="closeModal('certModal')" style="border:none; background:none; font-size:1.4rem; cursor:pointer;">&times;</button>
       </div>
 
       <div class="cert-container-box" id="cert-card-render">
+        <!-- उजव्या लोगोखाली दिनांक इंग्रजी अंकांमध्ये -->
+        <div class="cert-date-badge" id="cert-date-text">Date: 09/10/2026</div>
+
+        <!-- मुख्य मजकूर वर सरकवलेला -->
         <div class="cert-overlay-content">
           <h2 class="cert-student-title" id="cert-std-name">---</h2>
           <p class="cert-para">
-            यांनी जिल्हा परिषद, बीड अंतर्गत आयोजित <strong><span id="cert-exam-title">---</span></strong> अंतर्गत 
-            चाचणी क्र. <strong id="cert-test-no">-</strong> मध्ये उत्कृष्ट यश संपादन केले आहे.<br>
-            शाळा: <strong><span id="cert-school-name">---</span></strong> (UDISE: <span id="cert-udise-code">---</span>), 
-            तालुका: <strong><span id="cert-taluka-name">---</span></strong>.
+            <span id="cert-gender-pronoun" style="font-weight:700; color:#0369a1;">या विद्यार्थ्याने</span> 
+            (<strong id="cert-std-class" style="color:#b45309; font-family:'Poppins', sans-serif;">Class ---</strong>), 
+            शाळा: <strong><span id="cert-school-name">---</span></strong> (UDISE: <span id="cert-udise-code" style="font-family:'Poppins', sans-serif;">---</span>), तालुका: <strong><span id="cert-taluka-name">---</span></strong> यांनी 
+            जिल्हा परिषद, बीड अंतर्गत आयोजित <strong><span id="cert-exam-title">---</span></strong> अंतर्गत 
+            चाचणी क्र. <strong id="cert-test-no" style="font-size: 1.15rem; color:#b45309; font-family:'Poppins', sans-serif;">1</strong> मध्ये उत्कृष्ट यश संपादन केले आहे.
           </p>
+          
+          <!-- ठळक Golden आकारात प्राप्त गुण आणि रँक (इंग्रजी अंक) -->
           <div class="cert-badges">
-            <span class="cert-badge" id="cert-marks">प्राप्त गुण: ---</span>
-            <span class="cert-badge" id="cert-rank-text">गुणवत्ता क्रमांक: ---</span>
+            <div class="cert-badge-gold" id="cert-marks">
+              <i class="fa-solid fa-star" style="color: #d97706;"></i> प्राप्त गुण: 98 / 100
+            </div>
+            <div class="cert-badge-gold" id="cert-rank-text">
+              <i class="fa-solid fa-trophy" style="color: #d97706;"></i> जिल्ह्यात क्रमांक #1
+            </div>
           </div>
         </div>
       </div>
 
-      <div style="text-align: right; display:flex; gap:10px; justify-content:flex-end; margin-top:10px;">
+      <div style="text-align: right; display:flex; gap:10px; justify-content:flex-end; margin-top:14px;">
         <button class="btn btn-outline" onclick="closeModal('certModal')">बंद करा</button>
         <button class="btn btn-success" onclick="downloadCertificatePDF()"><i class="fa-solid fa-download"></i> प्रमाणपत्र PDF डाउनलोड करा</button>
       </div>
     </div>
   </div>
 
-  <!-- Share Banner Modal (logo, flower1, flower2 सह) -->
+  <!-- Share Banner Modal -->
   <div class="modal" id="shareModal">
     <div class="modal-content">
       <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -664,7 +706,7 @@
         })
         .then(data => {
           BEED_SCHOOLS = data.map(s => ({
-            c: s.udise,
+            c: String(s.udise).trim(),
             n: s.name,
             t: s.taluka,
             l: parseInt(s.lowest_class, 10) || 1,
@@ -786,8 +828,8 @@
       el.classList.add('active');
       currentSelectedTaluka = taluka;
       document.getElementById('toppers-table-title').innerText = taluka === 'all' 
-        ? 'बीड जिल्हा - टॉप १० गुणवत्ता यादी' 
-        : `${taluka} तालुका - टॉप १० गुणवत्ता यादी`;
+        ? 'बीड जिल्हा - टॉप 10 गुणवत्ता यादी' 
+        : `${taluka} तालुका - टॉप 10 गुणवत्ता यादी`;
       listenLiveDashboardData();
     }
 
@@ -1007,7 +1049,7 @@
     }
 
     function showConsolidatedReport() {
-      alert("एकत्रित अहवाल: सर्व १० चाचण्यांचा एकत्रित तक्ता लवकरच स्क्रीनवर उपलब्ध होईल.");
+      alert("एकत्रित अहवाल: सर्व 10 चाचण्यांचा एकत्रित तक्ता लवकरच स्क्रीनवर उपलब्ध होईल.");
     }
 
     function listenLiveDashboardData() {
@@ -1027,6 +1069,7 @@
                   const marksNum = parseFloat(st.marks) || 0;
                   const rec = {
                     name: st.name,
+                    gender: st.gender,
                     school: entry.school,
                     udise: entry.udise || '-',
                     taluka: entry.taluka,
@@ -1076,7 +1119,7 @@
             <td>${st.taluka}</td>
             <td><span style="background: #e0f2fe; color:#0369a1; padding:3px 10px; border-radius:12px; font-weight:700;">${st.marks} / 100</span></td>
             <td>
-              <button class="btn btn-outline" style="padding:4px 8px; font-size:0.85rem;" onclick="openCertificateModal('${st.name}', '${st.school}', '${st.udise}', '${st.taluka}', ${st.marks}, ${idx+1})">
+              <button class="btn btn-outline" style="padding:4px 8px; font-size:0.85rem;" onclick="openCertificateModal('${st.name}', '${st.school}', '${st.udise}', '${st.taluka}', ${st.marks}, ${idx+1}, '${st.gender || ''}')">
                 <i class="fa-solid fa-certificate"></i> प्रमाणपत्र
               </button>
             </td>
@@ -1085,22 +1128,48 @@
       });
     }
 
-    function openCertificateModal(name, school, udise, taluka, marks, rank) {
+    /* ================= 3. प्रमाणपत्र जनरेटर (इंग्रजी अंक व वर्ग) ================= */
+    function openCertificateModal(name, school, udise, taluka, marks, rank, gender) {
       document.getElementById('cert-std-name').innerText = name;
       document.getElementById('cert-school-name').innerText = school;
       document.getElementById('cert-udise-code').innerText = udise;
       document.getElementById('cert-taluka-name').innerText = taluka;
-      document.getElementById('cert-marks').innerText = `प्राप्त गुण: ${marks} / 100`;
-      document.getElementById('cert-rank-text').innerText = `${currentSelectedTaluka==='all'?'जिल्ह्यात':'तालुक्यात'} क्रमांक #${rank}`;
+
+      // १. वर्गाचा इंग्रजी अंकांसह अचूक उल्लेख
+      const classMap = {
+        '4th': 'Class 4th',
+        'navodaya': 'Class 5th',
+        '7th': 'Class 7th',
+        'nmms': 'Class 8th'
+      };
+      document.getElementById('cert-std-class').innerText = classMap[currentSelectedCategory] || 'Primary Class';
+
+      // २. लिंगानुसार अचूक शब्दरचना (या विद्यार्थ्याने / या विद्यार्थिनीने)
+      const isGirl = (gender === "मुलगी" || gender === "girl" || gender === "Female");
+      document.getElementById('cert-gender-pronoun').innerText = isGirl ? "या विद्यार्थिनीने" : "या विद्यार्थ्याने";
+
+      // ३. चाचणी क्रमांक इंग्रजी अंकात
       document.getElementById('cert-test-no').innerText = currentSelectedTest;
-      
+
+      // ४. ठळक Golden बॅजेस (इंग्रजी अंकांमध्ये)
+      document.getElementById('cert-marks').innerHTML = `<i class="fa-solid fa-star" style="color:#d97706;"></i> प्राप्त गुण: ${marks} / 100`;
+      document.getElementById('cert-rank-text').innerHTML = `<i class="fa-solid fa-trophy" style="color:#d97706;"></i> ${currentSelectedTaluka === 'all' ? 'जिल्ह्यात' : 'तालुक्यात'} क्रमांक #${rank}`;
+
+      // ५. उजव्या लोगोच्या खाली दिनांक इंग्रजी अंकांमध्ये
+      const today = new Date();
+      const dd = String(today.getDate()).padStart(2, '0');
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const yyyy = today.getFullYear();
+      document.getElementById('cert-date-text').innerText = `Date: ${dd}/${mm}/${yyyy}`;
+
       const examNames = {
         '4th': 'इयत्ता चौथी शिष्यवृत्ती सराव परीक्षा',
         '7th': 'इयत्ता सातवी शिष्यवृत्ती सराव परीक्षा',
         'nmms': 'NMMS शिष्यवृत्ती सराव परीक्षा',
         'navodaya': 'नवोदय विद्यालय प्रवेश पात्रता सराव परीक्षा'
       };
-      document.getElementById('cert-exam-title').innerText = examNames[currentSelectedCategory];
+      document.getElementById('cert-exam-title').innerText = examNames[currentSelectedCategory] || 'सराव परीक्षा';
+
       document.getElementById('certModal').style.display = 'flex';
     }
 
@@ -1117,6 +1186,7 @@
       });
     }
 
+    /* ================= 4. बॅनर शेअर ================= */
     function openShareModal(type) {
       const listEl = document.getElementById('banner-top-list');
       listEl.innerHTML = '';
@@ -1148,7 +1218,7 @@
         const pdf = new jsPDF('portrait', 'mm', 'a4');
         const imgWidth = 190;
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
-        pdf.addImage(imgData, 'PNG', 10, 15, imgWidth, imgHeight);
+        pdf.addImage(imgData, 'PNG', 10, 20, imgWidth, imgHeight);
         pdf.save('Abhinandan_Banner.pdf');
       });
     }
@@ -1157,6 +1227,7 @@
       document.getElementById(id).style.display = 'none';
     }
 
+    /* ================= 5. लॉगिन ================= */
     function openLoginModal(role) {
       const titles = {
         'eo': 'शिक्षणाधिकारी (प्राथमिक) लॉगिन',
