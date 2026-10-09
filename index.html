@@ -239,7 +239,7 @@
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     }
 
-    /* प्रमाणपत्राची मांडणी (cert.jpeg बॅकग्राउंडवर) */
+    /* प्रमाणपत्राची अद्ययावत मांडणी (cert.jpeg बॅकग्राउंडवर) */
     .cert-container-box {
       position: relative;
       width: 740px;
@@ -252,6 +252,22 @@
       box-shadow: 0 6px 20px rgba(0,0,0,0.18);
       border-radius: 6px;
       overflow: hidden;
+    }
+
+    /* दोन्ही लोगोच्या मध्यभागी Navy Blue रंगातील ठळक Aparajita शीर्षक */
+    .cert-main-heading {
+      position: absolute;
+      top: 48px;
+      left: 130px;
+      right: 130px;
+      text-align: center;
+      font-family: 'Aparajita', 'Yatra One', 'Mukta', serif;
+      font-size: 1.95rem;
+      font-weight: 800;
+      color: #0f2b5c; /* Deep Navy Blue */
+      letter-spacing: 1px;
+      text-shadow: 0 1px 2px rgba(15, 43, 92, 0.12);
+      z-index: 5;
     }
 
     /* उजव्या लोगोच्या खाली साधा इंग्रजी दिनांक (कोणतीही बॉर्डर न ठेवता वर व उजवीकडे सेट) */
@@ -269,7 +285,7 @@
       letter-spacing: 0.5px;
     }
 
-    /* विद्यार्थ्याचे नाव व मजकूर वर उचलला */
+    /* विद्यार्थ्याचे नाव व मजकूर वर उचललेला */
     .cert-overlay-content {
       position: absolute;
       top: 126px;
@@ -284,16 +300,23 @@
       color: #991b1b;
       margin-bottom: 8px;
       text-decoration: underline;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.6px;
+      word-spacing: 3px;
     }
 
-    /* मजकुरातील ओळींमधील किंचित वाढवलेले अंतर */
+    /* मजकुरातील ओळींमधील अंतर आणि दोन शब्दांमधील मोकळेपणा */
     .cert-para {
       font-size: 1.04rem;
       line-height: 1.85;
       color: #1e293b;
       font-weight: 500;
       margin-bottom: 8px;
+      word-spacing: 3px;     /* दोन शब्दांमधील स्पष्ट अंतर */
+      letter-spacing: 0.2px;
+    }
+
+    .cert-para span, .cert-para strong {
+      word-spacing: 3px;
     }
 
     /* UDISE कोड अखंड दिसण्यासाठी स्वतंत्र स्टाइल */
@@ -616,6 +639,9 @@
       </div>
 
       <div class="cert-container-box" id="cert-card-render">
+        <!-- दोन्ही लोगोच्या मध्यभागी Navy Blue रंगातील ठळक Aparajita शीर्षक -->
+        <div class="cert-main-heading">गुणवत्ता सन्मान प्रमाणपत्र</div>
+
         <!-- उजव्या लोगोच्या खाली साधा इंग्रजी दिनांक -->
         <div class="cert-date-badge" id="cert-date-text">Date: 09/10/2026</div>
 
@@ -1139,12 +1165,12 @@
       });
     }
 
-    /* ================= 3. प्रमाणपत्र जनरेटर (अचूक मांडणी व शुद्ध वाक्यरचना) ================= */
+    /* ================= 3. प्रमाणपत्र जनरेटर ================= */
     function openCertificateModal(name, school, udise, taluka, marks, rank, gender) {
       document.getElementById('cert-std-name').innerText = name;
       document.getElementById('cert-school-name').innerText = school;
       
-      // पूर्ण ११ अंक विनाकट सेट करणे
+      // पूर्ण ११ अंक विनाकट स्पष्ट सेट करणे
       document.getElementById('cert-udise-code').innerText = String(udise).trim();
       document.getElementById('cert-taluka-name').innerText = taluka;
 
@@ -1189,7 +1215,11 @@
     function downloadCertificatePDF() {
       const { jsPDF } = window.jspdf;
       const card = document.getElementById('cert-card-render');
-      html2canvas(card, { scale: 2, useCORS: true }).then(canvas => {
+      html2canvas(card, { 
+        scale: 3, 
+        useCORS: true,
+        letterRendering: true
+      }).then(canvas => {
         const imgData = canvas.toDataURL('image/png');
         const pdf = new jsPDF('landscape', 'mm', 'a4');
         const imgWidth = 277;
@@ -1240,7 +1270,7 @@
       document.getElementById(id).style.display = 'none';
     }
 
-    /* ================= 5. प्रशासकीय लॉगिन ================= */
+    /* ================= 5. लॉगिन ================= */
     function openLoginModal(role) {
       const titles = {
         'eo': 'शिक्षणाधिकारी (प्राथमिक) लॉगिन',
