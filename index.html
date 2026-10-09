@@ -5,27 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>सराव चाचणी गुण संकलन व डॅशबोर्ड | जिल्हा परिषद बीड</title>
   
-  <!-- Font & Icons -->
   <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
-  <!-- PDF & Canvas Libraries -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
-  <!-- शाळांचा अधिकृत डेटाबेस -->
-  <script src="schools_data.js"></script>
-
   <style>
     :root {
-      --primary: #0284c7;        /* Sky Blue */
-      --primary-light: #e0f2fe;  /* Very Light Sky */
+      --primary: #0284c7;
+      --primary-light: #e0f2fe;
       --primary-dark: #0369a1;
-      --bg-ivory: #fcfbf7;       /* Soft Ivory */
+      --bg-ivory: #fcfbf7;
       --surface: #ffffff;
       --text-main: #1e293b;
       --text-muted: #64748b;
@@ -38,7 +31,6 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Mukta', sans-serif; }
     body { background-color: var(--bg-ivory); color: var(--text-main); min-height: 100vh; padding-bottom: 50px; }
 
-    /* Header */
     header {
       background: #ffffff;
       border-bottom: 2px solid var(--primary-light);
@@ -81,10 +73,8 @@
     .btn-outline:hover { background: var(--primary-light); }
     .btn-success { background: var(--accent); color: white; }
 
-    /* Main Container */
     .container { max-width: 1200px; margin: 24px auto; padding: 0 16px; }
 
-    /* Top Navigation Tabs */
     .section-nav {
       display: flex;
       background: #f1f5f9;
@@ -111,7 +101,6 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.06);
     }
 
-    /* Cards */
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -132,7 +121,6 @@
       padding-bottom: 10px;
     }
 
-    /* 4 Exam Category Grid */
     .category-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -157,7 +145,6 @@
     .cat-card h3 { font-size: 1.05rem; font-weight: 700; }
     .cat-card span { font-size: 0.8rem; color: var(--text-muted); display: block; margin-top: 4px; }
 
-    /* Test Selector Pills */
     .test-pill-container {
       display: flex;
       flex-wrap: wrap;
@@ -179,7 +166,6 @@
       border-color: var(--primary);
     }
 
-    /* Stats Overview */
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -195,7 +181,6 @@
     .stat-box p { font-size: 0.85rem; color: var(--text-muted); }
     .stat-box h2 { font-size: 1.6rem; color: var(--text-main); font-weight: 700; }
 
-    /* Forms */
     .form-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -215,7 +200,6 @@
     .form-control:focus { border-color: var(--primary); }
     .locked { background: #f1f5f9; pointer-events: none; }
 
-    /* Live UDISE Search Suggestions Box */
     .udise-suggestions {
       position: absolute;
       top: 100%;
@@ -240,14 +224,12 @@
       background: var(--primary-light);
     }
 
-    /* Tables */
     .table-responsive { overflow-x: auto; margin-top: 12px; }
     table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
     th, td { padding: 12px 14px; border-bottom: 1px solid var(--border); text-align: left; }
     th { background: #f8fafc; font-weight: 700; color: #475569; }
     tr:hover { background: #fcfdfd; }
 
-    /* Modal */
     .modal {
       display: none;
       position: fixed;
@@ -268,7 +250,6 @@
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     }
 
-    /* Certificate */
     .cert-preview {
       border: 8px double #d97706;
       padding: 30px;
@@ -280,7 +261,6 @@
     .cert-preview h3 { font-size: 1.2rem; color: #0284c7; margin-bottom: 14px; }
     .cert-text { font-size: 1.05rem; line-height: 1.8; margin: 16px 0; color: #334155; }
 
-    /* Banner */
     .banner-preview {
       background: linear-gradient(135deg, #e0f2fe 0%, #ffffff 100%);
       border: 3px solid var(--primary);
@@ -293,7 +273,6 @@
     .banner-list { list-style: none; margin: 15px 0; display: grid; gap: 8px; }
     .banner-item { background: white; padding: 8px 12px; border-radius: 6px; border: 1px solid #bae6fd; font-weight: 600; display: flex; justify-content: space-between; }
 
-    /* Toast */
     .toast {
       position: fixed;
       bottom: 20px;
@@ -309,7 +288,6 @@
 </head>
 <body>
 
-  <!-- Header -->
   <header>
     <div class="header-container">
       <div class="brand-title">
@@ -328,7 +306,6 @@
   </header>
 
   <div class="container">
-    <!-- View Switcher -->
     <div class="section-nav">
       <button class="section-nav-btn active" id="btn-tab-dashboard" onclick="switchView('dashboard')">
         <i class="fa-solid fa-chart-line"></i> लाइव्ह गुणवत्ता डॅशबोर्ड
@@ -368,7 +345,6 @@
         <div class="test-pill-container" id="dashboard-test-pills"></div>
       </div>
 
-      <!-- Stats Overview -->
       <div class="stats-grid">
         <div class="stat-box">
           <p>एकूण प्रविष्ट विद्यार्थी</p>
@@ -388,7 +364,6 @@
         </div>
       </div>
 
-      <!-- District / Taluka Filter & Sharing Action -->
       <div class="card">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
           <div class="card-title" style="margin: 0; border: none; padding: 0;">
@@ -402,7 +377,6 @@
 
         <div style="margin: 15px 0 10px 0; display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px;" id="taluka-tabs"></div>
 
-        <!-- Toppers Table -->
         <div class="table-responsive">
           <table>
             <thead>
@@ -427,7 +401,6 @@
     <!-- ================= 2. चाचणीचे गुण भरा (शिक्षक पोर्टल) ================= -->
     <div id="view-entry" style="display: none;">
       
-      <!-- ४ परीक्षांचे टॅब्स -->
       <div class="card" style="padding-bottom: 8px;">
         <div class="card-title"><i class="fa-solid fa-layer-group"></i> परीक्षेचा प्रकार निवडा</div>
         <div class="category-grid">
@@ -454,11 +427,9 @@
         </div>
       </div>
 
-      <!-- १. शाळा व चाचणी निवड -->
       <div class="card">
         <div class="card-title"><i class="fa-solid fa-school"></i> १. चाचणी व शाळा निवड</div>
         
-        <!-- UDISE त्वरित शोध पर्याय -->
         <div class="form-group" style="margin-bottom: 18px;">
           <label><i class="fa-solid fa-magnifying-glass"></i> UDISE कोड टाकून शाळा शोधा (काही अंक टाकले तरी चालेल):</label>
           <input type="text" id="udise-search-input" class="form-control" placeholder="उदा. 272701 किंवा कोडचे काही अंक..." oninput="searchSchoolsByUdise(this.value)">
@@ -468,9 +439,7 @@
         <div class="form-grid">
           <div class="form-group">
             <label>चाचणी क्रमांक</label>
-            <select class="form-control" id="entry-test-no" onchange="loadStudentMarksForSelectedTest()">
-              <!-- 1 to 10 Tests populated dynamically -->
-            </select>
+            <select class="form-control" id="entry-test-no" onchange="loadStudentMarksForSelectedTest()"></select>
           </div>
           <div class="form-group">
             <label>तालुका निवडा</label>
@@ -491,7 +460,6 @@
         </div>
       </div>
 
-      <!-- २. नवीन विद्यार्थी जोडा -->
       <div class="card">
         <div class="card-title"><i class="fa-solid fa-user-plus"></i> २. नवीन विद्यार्थी जोडा (फक्त एकदाच जोडावे)</div>
         <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:12px;">
@@ -521,7 +489,6 @@
         <button class="btn btn-success" onclick="addStudentToList()"><i class="fa-solid fa-plus"></i> विद्यार्थी जोडा</button>
       </div>
 
-      <!-- ३. गुण भरण्याचा तक्ता -->
       <div class="card">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap:10px;">
           <div class="card-title" style="margin:0; border:none;"><i class="fa-solid fa-calculator"></i> ३. विद्यार्थ्यांचे चाचणी गुण भरा</div>
@@ -551,7 +518,6 @@
     </div>
   </div>
 
-  <!-- Modals -->
   <!-- Certificate Modal -->
   <div class="modal" id="certModal">
     <div class="modal-content">
@@ -639,8 +605,11 @@
 
   <div class="toast" id="toastMsg">माहिती सेव्ह झाली!</div>
 
+  <!-- डेटा फाईल लोड करण्यासाठी (जर लोकलमध्ये फाईल उपलब्ध असेल तर) -->
+  <script src="schools_data.js"></script>
+
   <script>
-    /* ================= 1. FIREBASE INITIALIZATION ================= */
+    /* ================= FIREBASE CONFIG ================= */
     const firebaseConfig = {
       apiKey: "AIzaSyBrKGEMc9uxBoZ4VIcNfOXq7xt_IZmluDE",
       authDomain: "test-database-34c8a.firebaseapp.com",
@@ -663,7 +632,7 @@
     let currentSelectedTest = 1;
     let currentSelectedTaluka = 'all';
 
-    let currentEntryCategory = '4th'; // शिक्षक नोंदणीसाठी निवडलेली परीक्षा
+    let currentEntryCategory = '4th';
     let currentStudentsList = [];
     let selectedSchoolObj = null;
     let currentFetchedToppers = [];
@@ -690,27 +659,19 @@
       document.getElementById('btn-tab-entry').classList.toggle('active', view === 'entry');
     }
 
-    /* ================= 2. अचूक वर्गनिहाय फिल्टरिंग लॉजिक ================= */
     function isSchoolEligible(school, examType) {
       const low = parseInt(school.l, 10);
       const high = parseInt(school.h, 10);
       let targetClass = 0;
 
-      if (examType === '4th') {
-        targetClass = 4; // ४ थी शिष्यवृत्तीसाठी वर्ग ४ हवा
-      } else if (examType === 'navodaya') {
-        targetClass = 5; // नवोदय परीक्षेसाठी वर्ग ५ हवा
-      } else if (examType === '7th') {
-        targetClass = 7; // ७ वी शिष्यवृत्तीसाठी वर्ग ७ हवा
-      } else if (examType === 'nmms') {
-        targetClass = 8; // NMMS परीक्षेसाठी वर्ग ८ हवा
-      }
+      if (examType === '4th') targetClass = 4;
+      else if (examType === 'navodaya') targetClass = 5;
+      else if (examType === '7th') targetClass = 7;
+      else if (examType === 'nmms') targetClass = 8;
 
-      // जर तो टार्गेट वर्ग शाळेत उपलब्ध असेल तरच शाळा पात्र मानली जाईल
       return low <= targetClass && high >= targetClass;
     }
 
-    /* चाचण्या १ ते १० */
     function buildDashboardTestPills() {
       const cont = document.getElementById('dashboard-test-pills');
       cont.innerHTML = '';
@@ -759,13 +720,10 @@
       listenLiveDashboardData();
     }
 
-    /* ================= 3. शिक्षक पोर्टल - ४ स्वतंत्र टॅब्स व शाळा निवड ================= */
     function selectEntryCategory(cat) {
       currentEntryCategory = cat;
       document.querySelectorAll('#view-entry .cat-card').forEach(c => c.classList.remove('active'));
       document.getElementById(`entry-cat-${cat}`).classList.add('active');
-      
-      // शाळा लॉक रीसेट करून नव्याने यादी रिफ्रेश करणे
       resetSchoolLock();
       onTalukaSelected();
     }
@@ -785,7 +743,6 @@
       schoolSelect.innerHTML = '<option value="">-- शाळा निवडा --</option>';
       if (!taluka || typeof BEED_SCHOOLS === 'undefined') return;
 
-      // निवडलेल्या सेक्शनच्या आवश्यक वर्गानुसार शाळांचे फिल्टरिंग
       const filtered = BEED_SCHOOLS.filter(s => s.t === taluka && isSchoolEligible(s, currentEntryCategory));
       
       if (filtered.length === 0) {
@@ -798,7 +755,6 @@
       });
     }
 
-    /* UDISE कोड Live Search */
     function searchSchoolsByUdise(query) {
       const box = document.getElementById('udise-results-box');
       const q = query.trim();
@@ -808,7 +764,6 @@
         return;
       }
 
-      // UDISE मधील काही अंक जुळणारे आणि चालू सेक्शनच्या वर्गासाठी पात्र असणाऱ्या शाळा
       const matches = BEED_SCHOOLS.filter(s => s.c.includes(q) && isSchoolEligible(s, currentEntryCategory)).slice(0, 15);
 
       if (matches.length === 0) {
@@ -863,7 +818,6 @@
       return `${currentEntryCategory}_${selectedSchoolObj.c}`;
     }
 
-    /* ================= 4. विद्यार्थी जोडणे व गुण Firebase वर सेव्ह ================= */
     function loadStudentsFromFirebase() {
       const key = getSchoolDbKey();
       if (!key) return;
@@ -985,7 +939,6 @@
       alert("एकत्रित अहवाल: सर्व १० चाचण्यांचा एकत्रित तक्ता लवकरच स्क्रीनवर उपलब्ध होईल.");
     }
 
-    /* ================= 5. LIVE DASHBOARD ================= */
     function listenLiveDashboardData() {
       const refPath = `results/${currentSelectedCategory}/test_${currentSelectedTest}`;
       db.ref(refPath).on('value', (snapshot) => {
@@ -1061,7 +1014,6 @@
       });
     }
 
-    /* ================= 6. प्रमाणपत्र व शेअर बॅनर ================= */
     function openCertificateModal(name, school, udise, taluka, marks, rank) {
       document.getElementById('cert-std-name').innerText = name;
       document.getElementById('cert-school-name').innerText = school;
@@ -1134,7 +1086,6 @@
       document.getElementById(id).style.display = 'none';
     }
 
-    /* प्रशासकीय लॉगिन */
     function openLoginModal(role) {
       const titles = {
         'eo': 'शिक्षणाधिकारी (प्राथमिक) लॉगिन',
