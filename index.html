@@ -239,7 +239,7 @@
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     }
 
-    /* प्रमाणपत्राची अद्ययावत मांडणी (cert.jpeg बॅकग्राउंडवर) */
+    /* प्रमाणपत्राची मांडणी (cert.jpeg बॅकग्राउंडवर) */
     .cert-container-box {
       position: relative;
       width: 740px;
@@ -254,26 +254,25 @@
       overflow: hidden;
     }
 
-    /* उजव्या लोगोच्या खाली इंग्रजी दिनांक */
+    /* उजव्या लोगोच्या खाली साधा इंग्रजी दिनांक (कोणतीही गोल्डन बॉर्डर न ठेवता उजवीकडे व वर सरकवलेला) */
     .cert-date-badge {
       position: absolute;
-      top: 118px;
-      right: 48px;
-      font-size: 0.88rem;
-      font-weight: 700;
-      color: #78350f;
+      top: 104px;
+      right: 36px;
+      font-size: 0.86rem;
+      font-weight: 600;
+      color: #334155;
       font-family: 'Poppins', sans-serif;
-      background: rgba(254, 243, 199, 0.9);
-      padding: 2px 12px;
-      border-radius: 12px;
-      border: 1.5px solid #f59e0b;
+      background: transparent;
+      padding: 0;
+      border: none;
       letter-spacing: 0.5px;
     }
 
-    /* वर सरकवलेला मजकूर */
+    /* विद्यार्थ्याचे नाव व मजकूर वर उचलला */
     .cert-overlay-content {
       position: absolute;
-      top: 136px;
+      top: 126px;
       left: 55px;
       right: 55px;
       text-align: center;
@@ -283,17 +282,18 @@
       font-family: 'Yatra One', cursive, sans-serif;
       font-size: 1.7rem;
       color: #991b1b;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
       text-decoration: underline;
       letter-spacing: 0.5px;
     }
 
+    /* मजकुरातील ओळींमधील किंचित वाढवलेले अंतर */
     .cert-para {
-      font-size: 1.05rem;
-      line-height: 1.7;
+      font-size: 1.04rem;
+      line-height: 1.85;
       color: #1e293b;
       font-weight: 500;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
     }
 
     /* ठळक Golden आकारात प्राप्त गुण आणि रँक */
@@ -310,7 +310,7 @@
       color: #78350f;
       font-weight: 800;
       font-size: 1.05rem;
-      padding: 6px 22px;
+      padding: 5px 22px;
       border-radius: 30px;
       box-shadow: 0 3px 8px rgba(217, 119, 6, 0.28), inset 0 1px 0 rgba(255,255,255,0.8);
       display: inline-flex;
@@ -607,7 +607,7 @@
       </div>
 
       <div class="cert-container-box" id="cert-card-render">
-        <!-- उजव्या लोगोखाली दिनांक इंग्रजी अंकांमध्ये -->
+        <!-- उजव्या लोगोच्या खाली साधा दिनांक इंग्रजी अंकांमध्ये -->
         <div class="cert-date-badge" id="cert-date-text">Date: 09/10/2026</div>
 
         <!-- मुख्य मजकूर वर सरकवलेला -->
@@ -616,9 +616,9 @@
           <p class="cert-para">
             <span id="cert-gender-pronoun" style="font-weight:700; color:#0369a1;">या विद्यार्थ्याने</span> 
             (<strong id="cert-std-class" style="color:#b45309; font-family:'Poppins', sans-serif;">Class ---</strong>), 
-            शाळा: <strong><span id="cert-school-name">---</span></strong> (UDISE: <span id="cert-udise-code" style="font-family:'Poppins', sans-serif;">---</span>), तालुका: <strong><span id="cert-taluka-name">---</span></strong> यांनी 
-            जिल्हा परिषद, बीड अंतर्गत आयोजित <strong><span id="cert-exam-title">---</span></strong> अंतर्गत 
-            चाचणी क्र. <strong id="cert-test-no" style="font-size: 1.15rem; color:#b45309; font-family:'Poppins', sans-serif;">1</strong> मध्ये उत्कृष्ट यश संपादन केले आहे.
+            शाळा: <strong><span id="cert-school-name">---</span></strong> (UDISE: <span id="cert-udise-code" style="font-family:'Poppins', sans-serif;">---</span>), तालुका: <strong><span id="cert-taluka-name">---</span></strong> 
+            यांनी जिल्हा परिषद, बीड अंतर्गत आयोजित <strong><span id="cert-exam-title">---</span></strong> अंतर्गत 
+            चाचणी क्र. <strong id="cert-test-no" style="font-size: 1.15rem; color:#b45309; font-family:'Poppins', sans-serif;">1</strong> मध्ये उत्कृष्ट यश संपादन केले आहे.[cite: 7]
           </p>
           
           <!-- ठळक Golden आकारात प्राप्त गुण आणि रँक (इंग्रजी अंक) -->
@@ -1128,7 +1128,7 @@
       });
     }
 
-    /* ================= 3. प्रमाणपत्र जनरेटर (इंग्रजी अंक व वर्ग) ================= */
+    /* ================= 3. प्रमाणपत्र जनरेटर (इंग्रजी अंक, वर्ग आणि नवीन मांडणी) ================= */
     function openCertificateModal(name, school, udise, taluka, marks, rank, gender) {
       document.getElementById('cert-std-name').innerText = name;
       document.getElementById('cert-school-name').innerText = school;
@@ -1142,9 +1142,9 @@
         '7th': 'Class 7th',
         'nmms': 'Class 8th'
       };
-      document.getElementById('cert-std-class').innerText = classMap[currentSelectedCategory] || 'Primary Class';
+      document.getElementById('cert-std-class').innerText = classMap[currentSelectedCategory] || 'Class 5th';
 
-      // २. लिंगानुसार अचूक शब्दरचना (या विद्यार्थ्याने / या विद्यार्थिनीने)
+      // २. लिंगानुसार योग्य शब्दयोजना (या विद्यार्थ्याने / या विद्यार्थिनीने)
       const isGirl = (gender === "मुलगी" || gender === "girl" || gender === "Female");
       document.getElementById('cert-gender-pronoun').innerText = isGirl ? "या विद्यार्थिनीने" : "या विद्यार्थ्याने";
 
@@ -1155,7 +1155,7 @@
       document.getElementById('cert-marks').innerHTML = `<i class="fa-solid fa-star" style="color:#d97706;"></i> प्राप्त गुण: ${marks} / 100`;
       document.getElementById('cert-rank-text').innerHTML = `<i class="fa-solid fa-trophy" style="color:#d97706;"></i> ${currentSelectedTaluka === 'all' ? 'जिल्ह्यात' : 'तालुक्यात'} क्रमांक #${rank}`;
 
-      // ५. उजव्या लोगोच्या खाली दिनांक इंग्रजी अंकांमध्ये
+      // ५. उजव्या लोगोच्या खाली साधा दिनांक इंग्रजी अंकांमध्ये (गोल्डन बॉर्डरशिवाय)
       const today = new Date();
       const dd = String(today.getDate()).padStart(2, '0');
       const mm = String(today.getMonth() + 1).padStart(2, '0');
@@ -1227,7 +1227,7 @@
       document.getElementById(id).style.display = 'none';
     }
 
-    /* ================= 5. लॉगिन ================= */
+    /* ================= 5. प्रशासकीय लॉगिन ================= */
     function openLoginModal(role) {
       const titles = {
         'eo': 'शिक्षणाधिकारी (प्राथमिक) लॉगिन',
