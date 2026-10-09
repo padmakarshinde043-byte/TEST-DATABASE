@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>सराव चाचणी गुण संकलन व लाइव्ह डॅशबोर्ड | जिल्हा परिषद बीड</title>
+  <title>सराव चाचणी गुण संकलन व डॅशबोर्ड | जिल्हा परिषद बीड</title>
   
   <!-- Font & Icons -->
   <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -13,9 +13,12 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-  <!-- Firebase SDKs (Compat version for single HTML file) -->
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
+  <!-- शाळांचा अधिकृत डेटाबेस -->
+  <script src="schools_data.js"></script>
 
   <style>
     :root {
@@ -61,7 +64,7 @@
 
     .nav-actions { display: flex; gap: 10px; }
     .btn {
-      padding: 8px 18px;
+      padding: 9px 18px;
       border-radius: 8px;
       font-weight: 600;
       cursor: pointer;
@@ -81,7 +84,7 @@
     /* Main Container */
     .container { max-width: 1200px; margin: 24px auto; padding: 0 16px; }
 
-    /* Navigation Tabs */
+    /* Top Navigation Tabs */
     .section-nav {
       display: flex;
       background: #f1f5f9;
@@ -129,7 +132,7 @@
       padding-bottom: 10px;
     }
 
-    /* Exam Category Grid (4 Big Tabs) */
+    /* 4 Exam Category Grid */
     .category-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -140,7 +143,7 @@
       background: white;
       border: 2px solid var(--border);
       border-radius: var(--radius);
-      padding: 18px;
+      padding: 16px;
       text-align: center;
       cursor: pointer;
       transition: all 0.2s ease;
@@ -152,6 +155,7 @@
     }
     .cat-card i { font-size: 1.8rem; color: var(--primary); margin-bottom: 8px; }
     .cat-card h3 { font-size: 1.05rem; font-weight: 700; }
+    .cat-card span { font-size: 0.8rem; color: var(--text-muted); display: block; margin-top: 4px; }
 
     /* Test Selector Pills */
     .test-pill-container {
@@ -198,7 +202,7 @@
       gap: 16px;
       margin-bottom: 16px;
     }
-    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; position: relative; }
     .form-group label { font-size: 0.9rem; font-weight: 600; color: #334155; }
     .form-control {
       padding: 10px 14px;
@@ -211,14 +215,39 @@
     .form-control:focus { border-color: var(--primary); }
     .locked { background: #f1f5f9; pointer-events: none; }
 
+    /* Live UDISE Search Suggestions Box */
+    .udise-suggestions {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: white;
+      border: 1.5px solid var(--primary);
+      border-radius: 8px;
+      max-height: 250px;
+      overflow-y: auto;
+      z-index: 1000;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      display: none;
+    }
+    .udise-item {
+      padding: 10px 14px;
+      cursor: pointer;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 0.9rem;
+    }
+    .udise-item:hover {
+      background: var(--primary-light);
+    }
+
     /* Tables */
     .table-responsive { overflow-x: auto; margin-top: 12px; }
-    table { width: 100%; border-collapse: collapse; font-size: 0.95rem; text-align: left; }
-    th, td { padding: 12px 14px; border-bottom: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+    th, td { padding: 12px 14px; border-bottom: 1px solid var(--border); text-align: left; }
     th { background: #f8fafc; font-weight: 700; color: #475569; }
     tr:hover { background: #fcfdfd; }
 
-    /* Modals */
+    /* Modal */
     .modal {
       display: none;
       position: fixed;
@@ -239,20 +268,19 @@
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     }
 
-    /* Certificate Preview */
+    /* Certificate */
     .cert-preview {
       border: 8px double #d97706;
       padding: 30px;
       background: #fffdfa;
       text-align: center;
-      position: relative;
       margin: 15px 0;
     }
     .cert-preview h2 { color: #b45309; font-size: 1.8rem; font-weight: 800; margin-bottom: 4px; }
     .cert-preview h3 { font-size: 1.2rem; color: #0284c7; margin-bottom: 14px; }
     .cert-text { font-size: 1.05rem; line-height: 1.8; margin: 16px 0; color: #334155; }
 
-    /* Banner Preview */
+    /* Banner */
     .banner-preview {
       background: linear-gradient(135deg, #e0f2fe 0%, #ffffff 100%);
       border: 3px solid var(--primary);
@@ -265,6 +293,7 @@
     .banner-list { list-style: none; margin: 15px 0; display: grid; gap: 8px; }
     .banner-item { background: white; padding: 8px 12px; border-radius: 6px; border: 1px solid #bae6fd; font-weight: 600; display: flex; justify-content: space-between; }
 
+    /* Toast */
     .toast {
       position: fixed;
       bottom: 20px;
@@ -275,7 +304,6 @@
       border-radius: 8px;
       display: none;
       z-index: 2000;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
   </style>
 </head>
@@ -288,7 +316,7 @@
         <i class="fa-solid fa-graduation-cap"></i>
         <div>
           <h1>जिल्हा परिषद, बीड - सराव चाचणी पोर्टल</h1>
-          <p>गुण संकलन, विश्लेषण, लाइव्ह डॅशबोर्ड व गुणवत्ता यादी</p>
+          <p>गुण संकलन, विश्लेषण, लाइव्ह गुणवत्ता डॅशबोर्ड व प्रमाणपत्र</p>
         </div>
       </div>
       <div class="nav-actions">
@@ -310,35 +338,37 @@
       </button>
     </div>
 
-    <!-- ================= VIEW 1: DASHBOARD ================= -->
+    <!-- ================= 1. लाइव्ह डॅशबोर्ड विभाग ================= -->
     <div id="view-dashboard">
-      <!-- 4 Main Exam Tabs -->
       <div class="category-grid">
-        <div class="cat-card active" onclick="selectCategory('4th', this)">
+        <div class="cat-card active" onclick="selectDashboardCategory('4th', this)">
           <i class="fa-solid fa-book-open"></i>
           <h3>इयत्ता चौथी शिष्यवृत्ती</h3>
+          <span>(वर्ग ४ असणाऱ्या सर्व शाळा)</span>
         </div>
-        <div class="cat-card" onclick="selectCategory('7th', this)">
+        <div class="cat-card" onclick="selectDashboardCategory('7th', this)">
           <i class="fa-solid fa-award"></i>
           <h3>इयत्ता सातवी शिष्यवृत्ती</h3>
+          <span>(वर्ग ७ असणाऱ्या सर्व शाळा)</span>
         </div>
-        <div class="cat-card" onclick="selectCategory('nmms', this)">
+        <div class="cat-card" onclick="selectDashboardCategory('nmms', this)">
           <i class="fa-solid fa-medal"></i>
           <h3>NMMS शिष्यवृत्ती</h3>
+          <span>(वर्ग ८ असणाऱ्या सर्व शाळा)</span>
         </div>
-        <div class="cat-card" onclick="selectCategory('navodaya', this)">
+        <div class="cat-card" onclick="selectDashboardCategory('navodaya', this)">
           <i class="fa-solid fa-school-flag"></i>
           <h3>नवोदय प्रवेश पात्रता परीक्षा</h3>
+          <span>(वर्ग ५ असणाऱ्या सर्व शाळा)</span>
         </div>
       </div>
 
-      <!-- Test Number Selector -->
       <div class="card">
         <div class="card-title"><i class="fa-solid fa-list-check"></i> चाचणी क्रमांक निवडा</div>
         <div class="test-pill-container" id="dashboard-test-pills"></div>
       </div>
 
-      <!-- Overview Stats -->
+      <!-- Stats Overview -->
       <div class="stats-grid">
         <div class="stat-box">
           <p>एकूण प्रविष्ट विद्यार्थी</p>
@@ -354,7 +384,7 @@
         </div>
         <div class="stat-box">
           <p>सहभागी तालुके</p>
-          <h2 id="stat-active-blocks">0/11</h2>
+          <h2 id="stat-active-blocks">0/12</h2>
         </div>
       </div>
 
@@ -380,7 +410,7 @@
                 <th>रँक</th>
                 <th>विद्यार्थ्याचे नाव</th>
                 <th>शाळा</th>
-                <th>केंद्र</th>
+                <th>UDISE कोड</th>
                 <th>तालुका</th>
                 <th>प्राप्त गुण</th>
                 <th>प्रमाणपत्र</th>
@@ -394,22 +424,48 @@
       </div>
     </div>
 
-    <!-- ================= VIEW 2: TEACHER ENTRY PORTAL ================= -->
+    <!-- ================= 2. चाचणीचे गुण भरा (शिक्षक पोर्टल) ================= -->
     <div id="view-entry" style="display: none;">
-      <!-- Step 1: Basic Selection -->
-      <div class="card">
-        <div class="card-title"><i class="fa-solid fa-map-location-dot"></i> १. परीक्षा, चाचणी व शाळा निवड</div>
-        
-        <div class="form-grid">
-          <div class="form-group">
-            <label>परीक्षेचा प्रकार</label>
-            <select class="form-control" id="entry-exam-type" onchange="onSchoolOrExamChange()">
-              <option value="4th">इयत्ता चौथी शिष्यवृत्ती</option>
-              <option value="7th">इयत्ता सातवी शिष्यवृत्ती</option>
-              <option value="nmms">NMMS शिष्यवृत्ती</option>
-              <option value="navodaya">नवोदय विद्यालय प्रवेश पात्रता</option>
-            </select>
+      
+      <!-- ४ परीक्षांचे टॅब्स -->
+      <div class="card" style="padding-bottom: 8px;">
+        <div class="card-title"><i class="fa-solid fa-layer-group"></i> परीक्षेचा प्रकार निवडा</div>
+        <div class="category-grid">
+          <div class="cat-card active" id="entry-cat-4th" onclick="selectEntryCategory('4th')">
+            <i class="fa-solid fa-book-open"></i>
+            <h3>इयत्ता चौथी शिष्यवृत्ती</h3>
+            <span>(वर्ग ४ उपलब्ध असलेल्या सर्व शाळा)</span>
           </div>
+          <div class="cat-card" id="entry-cat-7th" onclick="selectEntryCategory('7th')">
+            <i class="fa-solid fa-award"></i>
+            <h3>इयत्ता सातवी शिष्यवृत्ती</h3>
+            <span>(वर्ग ७ उपलब्ध असलेल्या सर्व शाळा)</span>
+          </div>
+          <div class="cat-card" id="entry-cat-nmms" onclick="selectEntryCategory('nmms')">
+            <i class="fa-solid fa-medal"></i>
+            <h3>NMMS शिष्यवृत्ती</h3>
+            <span>(वर्ग ८ उपलब्ध असलेल्या सर्व शाळा)</span>
+          </div>
+          <div class="cat-card" id="entry-cat-navodaya" onclick="selectEntryCategory('navodaya')">
+            <i class="fa-solid fa-school-flag"></i>
+            <h3>नवोदय प्रवेश पात्रता परीक्षा</h3>
+            <span>(वर्ग ५ उपलब्ध असलेल्या सर्व शाळा)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- १. शाळा व चाचणी निवड -->
+      <div class="card">
+        <div class="card-title"><i class="fa-solid fa-school"></i> १. चाचणी व शाळा निवड</div>
+        
+        <!-- UDISE त्वरित शोध पर्याय -->
+        <div class="form-group" style="margin-bottom: 18px;">
+          <label><i class="fa-solid fa-magnifying-glass"></i> UDISE कोड टाकून शाळा शोधा (काही अंक टाकले तरी चालेल):</label>
+          <input type="text" id="udise-search-input" class="form-control" placeholder="उदा. 272701 किंवा कोडचे काही अंक..." oninput="searchSchoolsByUdise(this.value)">
+          <div class="udise-suggestions" id="udise-results-box"></div>
+        </div>
+
+        <div class="form-grid">
           <div class="form-group">
             <label>चाचणी क्रमांक</label>
             <select class="form-control" id="entry-test-no" onchange="loadStudentMarksForSelectedTest()">
@@ -418,33 +474,28 @@
           </div>
           <div class="form-group">
             <label>तालुका निवडा</label>
-            <select class="form-control" id="entry-taluka" onchange="onTalukaChange()">
+            <select class="form-control" id="entry-taluka" onchange="onTalukaSelected()">
               <option value="">-- तालुका निवडा --</option>
             </select>
           </div>
           <div class="form-group">
-            <label>केंद्र निवडा</label>
-            <select class="form-control" id="entry-kendra" onchange="onKendraChange()">
-              <option value="">-- प्रथम तालुका निवडा --</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>शाळा निवडा</label>
-            <select class="form-control" id="entry-school" onchange="lockSchoolSelection()">
-              <option value="">-- प्रथम केंद्र निवडा --</option>
+            <label>शाळा निवडा (वर्ग पात्रतेनुसार)</label>
+            <select class="form-control" id="entry-school" onchange="lockSelectedSchool()">
+              <option value="">-- आधी तालुका निवडा --</option>
             </select>
           </div>
         </div>
-        <div id="lock-notice" style="display:none; color: var(--accent); font-weight:600; font-size:0.9rem;">
-          <i class="fa-solid fa-circle-check"></i> शाळा निवड सुरक्षित (Lock) झाली आहे. आता खाली विद्यार्थी नोंदणी व गुण नोंद करू शकता.
+
+        <div id="lock-notice" style="display:none; color: var(--accent); font-weight:600; font-size:0.92rem; margin-top:8px;">
+          <i class="fa-solid fa-circle-check"></i> शाळा व UDISE कोड निवड सुरक्षित (Lock) झाली आहे.
         </div>
       </div>
 
-      <!-- Step 2: Add Student (Once Only) -->
+      <!-- २. नवीन विद्यार्थी जोडा -->
       <div class="card">
-        <div class="card-title"><i class="fa-solid fa-user-plus"></i> २. नवीन विद्यार्थी जोडा (फक्त एकदाच नाव नोंदवावे)</div>
+        <div class="card-title"><i class="fa-solid fa-user-plus"></i> २. नवीन विद्यार्थी जोडा (फक्त एकदाच जोडावे)</div>
         <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:12px;">
-          * सूचना: एकदा जोडलेले विद्यार्थी सर्व १० चाचण्यांसाठी उपलब्ध राहतील. वारंवार नाव भरण्याची गरज नाही.
+          * सूचना: एकदा जोडलेले विद्यार्थी सर्व १० चाचण्यांसाठी कायम उपलब्ध राहतील. वारंवार नाव भरण्याची गरज नाही.
         </p>
         <div class="form-grid">
           <div class="form-group">
@@ -467,12 +518,12 @@
             </select>
           </div>
         </div>
-        <button class="btn btn-success" onclick="addStudentToList()"><i class="fa-solid fa-plus"></i> विद्यार्थी ॲड करा</button>
+        <button class="btn btn-success" onclick="addStudentToList()"><i class="fa-solid fa-plus"></i> विद्यार्थी जोडा</button>
       </div>
 
-      <!-- Step 3: Enter Marks Table -->
+      <!-- ३. गुण भरण्याचा तक्ता -->
       <div class="card">
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap:10px;">
           <div class="card-title" style="margin:0; border:none;"><i class="fa-solid fa-calculator"></i> ३. विद्यार्थ्यांचे चाचणी गुण भरा</div>
           <button class="btn btn-outline" onclick="showConsolidatedReport()"><i class="fa-solid fa-table-list"></i> एकत्रित सर्व चाचण्यांचे गुण पहा</button>
         </div>
@@ -488,13 +539,13 @@
               </tr>
             </thead>
             <tbody id="student-marks-entry-body">
-              <tr><td colspan="4" style="text-align:center; color:#94a3b8;">कृपया प्रथम शाळा निवडा आणि विद्यार्थी जोडा.</td></tr>
+              <tr><td colspan="4" style="text-align:center; color:#94a3b8;">कृपया प्रथम शाळा निवडा.</td></tr>
             </tbody>
           </table>
         </div>
 
         <div style="margin-top: 18px; text-align: right;">
-          <button class="btn btn-primary" onclick="submitMarksToFirebase()"><i class="fa-solid fa-cloud-arrow-up"></i> सर्व गुण सबमिट व लॉक करा</button>
+          <button class="btn btn-primary" onclick="submitMarksToFirebase()"><i class="fa-solid fa-cloud-arrow-up"></i> सर्व गुण Firebase वर सेव्ह व लॉक करा</button>
         </div>
       </div>
     </div>
@@ -505,7 +556,7 @@
   <div class="modal" id="certModal">
     <div class="modal-content">
       <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h3>गुणवत्ता प्रमाणपत्र</h3>
+        <h3>गुणवत्ता सन्मान प्रमाणपत्र</h3>
         <button onclick="closeModal('certModal')" style="border:none; background:none; font-size:1.3rem; cursor:pointer;">&times;</button>
       </div>
 
@@ -518,7 +569,7 @@
         
         <p class="cert-text">
           प्रमाणित करण्यात येते की, कुमार/कुमारी <strong id="cert-std-name" style="color:#0369a1; text-decoration: underline;">---</strong>, 
-          शाळा: <span id="cert-school-name">---</span>, केंद्र: <span id="cert-kendra-name">---</span>, तालुका: <span id="cert-taluka-name">---</span> यांनी 
+          शाळा: <span id="cert-school-name">---</span> (UDISE: <span id="cert-udise-code">---</span>), तालुका: <span id="cert-taluka-name">---</span> यांनी 
           जिल्हा परिषद बीड अंतर्गत आयोजित <strong><span id="cert-exam-title">---</span></strong> अंतर्गत 
           चाचणी क्र. <span id="cert-test-no">-</span> मध्ये उत्कृष्ट कामगिरी करून 
           <strong id="cert-marks">---</strong> गुणांसह <strong id="cert-rank-text">---</strong> पटकावला आहे.<br>
@@ -555,7 +606,7 @@
       <div class="banner-preview" id="banner-card-render">
         <p style="font-weight:700; color:#d97706; letter-spacing: 1px;">💐 हार्दिक अभिनंदन ! हार्दिक अभिनंदन ! 💐</p>
         <h2 id="banner-heading">बीड जिल्हा सराव परीक्षा टॉपर्स</h2>
-        <p id="banner-sub" style="color:var(--text-muted); font-size:0.95rem; margin-bottom: 10px;">चाचणी गुणवत्ता यादी</p>
+        <p id="banner-sub" style="color:var(--text-muted); font-size:0.95rem; margin-bottom: 10px;">गुणवत्ता यादी</p>
         
         <ul class="banner-list" id="banner-top-list"></ul>
 
@@ -597,44 +648,32 @@
       storageBucket: "test-database-34c8a.firebasestorage.app",
       messagingSenderId: "245228014027",
       appId: "1:245228014027:web:fa439be5e1739868a74e4e",
-      databaseURL: "https://test-database-34c8a-default-rtdb.firebaseio.com" // Realtime DB URL
+      databaseURL: "https://test-database-34c8a-default-rtdb.firebaseio.com"
     };
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    /* ================= 2. बीड जिल्हा डेटा स्ट्रक्चर ================= */
-    const beedDistData = {
-      "माजलगाव": {
-        "सावरगाव": ["जि.प.प्रा.शाळा सावरगाव", "जि.प.प्रा.शाळा हरकी निमगाव", "जि.प.कें.शाळा उमरी"],
-        "किट्टीवडगाव": ["जि.प.प्रा.शाळा किट्टीवडगाव", "जि.प.प्रा.शाळा तालखेड"],
-        "दिंद्रुड": ["जि.प.प्रा.शाळा दिंद्रुड", "जि.प.प्रा.शाळा कौडगाव"]
-      },
-      "बीड": {
-        "पांगरी": ["जि.प.प्रा.शाळा पांगरी", "जि.प.प्रा.शाळा नाळवंडी"],
-        "पिंपळनेर": ["जि.प.प्रा.शाळा पिंपळनेर"]
-      },
-      "आष्टी": { "कडा": ["जि.प.प्रा.शाळा कडा केंद्र"], "धानोरा": ["जि.प.प्रा.शाळा धानोरा"] },
-      "गेवराई": { "उमापूर": ["जि.प.प्रा.शाळा उमापूर"], "तलवाडा": ["जि.प.प्रा.शाळा तलवाडा"] },
-      "अंबाजोगाई": { "घाटनांदूर": ["जि.प.प्रा.शाळा घाटनांदूर"], "लोखंडी सावरगाव": ["जि.प.प्रा.शाळा लो. सावरगाव"] },
-      "परळी": { "सिरसाळा": ["जि.प.प्रा.शाळा सिरसाळा"], "धर्मापुरी": ["जि.प.प्रा.शाळा धर्मापुरी"] },
-      "पाटोदा": { "अंमळनेर": ["जि.प.प्रा.शाळा अंमळनेर"], "रोहाटवाडी": ["जि.प.प्रा.शाळा रोहाटवाडी"] },
-      "शिरूर (कासार)": { "शिरूर कें": ["जि.प.प्रा.शाळा शिरूर"] },
-      "वडवणी": { "वडवणी कें": ["जि.प.प्रा.शाळा वडवणी"] },
-      "धारूर": { "धारूर कें": ["जि.प.प्रा.शाळा धारूर"] },
-      "केज": { "युसुफवडगाव": ["जि.प.प्रा.शाळा युसुफवडगाव"], "होळ": ["जि.प.प्रा.शाळा होळ"] }
-    };
+    const TALUKA_LIST = [
+      "अंबाजोगाई", "आष्टी", "बीड ग्रामीण", "बीड शहर", "धारूर", 
+      "गेवराई", "केज", "माजलगाव", "परळी", "पाटोदा", "शिरूर कासार", "वडवणी"
+    ];
 
     let currentSelectedCategory = '4th';
     let currentSelectedTest = 1;
     let currentSelectedTaluka = 'all';
-    let currentStudentsList = []; // स्थानिक विद्यार्थ्यांची यादी
+
+    let currentEntryCategory = '4th'; // शिक्षक नोंदणीसाठी निवडलेली परीक्षा
+    let currentStudentsList = [];
+    let selectedSchoolObj = null;
+    let currentFetchedToppers = [];
 
     window.addEventListener('DOMContentLoaded', () => {
       buildDashboardTestPills();
       buildTalukaTabs();
-      initEntryDropdowns();
-      listenLiveDashboardData(); // Realtime Firebase Sync
+      initTalukaDropdown();
+      buildEntryTestOptions();
+      listenLiveDashboardData();
     });
 
     function showToast(msg) {
@@ -651,19 +690,45 @@
       document.getElementById('btn-tab-entry').classList.toggle('active', view === 'entry');
     }
 
+    /* ================= 2. अचूक वर्गनिहाय फिल्टरिंग लॉजिक ================= */
+    function isSchoolEligible(school, examType) {
+      const low = parseInt(school.l, 10);
+      const high = parseInt(school.h, 10);
+      let targetClass = 0;
+
+      if (examType === '4th') {
+        targetClass = 4; // ४ थी शिष्यवृत्तीसाठी वर्ग ४ हवा
+      } else if (examType === 'navodaya') {
+        targetClass = 5; // नवोदय परीक्षेसाठी वर्ग ५ हवा
+      } else if (examType === '7th') {
+        targetClass = 7; // ७ वी शिष्यवृत्तीसाठी वर्ग ७ हवा
+      } else if (examType === 'nmms') {
+        targetClass = 8; // NMMS परीक्षेसाठी वर्ग ८ हवा
+      }
+
+      // जर तो टार्गेट वर्ग शाळेत उपलब्ध असेल तरच शाळा पात्र मानली जाईल
+      return low <= targetClass && high >= targetClass;
+    }
+
+    /* चाचण्या १ ते १० */
     function buildDashboardTestPills() {
       const cont = document.getElementById('dashboard-test-pills');
-      const entrySelect = document.getElementById('entry-test-no');
       cont.innerHTML = '';
-      entrySelect.innerHTML = '';
       for (let i = 1; i <= 10; i++) {
         cont.innerHTML += `<button class="test-pill ${i===1?'active':''}" onclick="selectTest(${i}, this)">चाचणी क्र. ${i}</button>`;
+      }
+    }
+
+    function buildEntryTestOptions() {
+      const entrySelect = document.getElementById('entry-test-no');
+      entrySelect.innerHTML = '';
+      for (let i = 1; i <= 10; i++) {
         entrySelect.innerHTML += `<option value="${i}">चाचणी क्रमांक ${i}</option>`;
       }
     }
 
-    function selectCategory(cat, el) {
-      document.querySelectorAll('.cat-card').forEach(c => c.classList.remove('active'));
+    function selectDashboardCategory(cat, el) {
+      document.querySelectorAll('#view-dashboard .cat-card').forEach(c => c.classList.remove('active'));
       el.classList.add('active');
       currentSelectedCategory = cat;
       listenLiveDashboardData();
@@ -679,7 +744,7 @@
     function buildTalukaTabs() {
       const container = document.getElementById('taluka-tabs');
       container.innerHTML = `<button class="test-pill active" onclick="filterTaluka('all', this)">संपूर्ण बीड जिल्हा</button>`;
-      Object.keys(beedDistData).forEach(t => {
+      TALUKA_LIST.forEach(t => {
         container.innerHTML += `<button class="test-pill" onclick="filterTaluka('${t}', this)">${t}</button>`;
       });
     }
@@ -694,161 +759,117 @@
       listenLiveDashboardData();
     }
 
-    /* ================= 3. FIREBASE वरून LIVE DASHBOARD डेटा ================= */
-    let currentFetchedToppers = [];
+    /* ================= 3. शिक्षक पोर्टल - ४ स्वतंत्र टॅब्स व शाळा निवड ================= */
+    function selectEntryCategory(cat) {
+      currentEntryCategory = cat;
+      document.querySelectorAll('#view-entry .cat-card').forEach(c => c.classList.remove('active'));
+      document.getElementById(`entry-cat-${cat}`).classList.add('active');
+      
+      // शाळा लॉक रीसेट करून नव्याने यादी रिफ्रेश करणे
+      resetSchoolLock();
+      onTalukaSelected();
+    }
 
-    function listenLiveDashboardData() {
-      const refPath = `results/${currentSelectedCategory}/test_${currentSelectedTest}`;
-      db.ref(refPath).on('value', (snapshot) => {
-        const data = snapshot.val();
-        let allStudents = [];
-        let totalScore = 0;
-        let blocksSet = new Set();
-        let maxScore = 0;
-
-        if (data) {
-          Object.values(data).forEach(schoolEntry => {
-            if (schoolEntry.students && Array.isArray(schoolEntry.students)) {
-              schoolEntry.students.forEach(st => {
-                if (st.marks !== undefined && st.marks !== '') {
-                  const marksNum = parseFloat(st.marks) || 0;
-                  const record = {
-                    name: st.name,
-                    gender: st.gender,
-                    school: schoolEntry.school,
-                    kendra: schoolEntry.kendra,
-                    taluka: schoolEntry.taluka,
-                    marks: marksNum
-                  };
-                  allStudents.push(record);
-                  totalScore += marksNum;
-                  blocksSet.add(schoolEntry.taluka);
-                  if (marksNum > maxScore) maxScore = marksNum;
-                }
-              });
-            }
-          });
-        }
-
-        // Stats अपडेट
-        const count = allStudents.length;
-        document.getElementById('stat-total-students').innerText = count;
-        document.getElementById('stat-avg-score').innerText = count > 0 ? (totalScore / count).toFixed(1) + '%' : '0%';
-        document.getElementById('stat-max-score').innerText = maxScore + '/100';
-        document.getElementById('stat-active-blocks').innerText = blocksSet.size + '/11';
-
-        // Filter by Taluka
-        let filtered = allStudents;
-        if (currentSelectedTaluka !== 'all') {
-          filtered = allStudents.filter(s => s.taluka === currentSelectedTaluka);
-        }
-
-        // Sort Highest Marks First
-        filtered.sort((a, b) => b.marks - a.marks);
-        currentFetchedToppers = filtered.slice(0, 10);
-
-        renderToppersTable(currentFetchedToppers);
+    function initTalukaDropdown() {
+      const select = document.getElementById('entry-taluka');
+      select.innerHTML = '<option value="">-- तालुका निवडा --</option>';
+      TALUKA_LIST.forEach(t => {
+        select.innerHTML += `<option value="${t}">${t}</option>`;
       });
     }
 
-    function renderToppersTable(list) {
-      const tbody = document.getElementById('topper-rows');
-      tbody.innerHTML = '';
-      if (list.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#94a3b8;">या चाचणीचा डेटा अद्याप भरलेला नाही.</td></tr>`;
+    function onTalukaSelected() {
+      const taluka = document.getElementById('entry-taluka').value;
+      const schoolSelect = document.getElementById('entry-school');
+      
+      schoolSelect.innerHTML = '<option value="">-- शाळा निवडा --</option>';
+      if (!taluka || typeof BEED_SCHOOLS === 'undefined') return;
+
+      // निवडलेल्या सेक्शनच्या आवश्यक वर्गानुसार शाळांचे फिल्टरिंग
+      const filtered = BEED_SCHOOLS.filter(s => s.t === taluka && isSchoolEligible(s, currentEntryCategory));
+      
+      if (filtered.length === 0) {
+        schoolSelect.innerHTML = '<option value="">-- या तालुक्यात लागू शाळा नाहीत --</option>';
         return;
       }
 
-      list.forEach((st, idx) => {
-        tbody.innerHTML += `
-          <tr>
-            <td><strong>#${idx + 1}</strong></td>
-            <td><strong>${st.name}</strong></td>
-            <td>${st.school}</td>
-            <td>${st.kendra}</td>
-            <td>${st.taluka}</td>
-            <td><span style="background: #e0f2fe; color:#0369a1; padding:3px 10px; border-radius:12px; font-weight:700;">${st.marks} / 100</span></td>
-            <td>
-              <button class="btn btn-outline" style="padding:4px 8px; font-size:0.85rem;" onclick="openCertificateModal('${st.name}', '${st.school}', '${st.kendra}', '${st.taluka}', ${st.marks}, ${idx+1})">
-                <i class="fa-solid fa-certificate"></i> प्रमाणपत्र
-              </button>
-            </td>
-          </tr>
-        `;
+      filtered.forEach(s => {
+        schoolSelect.innerHTML += `<option value="${s.c}">${s.n} (वर्ग ${s.l} ते ${s.h})</option>`;
       });
     }
 
-    /* ================= 4. शिक्षक माहिती नोंदणी व FIREBASE SAVE ================= */
-    function initEntryDropdowns() {
-      const tSelect = document.getElementById('entry-taluka');
-      Object.keys(beedDistData).forEach(t => {
-        tSelect.innerHTML += `<option value="${t}">${t}</option>`;
-      });
-    }
-
-    function onTalukaChange() {
-      const taluka = document.getElementById('entry-taluka').value;
-      const kSelect = document.getElementById('entry-kendra');
-      const sSelect = document.getElementById('entry-school');
-      kSelect.innerHTML = '<option value="">-- केंद्र निवडा --</option>';
-      sSelect.innerHTML = '<option value="">-- प्रथम केंद्र निवडा --</option>';
-
-      if (taluka && beedDistData[taluka]) {
-        Object.keys(beedDistData[taluka]).forEach(k => {
-          kSelect.innerHTML += `<option value="${k}">${k}</option>`;
-        });
+    /* UDISE कोड Live Search */
+    function searchSchoolsByUdise(query) {
+      const box = document.getElementById('udise-results-box');
+      const q = query.trim();
+      
+      if (q.length < 2 || typeof BEED_SCHOOLS === 'undefined') {
+        box.style.display = 'none';
+        return;
       }
-    }
 
-    function onKendraChange() {
-      const taluka = document.getElementById('entry-taluka').value;
-      const kendra = document.getElementById('entry-kendra').value;
-      const sSelect = document.getElementById('entry-school');
-      sSelect.innerHTML = '<option value="">-- शाळा निवडा --</option>';
+      // UDISE मधील काही अंक जुळणारे आणि चालू सेक्शनच्या वर्गासाठी पात्र असणाऱ्या शाळा
+      const matches = BEED_SCHOOLS.filter(s => s.c.includes(q) && isSchoolEligible(s, currentEntryCategory)).slice(0, 15);
 
-      if (taluka && kendra && beedDistData[taluka][kendra]) {
-        beedDistData[taluka][kendra].forEach(sch => {
-          sSelect.innerHTML += `<option value="${sch}">${sch}</option>`;
-        });
+      if (matches.length === 0) {
+        box.innerHTML = `<div class="udise-item" style="color:#94a3b8;">या UDISE शी जुळणारी व पात्र शाळा सापडली नाही.</div>`;
+      } else {
+        box.innerHTML = matches.map(s => `
+          <div class="udise-item" onclick="selectSchoolFromUdise('${s.c}')">
+            <strong>${s.c}</strong> - ${s.n} <span style="color:#0284c7;">(${s.t}, वर्ग: ${s.l}-${s.h})</span>
+          </div>
+        `).join('');
       }
+      box.style.display = 'block';
     }
 
-    function getSchoolKey() {
-      const taluka = document.getElementById('entry-taluka').value;
-      const kendra = document.getElementById('entry-kendra').value;
-      const school = document.getElementById('entry-school').value;
-      const exam = document.getElementById('entry-exam-type').value;
-      if (!taluka || !kendra || !school) return null;
-      // Firebase key safe
-      return `${exam}_${taluka}_${kendra}_${school}`.replace(/[\.\#\$\[\]\/ ]/g, '_');
+    function selectSchoolFromUdise(udiseCode) {
+      const school = BEED_SCHOOLS.find(s => s.c === udiseCode);
+      if (!school) return;
+
+      document.getElementById('entry-taluka').value = school.t;
+      onTalukaSelected();
+      document.getElementById('entry-school').value = school.c;
+      document.getElementById('udise-results-box').style.display = 'none';
+      document.getElementById('udise-search-input').value = `${school.c} - ${school.n}`;
+      lockSelectedSchool();
     }
 
-    function lockSchoolSelection() {
-      const sch = document.getElementById('entry-school').value;
-      if (sch) {
-        document.getElementById('lock-notice').style.display = 'block';
-        document.getElementById('entry-taluka').classList.add('locked');
-        document.getElementById('entry-kendra').classList.add('locked');
-        document.getElementById('entry-school').classList.add('locked');
-        showToast('शाळा निवड यशस्वीरित्या लॉक झाली आहे!');
-        loadStudentsFromFirebase();
-      }
+    function lockSelectedSchool() {
+      const udiseCode = document.getElementById('entry-school').value;
+      if (!udiseCode) return;
+      selectedSchoolObj = BEED_SCHOOLS.find(s => s.c === udiseCode);
+
+      document.getElementById('lock-notice').style.display = 'block';
+      document.getElementById('entry-taluka').classList.add('locked');
+      document.getElementById('entry-school').classList.add('locked');
+      showToast('शाळा निवड यशस्वी झाली व लॉक करण्यात आली!');
+      loadStudentsFromFirebase();
     }
 
-    function onSchoolOrExamChange() {
-      if (document.getElementById('entry-school').value) {
-        loadStudentsFromFirebase();
-      }
+    function resetSchoolLock() {
+      selectedSchoolObj = null;
+      document.getElementById('lock-notice').style.display = 'none';
+      document.getElementById('entry-taluka').classList.remove('locked');
+      document.getElementById('entry-school').classList.remove('locked');
+      document.getElementById('entry-school').value = '';
+      document.getElementById('udise-search-input').value = '';
+      document.getElementById('student-marks-entry-body').innerHTML = `<tr><td colspan="4" style="text-align:center; color:#94a3b8;">कृपया प्रथम शाळा निवडा.</td></tr>`;
+      currentStudentsList = [];
     }
 
-    // शाळेचे आधी नोंदवलेले विद्यार्थी Firebase वरून आणणे
+    function getSchoolDbKey() {
+      if (!selectedSchoolObj) return null;
+      return `${currentEntryCategory}_${selectedSchoolObj.c}`;
+    }
+
+    /* ================= 4. विद्यार्थी जोडणे व गुण Firebase वर सेव्ह ================= */
     function loadStudentsFromFirebase() {
-      const schoolKey = getSchoolKey();
-      if (!schoolKey) return;
+      const key = getSchoolDbKey();
+      if (!key) return;
 
-      db.ref(`students_master/${schoolKey}`).once('value', (snapshot) => {
-        const data = snapshot.val();
-        currentStudentsList = data || [];
+      db.ref(`students_master/${key}`).once('value', (snapshot) => {
+        currentStudentsList = snapshot.val() || [];
         loadStudentMarksForSelectedTest();
       });
     }
@@ -863,8 +884,8 @@
         alert('कृपया विद्यार्थ्याचे नाव व आडनाव भरा!');
         return;
       }
-      const schoolKey = getSchoolKey();
-      if (!schoolKey) {
+      const key = getSchoolDbKey();
+      if (!key) {
         alert('कृपया आधी शाळा निवडा!');
         return;
       }
@@ -876,23 +897,21 @@
         gender: gender
       });
 
-      // Firebase Master List Update
-      db.ref(`students_master/${schoolKey}`).set(currentStudentsList).then(() => {
+      db.ref(`students_master/${key}`).set(currentStudentsList).then(() => {
         document.getElementById('std-fname').value = '';
         document.getElementById('std-mname').value = '';
         document.getElementById('std-lname').value = '';
         loadStudentMarksForSelectedTest();
-        showToast('विद्यार्थी कायमस्वरूपी जोडला गेला!');
+        showToast('विद्यार्थी यशस्वीरित्या जोडला गेला!');
       });
     }
 
     function loadStudentMarksForSelectedTest() {
+      const key = getSchoolDbKey();
       const testNo = document.getElementById('entry-test-no').value;
-      const exam = document.getElementById('entry-exam-type').value;
-      const schoolKey = getSchoolKey();
-      if (!schoolKey) return;
+      if (!key) return;
 
-      db.ref(`results/${exam}/test_${testNo}/${schoolKey}`).once('value', (snapshot) => {
+      db.ref(`results/${currentEntryCategory}/test_${testNo}/${key}`).once('value', (snapshot) => {
         const testData = snapshot.val();
         renderMarksTable(testData ? testData.students : null);
       });
@@ -929,16 +948,12 @@
     }
 
     function submitMarksToFirebase() {
-      const schoolKey = getSchoolKey();
-      if (!schoolKey) {
+      const key = getSchoolDbKey();
+      if (!key || !selectedSchoolObj) {
         alert('कृपया आधी शाळा निवडा!');
         return;
       }
 
-      const taluka = document.getElementById('entry-taluka').value;
-      const kendra = document.getElementById('entry-kendra').value;
-      const school = document.getElementById('entry-school').value;
-      const exam = document.getElementById('entry-exam-type').value;
       const testNo = document.getElementById('entry-test-no').value;
 
       let studentsWithMarks = currentStudentsList.map(st => {
@@ -952,29 +967,105 @@
       });
 
       const payload = {
-        taluka: taluka,
-        kendra: kendra,
-        school: school,
+        taluka: selectedSchoolObj.t,
+        school: selectedSchoolObj.n,
+        udise: selectedSchoolObj.c,
         students: studentsWithMarks,
         updatedAt: new Date().toISOString()
       };
 
-      db.ref(`results/${exam}/test_${testNo}/${schoolKey}`).set(payload).then(() => {
-        showToast('सर्व गुण Firebase वर सुरक्षितपणे सेव्ह झाले!');
+      db.ref(`results/${currentEntryCategory}/test_${testNo}/${key}`).set(payload).then(() => {
+        showToast('सर्व गुण Firebase वर यशस्वीरित्या सेव्ह व लॉक झाले!');
       }).catch(err => {
         alert('त्रुटी: ' + err.message);
       });
     }
 
     function showConsolidatedReport() {
-      alert("एकत्रित अहवाल: सर्व १० चाचण्यांचा एकत्रित तक्ता लवकरच एका क्लिकवर उपलब्ध होईल.");
+      alert("एकत्रित अहवाल: सर्व १० चाचण्यांचा एकत्रित तक्ता लवकरच स्क्रीनवर उपलब्ध होईल.");
     }
 
-    /* ================= 5. प्रमाणपत्र व शेअर बॅनर ================= */
-    function openCertificateModal(name, school, kendra, taluka, marks, rank) {
+    /* ================= 5. LIVE DASHBOARD ================= */
+    function listenLiveDashboardData() {
+      const refPath = `results/${currentSelectedCategory}/test_${currentSelectedTest}`;
+      db.ref(refPath).on('value', (snapshot) => {
+        const data = snapshot.val();
+        let allStudents = [];
+        let totalScore = 0;
+        let blocksSet = new Set();
+        let maxScore = 0;
+
+        if (data) {
+          Object.values(data).forEach(entry => {
+            if (entry.students && Array.isArray(entry.students)) {
+              entry.students.forEach(st => {
+                if (st.marks !== undefined && st.marks !== '') {
+                  const marksNum = parseFloat(st.marks) || 0;
+                  const rec = {
+                    name: st.name,
+                    school: entry.school,
+                    udise: entry.udise || '-',
+                    taluka: entry.taluka,
+                    marks: marksNum
+                  };
+                  allStudents.push(rec);
+                  totalScore += marksNum;
+                  blocksSet.add(entry.taluka);
+                  if (marksNum > maxScore) maxScore = marksNum;
+                }
+              });
+            }
+          });
+        }
+
+        const count = allStudents.length;
+        document.getElementById('stat-total-students').innerText = count;
+        document.getElementById('stat-avg-score').innerText = count > 0 ? (totalScore / count).toFixed(1) + '%' : '0%';
+        document.getElementById('stat-max-score').innerText = maxScore + '/100';
+        document.getElementById('stat-active-blocks').innerText = blocksSet.size + '/12';
+
+        let filtered = allStudents;
+        if (currentSelectedTaluka !== 'all') {
+          filtered = allStudents.filter(s => s.taluka === currentSelectedTaluka);
+        }
+
+        filtered.sort((a, b) => b.marks - a.marks);
+        currentFetchedToppers = filtered.slice(0, 10);
+        renderToppers(currentFetchedToppers);
+      });
+    }
+
+    function renderToppers(list) {
+      const tbody = document.getElementById('topper-rows');
+      tbody.innerHTML = '';
+      if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#94a3b8;">या चाचणीचा निकाल अद्याप भरलेला नाही.</td></tr>`;
+        return;
+      }
+      list.forEach((st, idx) => {
+        tbody.innerHTML += `
+          <tr>
+            <td><strong>#${idx + 1}</strong></td>
+            <td><strong>${st.name}</strong></td>
+            <td>${st.school}</td>
+            <td>${st.udise}</td>
+            <td>${st.taluka}</td>
+            <td><span style="background: #e0f2fe; color:#0369a1; padding:3px 10px; border-radius:12px; font-weight:700;">${st.marks} / 100</span></td>
+            <td>
+              <button class="btn btn-outline" style="padding:4px 8px; font-size:0.85rem;" onclick="openCertificateModal('${st.name}', '${st.school}', '${st.udise}', '${st.taluka}', ${st.marks}, ${idx+1})">
+                <i class="fa-solid fa-certificate"></i> प्रमाणपत्र
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    /* ================= 6. प्रमाणपत्र व शेअर बॅनर ================= */
+    function openCertificateModal(name, school, udise, taluka, marks, rank) {
       document.getElementById('cert-std-name').innerText = name;
       document.getElementById('cert-school-name').innerText = school;
-      document.getElementById('cert-kendra-name').innerText = kendra;
+      document.getElementById('cert-udise-code').innerText = udise;
       document.getElementById('cert-taluka-name').innerText = taluka;
       document.getElementById('cert-marks').innerText = marks + "/100";
       document.getElementById('cert-rank-text').innerText = `${currentSelectedTaluka==='all'?'जिल्ह्यात':'तालुक्यात'} गुणवत्ता क्रमांक #${rank}`;
@@ -1043,10 +1134,8 @@
       document.getElementById(id).style.display = 'none';
     }
 
-    /* ================= 6. प्रशासकीय लॉगिन ================= */
-    let currentAuthRole = '';
+    /* प्रशासकीय लॉगिन */
     function openLoginModal(role) {
-      currentAuthRole = role;
       const titles = {
         'eo': 'शिक्षणाधिकारी (प्राथमिक) लॉगिन',
         'beo': 'गटशिक्षणाधिकारी (BEO) लॉगिन',
