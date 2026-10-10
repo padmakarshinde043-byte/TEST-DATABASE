@@ -24,6 +24,7 @@
       --text-muted: #64748b;
       --border: #e2e8f0;
       --accent: #059669;
+      --danger: #dc2626;
       --shadow: 0 4px 18px -2px rgba(2, 132, 199, 0.08);
       --radius: 12px;
     }
@@ -72,6 +73,7 @@
     .btn-outline { background: white; border-color: var(--primary); color: var(--primary); }
     .btn-outline:hover { background: var(--primary-light); }
     .btn-success { background: var(--accent); color: white; }
+    .btn-danger { background: var(--danger); color: white; }
 
     .container { max-width: 1200px; margin: 24px auto; padding: 0 16px; }
 
@@ -234,12 +236,12 @@
       background: white;
       padding: 24px;
       border-radius: 14px;
-      max-width: 820px;
+      max-width: 840px;
       width: 100%;
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     }
 
-    /* प्रमाणपत्राची अद्ययावत मांडणी (cert.jpeg बॅकग्राउंडवर) */
+    /* प्रमाणपत्र बॉक्स */
     .cert-container-box {
       position: relative;
       width: 740px;
@@ -253,8 +255,6 @@
       border-radius: 6px;
       overflow: hidden;
     }
-
-    /* दोन्ही लोगोच्या मध्यभागी Navy Blue रंगातील ठळक Aparajita शीर्षक */
     .cert-main-heading {
       position: absolute;
       top: 48px;
@@ -264,13 +264,11 @@
       font-family: 'Aparajita', 'Yatra One', 'Mukta', serif;
       font-size: 1.95rem;
       font-weight: 800;
-      color: #0f2b5c; /* Deep Navy Blue */
+      color: #0f2b5c;
       letter-spacing: 1px;
       text-shadow: 0 1px 2px rgba(15, 43, 92, 0.12);
       z-index: 5;
     }
-
-    /* उजव्या लोगोच्या खाली साधा इंग्रजी दिनांक (कोणतीही बॉर्डर न ठेवता वर व उजवीकडे सेट) */
     .cert-date-badge {
       position: absolute;
       top: 104px;
@@ -284,8 +282,6 @@
       border: none;
       letter-spacing: 0.5px;
     }
-
-    /* विद्यार्थ्याचे नाव व मजकूर वर उचललेला */
     .cert-overlay-content {
       position: absolute;
       top: 126px;
@@ -293,7 +289,6 @@
       right: 55px;
       text-align: center;
     }
-
     .cert-student-title {
       font-family: 'Yatra One', cursive, sans-serif;
       font-size: 1.7rem;
@@ -303,23 +298,16 @@
       letter-spacing: 0.6px;
       word-spacing: 3px;
     }
-
-    /* मजकुरातील ओळींमधील अंतर आणि दोन शब्दांमधील मोकळेपणा */
     .cert-para {
       font-size: 1.04rem;
       line-height: 1.85;
       color: #1e293b;
       font-weight: 500;
       margin-bottom: 8px;
-      word-spacing: 3px;     /* दोन शब्दांमधील स्पष्ट अंतर */
+      word-spacing: 3px;
       letter-spacing: 0.2px;
     }
-
-    .cert-para span, .cert-para strong {
-      word-spacing: 3px;
-    }
-
-    /* UDISE कोड अखंड दिसण्यासाठी स्वतंत्र स्टाइल */
+    .cert-para span, .cert-para strong { word-spacing: 3px; }
     .cert-udise-txt {
       font-family: 'Poppins', sans-serif;
       font-weight: 600;
@@ -327,15 +315,12 @@
       display: inline-block;
       white-space: nowrap;
     }
-
-    /* ठळक Golden आकारात प्राप्त गुण आणि रँक */
     .cert-badges {
       margin-top: 12px;
       display: flex;
       justify-content: center;
       gap: 18px;
     }
-
     .cert-badge-gold {
       background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 50%, #fde68a 100%);
       border: 2px solid #d97706;
@@ -352,6 +337,61 @@
       font-family: 'Mukta', 'Poppins', sans-serif;
     }
 
+    /* कन्सोलिडेटेड रिपोर्ट कार्ड (प्रगती पुस्तक) स्टाइल */
+    .report-card-container {
+      background: #ffffff;
+      border: 3px double #0284c7;
+      padding: 24px;
+      border-radius: 8px;
+      color: #1e293b;
+      margin: 12px 0;
+    }
+    .report-card-header {
+      text-align: center;
+      border-bottom: 2px solid #e0f2fe;
+      padding-bottom: 12px;
+      margin-bottom: 16px;
+    }
+    .report-card-header h2 { font-size: 1.5rem; color: #0369a1; }
+    .report-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px;
+      background: #f8fafc;
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 16px;
+      font-size: 0.95rem;
+    }
+    .progress-bar-container {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      height: 110px;
+      padding: 10px;
+      background: #f8fafc;
+      border-radius: 8px;
+      margin-top: 14px;
+      border: 1px solid #e2e8f0;
+    }
+    .progress-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100%;
+      justify-content: flex-end;
+    }
+    .progress-bar-fill {
+      width: 100%;
+      background: #0284c7;
+      border-radius: 4px 4px 0 0;
+      transition: height 0.3s;
+      min-height: 4px;
+    }
+    .progress-col-label { font-size: 0.75rem; margin-top: 4px; color: #64748b; font-family: 'Poppins', sans-serif; }
+
+    /* बॅनर */
     .banner-preview {
       background: linear-gradient(135deg, #f0f9ff 0%, #ffffff 100%);
       border: 3px solid var(--primary);
@@ -362,12 +402,7 @@
       margin: 15px 0;
       overflow: hidden;
     }
-    .banner-header-decor {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
-    }
+    .banner-header-decor { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
     .banner-flower { width: 75px; height: 75px; object-fit: contain; }
     .banner-center-logo { width: 68px; height: 68px; object-fit: contain; }
     .banner-preview h2 { color: var(--primary-dark); font-size: 1.65rem; font-weight: 800; }
@@ -406,7 +441,7 @@
         <img src="logo.jpeg" alt="Logo" class="brand-logo" onerror="this.style.display='none'">
         <div>
           <h1>जिल्हा परिषद, बीड - सराव चाचणी पोर्टल</h1>
-          <p>गुण संकलन, विश्लेषण, लाइव्ह गुणवत्ता डॅशबोर्ड व डिजिटल प्रमाणपत्र</p>
+          <p>गुण संकलन, विश्लेषण, प्रगती पुस्तक व पर्यवेक्षण प्रणाली</p>
         </div>
       </div>
       <div class="nav-actions">
@@ -453,10 +488,17 @@
       </div>
 
       <div class="card">
-        <div class="card-title"><i class="fa-solid fa-list-check"></i> चाचणी क्रमांक निवडा</div>
-        <div class="test-pill-container" id="dashboard-test-pills"></div>
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap:10px;">
+          <div class="card-title" style="margin:0; border:none;"><i class="fa-solid fa-list-check"></i> चाचणी क्रमांक निवडा</div>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn btn-success" onclick="exportDataToExcel()"><i class="fa-solid fa-file-excel"></i> निकाल Excel डाऊनलोड</button>
+            <button class="btn btn-danger" onclick="openPendingSchoolsModal()"><i class="fa-solid fa-triangle-exclamation"></i> प्रलंबित शाळा ट्रॅकर</button>
+          </div>
+        </div>
+        <div class="test-pill-container" id="dashboard-test-pills" style="margin-top: 14px;"></div>
       </div>
 
+      <!-- आकडेवारी -->
       <div class="stats-grid">
         <div class="stat-box">
           <p>एकूण प्रविष्ट विद्यार्थी</p>
@@ -476,14 +518,16 @@
         </div>
       </div>
 
+      <!-- टॉपर्स व गौरव यादी -->
       <div class="card">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
           <div class="card-title" style="margin: 0; border: none; padding: 0;">
             <i class="fa-solid fa-trophy" style="color: #f59e0b;"></i> <span id="toppers-table-title">बीड जिल्हा - टॉप 10 गुणवत्ता यादी</span>
           </div>
           <div style="display: flex; gap: 8px;">
-            <button class="btn btn-outline" onclick="openShareModal('district')"><i class="fa-solid fa-share-nodes"></i> जिल्हा टॉपर्स बॅनर शेअर</button>
-            <button class="btn btn-primary" onclick="openShareModal('taluka')"><i class="fa-solid fa-share-nodes"></i> तालुका वाईज बॅनर शेअर</button>
+            <button class="btn btn-outline" onclick="openShareModal('district')"><i class="fa-solid fa-share-nodes"></i> जिल्हा टॉपर्स बॅनर</button>
+            <button class="btn btn-primary" onclick="openShareModal('taluka')"><i class="fa-solid fa-share-nodes"></i> तालुका वाईज बॅनर</button>
+            <button class="btn btn-outline" style="border-color:#d97706; color:#b45309;" onclick="openBestSchoolModal()"><i class="fa-solid fa-award"></i> सर्वोत्कृष्ट शाळा गौरव</button>
           </div>
         </div>
 
@@ -604,21 +648,22 @@
       <div class="card">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap:10px;">
           <div class="card-title" style="margin:0; border:none;"><i class="fa-solid fa-calculator"></i> ३. विद्यार्थ्यांचे चाचणी गुण भरा</div>
-          <button class="btn btn-outline" onclick="showConsolidatedReport()"><i class="fa-solid fa-table-list"></i> एकत्रित सर्व चाचण्यांचे गुण पहा</button>
+          <button class="btn btn-outline" onclick="showSchoolConsolidatedReport()"><i class="fa-solid fa-table-list"></i> एकत्रित सर्व 10 चाचण्यांचे गुण पहा</button>
         </div>
 
         <div class="table-responsive">
           <table>
             <thead>
               <tr>
-                <th style="width: 60px;">अ.क्र.</th>
+                <th style="width: 50px;">अ.क्र.</th>
                 <th>विद्यार्थ्याचे संपूर्ण नाव</th>
                 <th>लिंग</th>
-                <th style="width: 180px;">मिळालेले गुण (पैकी 100)</th>
+                <th style="width: 170px;">मिळालेले गुण (पैकी 100)</th>
+                <th style="width: 160px;">सराव प्रगती पुस्तक</th>
               </tr>
             </thead>
             <tbody id="student-marks-entry-body">
-              <tr><td colspan="4" style="text-align:center; color:#94a3b8;">कृपया प्रथम शाळा निवडा.</td></tr>
+              <tr><td colspan="5" style="text-align:center; color:#94a3b8;">कृपया प्रथम शाळा निवडा.</td></tr>
             </tbody>
           </table>
         </div>
@@ -630,7 +675,9 @@
     </div>
   </div>
 
-  <!-- Certificate Modal -->
+  <!-- ================= MODALS ================= -->
+
+  <!-- १. प्रमाणपत्र Modal (cert.jpeg) -->
   <div class="modal" id="certModal">
     <div class="modal-content">
       <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -639,13 +686,9 @@
       </div>
 
       <div class="cert-container-box" id="cert-card-render">
-        <!-- दोन्ही लोगोच्या मध्यभागी Navy Blue रंगातील ठळक Aparajita शीर्षक -->
         <div class="cert-main-heading">गुणवत्ता सन्मान प्रमाणपत्र</div>
-
-        <!-- उजव्या लोगोच्या खाली साधा इंग्रजी दिनांक -->
         <div class="cert-date-badge" id="cert-date-text">Date: 09/10/2026</div>
 
-        <!-- मुख्य मजकूर वर सरकवलेला -->
         <div class="cert-overlay-content">
           <h2 class="cert-student-title" id="cert-std-name">---</h2>
           <p class="cert-para">
@@ -658,7 +701,6 @@
             चाचणी क्र. <strong id="cert-test-no" style="font-size: 1.15rem; color:#b45309; font-family:'Poppins', sans-serif;">1</strong> मध्ये उत्कृष्ट यश संपादन केले आहे.
           </p>
           
-          <!-- ठळक Golden आकारात प्राप्त गुण आणि रँक -->
           <div class="cert-badges">
             <div class="cert-badge-gold" id="cert-marks">
               <i class="fa-solid fa-star" style="color: #d97706;"></i> प्राप्त गुण: 98 / 100
@@ -677,7 +719,123 @@
     </div>
   </div>
 
-  <!-- Share Banner Modal -->
+  <!-- २. सराव परीक्षा प्रगती पुस्तक (Report Card + Trend Graph) Modal -->
+  <div class="modal" id="reportCardModal">
+    <div class="modal-content" style="max-width: 720px;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="color: var(--primary-dark);"><i class="fa-solid fa-chart-column"></i> सराव परीक्षा प्रगती पुस्तक (Report Card)</h3>
+        <button onclick="closeModal('reportCardModal')" style="border:none; background:none; font-size:1.4rem; cursor:pointer;">&times;</button>
+      </div>
+
+      <div class="report-card-container" id="report-card-render">
+        <div class="report-card-header">
+          <h2>जिल्हा परिषद, बीड - शिक्षण विभाग</h2>
+          <p style="font-weight:600; font-size:1.05rem; color:#334155;">सराव चाचणी संकलित प्रगती पुस्तक (चाचणी १ ते १०)</p>
+        </div>
+
+        <div class="report-meta-grid">
+          <div>विद्यार्थी: <strong id="rc-student-name">---</strong></div>
+          <div>शाळा: <strong id="rc-school-name">---</strong></div>
+          <div>वर्ग: <strong id="rc-class-name">---</strong></div>
+          <div>UDISE: <strong id="rc-udise">---</strong></div>
+        </div>
+
+        <table style="margin-bottom: 12px; font-size:0.9rem;">
+          <thead>
+            <tr>
+              <th style="padding:6px 10px;">चाचणी क्र.</th>
+              <th>T1</th><th>T2</th><th>T3</th><th>T4</th><th>T5</th><th>T6</th><th>T7</th><th>T8</th><th>T9</th><th>T10</th>
+              <th>सरासरी</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr id="rc-marks-row" style="text-align:center; font-weight:700;">
+              <!-- 10 tests marks -->
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Progress Trend Graph -->
+        <p style="font-weight:700; font-size:0.88rem; color:#475569; margin-top:10px;">📈 प्रगती आलेख (Performance Trend Graph):</p>
+        <div class="progress-bar-container" id="rc-graph-bars">
+          <!-- 10 vertical bars -->
+        </div>
+
+        <div style="margin-top:16px; padding:10px; background:#f0fdf4; border-radius:6px; border:1px solid #bbf7d0; font-size:0.95rem;">
+          अंतिम शेरा: <strong id="rc-remark-text" style="color:#166534;">उत्कृष्ट तयारी व सातत्यपूर्ण प्रगती!</strong>
+        </div>
+      </div>
+
+      <div style="text-align: right; display:flex; gap:10px; justify-content:flex-end; margin-top:14px;">
+        <button class="btn btn-outline" onclick="closeModal('reportCardModal')">बंद करा</button>
+        <button class="btn btn-primary" onclick="downloadReportCardPDF()"><i class="fa-solid fa-file-pdf"></i> प्रगती पुस्तक PDF</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ३. प्रलंबित शाळा ट्रॅकर (Pending Schools Modal) -->
+  <div class="modal" id="pendingSchoolsModal">
+    <div class="modal-content">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="color: var(--danger);"><i class="fa-solid fa-triangle-exclamation"></i> गुण न भरलेल्या प्रलंबित शाळांची यादी</h3>
+        <button onclick="closeModal('pendingSchoolsModal')" style="border:none; background:none; font-size:1.4rem; cursor:pointer;">&times;</button>
+      </div>
+      <p style="margin: 8px 0; font-size:0.9rem; color:#64748b;" id="pending-subtitle">चाचणी क्रमांक १ साठी अद्याप माहिती न भरलेल्या शाळा:</p>
+      
+      <div class="table-responsive" style="max-height: 380px;">
+        <table>
+          <thead>
+            <tr>
+              <th>अ.क्र.</th>
+              <th>UDISE कोड</th>
+              <th>शाळेचे नाव</th>
+              <th>तालुका</th>
+              <th>स्थिती</th>
+            </tr>
+          </thead>
+          <tbody id="pending-schools-body">
+            <!-- Dynamic pending list -->
+          </tbody>
+        </table>
+      </div>
+      <div style="text-align: right; margin-top: 14px;">
+        <button class="btn btn-outline" onclick="closeModal('pendingSchoolsModal')">बंद करा</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ४. सर्वोत्कृष्ट शाळा सन्मान पत्र Modal -->
+  <div class="modal" id="bestSchoolModal">
+    <div class="modal-content">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="color: #b45309;"><i class="fa-solid fa-school-flag"></i> गुणवत्ता शाळा सन्मान पत्र</h3>
+        <button onclick="closeModal('bestSchoolModal')" style="border:none; background:none; font-size:1.4rem; cursor:pointer;">&times;</button>
+      </div>
+      
+      <div class="cert-container-box" id="best-school-card-render">
+        <div class="cert-main-heading">गुणवत्ता शाळा सन्मान पत्र</div>
+        <div class="cert-date-badge" id="bs-date-text">Date: 09/10/2026</div>
+
+        <div class="cert-overlay-content" style="top: 140px;">
+          <h2 class="cert-student-title" id="bs-school-name" style="font-size:1.5rem;">जि.प.प्रा.शाळा सावरगाव</h2>
+          <p class="cert-para">
+            तालुका: <strong><span id="bs-taluka-name">माजलगाव</span></strong> यांनी जिल्हा परिषद, बीड अंतर्गत आयोजित सराव परीक्षांमध्ये 
+            विद्यार्थ्यांचा १००% सहभाग व सरासरी <strong><span id="bs-avg-score">88.5%</span></strong> गुणांसह सर्वोत्कृष्ट गुणवत्ता सिद्ध केली आहे.
+          </p>
+          <div class="cert-badges">
+            <div class="cert-badge-gold"><i class="fa-solid fa-medal"></i> आदर्श गुणवत्ता शाळा २०२६-२७</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align: right; margin-top: 14px;">
+        <button class="btn btn-outline" onclick="closeModal('bestSchoolModal')">बंद करा</button>
+        <button class="btn btn-success" onclick="downloadBestSchoolPDF()"><i class="fa-solid fa-download"></i> सन्मान पत्र PDF डाऊनलोड</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ५. अभिनंदन बॅनर Modal -->
   <div class="modal" id="shareModal">
     <div class="modal-content">
       <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -698,12 +856,8 @@
         <ul class="banner-list" id="banner-top-list"></ul>
 
         <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px; padding-top:8px; border-top:1px dashed #bae6fd;">
-          <p style="font-size:0.85rem; color:#475569;">
-            🎯 प्रेरणा: शिक्षणाधिकारी (प्राथमिक), जिल्हा परिषद बीड
-          </p>
-          <p style="font-size:0.85rem; color:#475569; font-weight:600;">
-            समस्त शिक्षण विभाग, बीड
-          </p>
+          <p style="font-size:0.85rem; color:#475569;">🎯 प्रेरणा: शिक्षणाधिकारी (प्राथमिक), जिल्हा परिषद बीड</p>
+          <p style="font-size:0.85rem; color:#475569; font-weight:600;">समस्त शिक्षण विभाग, बीड</p>
         </div>
       </div>
 
@@ -714,7 +868,7 @@
     </div>
   </div>
 
-  <!-- Login Modal -->
+  <!-- ६. ॲडमिन लॉगिन Modal -->
   <div class="modal" id="loginModal">
     <div class="modal-content" style="max-width: 400px;">
       <h3 id="login-role-title" style="margin-bottom: 12px; color:var(--primary);">प्रशासकीय लॉगिन</h3>
@@ -732,7 +886,7 @@
   <div class="toast" id="toastMsg">माहिती सेव्ह झाली!</div>
 
   <script>
-    /* ================= 1. शाळांचा डेटा JSON द्वारे लोड करणे ================= */
+    /* ================= 1. शाळांचा डेटा JSON द्वारे लोड ================= */
     let BEED_SCHOOLS = [];
 
     function loadSchoolsDataFromJson() {
@@ -749,12 +903,10 @@
             l: parseInt(s.lowest_class, 10) || 1,
             h: parseInt(s.highest_class, 10) || 7
           }));
-          console.log("सर्व शाळा यशस्वीरित्या लोड झाल्या! संख्या:", BEED_SCHOOLS.length);
           onTalukaSelected();
         })
         .catch(err => {
-          console.error("त्रुटी:", err);
-          showToast("शाळा डेटा लोड करताना अडचण आली: " + err.message);
+          showToast("शाळा डेटा लोड करताना त्रुटी: " + err.message);
         });
     }
 
@@ -785,6 +937,7 @@
     let currentStudentsList = [];
     let selectedSchoolObj = null;
     let currentFetchedToppers = [];
+    let currentRawResults = {};
 
     window.addEventListener('DOMContentLoaded', () => {
       loadSchoolsDataFromJson();
@@ -959,7 +1112,7 @@
       document.getElementById('entry-school').classList.remove('locked');
       document.getElementById('entry-school').value = '';
       document.getElementById('udise-search-input').value = '';
-      document.getElementById('student-marks-entry-body').innerHTML = `<tr><td colspan="4" style="text-align:center; color:#94a3b8;">कृपया प्रथम शाळा निवडा.</td></tr>`;
+      document.getElementById('student-marks-entry-body').innerHTML = `<tr><td colspan="5" style="text-align:center; color:#94a3b8;">कृपया प्रथम शाळा निवडा.</td></tr>`;
       currentStudentsList = [];
     }
 
@@ -1026,7 +1179,7 @@
       tbody.innerHTML = '';
 
       if (currentStudentsList.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#94a3b8;">या शाळेसाठी अद्याप विद्यार्थी जोडलेले नाहीत. कृपया वरील फॉर्ममधून विद्यार्थी जोडा.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#94a3b8;">या शाळेसाठी अद्याप विद्यार्थी जोडलेले नाहीत. कृपया वरील फॉर्ममधून विद्यार्थी जोडा.</td></tr>`;
         return;
       }
 
@@ -1043,8 +1196,13 @@
             <td><strong>${st.name}</strong></td>
             <td>${st.gender}</td>
             <td>
-              <input type="number" min="0" max="100" class="form-control" style="width:120px;" 
-                     id="marks-input-${st.id}" value="${marks}" placeholder="गुण टाका">
+              <input type="number" min="0" max="100" class="form-control" style="width:110px;" 
+                     id="marks-input-${st.id}" value="${marks}" placeholder="गुण">
+            </td>
+            <td>
+              <button class="btn btn-outline" style="padding:4px 8px; font-size:0.82rem;" onclick="openReportCardModal(${st.id}, '${st.name}')">
+                <i class="fa-solid fa-address-card"></i> प्रगती पुस्तक
+              </button>
             </td>
           </tr>
         `;
@@ -1085,14 +1243,12 @@
       });
     }
 
-    function showConsolidatedReport() {
-      alert("एकत्रित अहवाल: सर्व 10 चाचण्यांचा एकत्रित तक्ता लवकरच स्क्रीनवर उपलब्ध होईल.");
-    }
-
+    /* ================= 3. LIVE DASHBOARD ================= */
     function listenLiveDashboardData() {
       const refPath = `results/${currentSelectedCategory}/test_${currentSelectedTest}`;
       db.ref(refPath).on('value', (snapshot) => {
         const data = snapshot.val();
+        currentRawResults = data || {};
         let allStudents = [];
         let totalScore = 0;
         let blocksSet = new Set();
@@ -1165,36 +1321,23 @@
       });
     }
 
-    /* ================= 3. प्रमाणपत्र जनरेटर ================= */
+    /* ================= 4. प्रमाणपत्र (CERTIFICATE) ================= */
     function openCertificateModal(name, school, udise, taluka, marks, rank, gender) {
       document.getElementById('cert-std-name').innerText = name;
       document.getElementById('cert-school-name').innerText = school;
-      
-      // पूर्ण ११ अंक विनाकट स्पष्ट सेट करणे
       document.getElementById('cert-udise-code').innerText = String(udise).trim();
       document.getElementById('cert-taluka-name').innerText = taluka;
 
-      // १. वर्गाचा इंग्रजी अंकांसह उल्लेख
-      const classMap = {
-        '4th': 'Class 4th',
-        'navodaya': 'Class 5th',
-        '7th': 'Class 7th',
-        'nmms': 'Class 8th'
-      };
+      const classMap = { '4th': 'Class 4th', 'navodaya': 'Class 5th', '7th': 'Class 7th', 'nmms': 'Class 8th' };
       document.getElementById('cert-std-class').innerText = classMap[currentSelectedCategory] || 'Class 5th';
 
-      // २. लिंगानुसार शब्दरचना: तालुका नावानंतर 'या विद्यार्थ्याने' किंवा 'या विद्यार्थिनीने'
       const isGirl = (gender === "मुलगी" || gender === "girl" || gender === "Female");
       document.getElementById('cert-gender-pronoun').innerText = isGirl ? "या विद्यार्थिनीने" : "या विद्यार्थ्याने";
 
-      // ३. चाचणी क्रमांक इंग्रजी अंकात
       document.getElementById('cert-test-no').innerText = currentSelectedTest;
-
-      // ४. ठळक Golden बॅजेस (इंग्रजी अंकांमध्ये)
       document.getElementById('cert-marks').innerHTML = `<i class="fa-solid fa-star" style="color:#d97706;"></i> प्राप्त गुण: ${marks} / 100`;
       document.getElementById('cert-rank-text').innerHTML = `<i class="fa-solid fa-trophy" style="color:#d97706;"></i> ${currentSelectedTaluka === 'all' ? 'जिल्ह्यात' : 'तालुक्यात'} क्रमांक #${rank}`;
 
-      // ५. उजव्या लोगोच्या खाली साधा इंग्रजी दिनांक
       const today = new Date();
       const dd = String(today.getDate()).padStart(2, '0');
       const mm = String(today.getMonth() + 1).padStart(2, '0');
@@ -1208,28 +1351,208 @@
         'navodaya': 'नवोदय विद्यालय प्रवेश पात्रता सराव परीक्षा'
       };
       document.getElementById('cert-exam-title').innerText = examNames[currentSelectedCategory] || 'सराव परीक्षा';
-
       document.getElementById('certModal').style.display = 'flex';
     }
 
     function downloadCertificatePDF() {
       const { jsPDF } = window.jspdf;
       const card = document.getElementById('cert-card-render');
-      html2canvas(card, { 
-        scale: 3, 
-        useCORS: true,
-        letterRendering: true
-      }).then(canvas => {
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF('landscape', 'mm', 'a4');
+      showToast('प्रमाणपत्र PDF तयार होत आहे...');
+
+      html2canvas(card, { scale: 1.8, useCORS: true, letterRendering: true }).then(canvas => {
+        const imgData = canvas.toDataURL('image/jpeg', 0.82);
+        const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4', compress: true });
         const imgWidth = 277;
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
-        pdf.addImage(imgData, 'PNG', 10, 15, imgWidth, imgHeight);
-        pdf.save(`Certificate_${document.getElementById('cert-std-name').innerText}.pdf`);
+        pdf.addImage(imgData, 'JPEG', 10, 15, imgWidth, imgHeight, undefined, 'FAST');
+        const stdName = document.getElementById('cert-std-name').innerText.trim() || 'Student';
+        pdf.save(`Certificate_${stdName}.pdf`);
+        showToast('प्रमाणपत्र PDF डाऊनलोड झाले!');
       });
     }
 
-    /* ================= 4. बॅनर शेअर ================= */
+    /* ================= 5. प्रगती पुस्तक (CUMULATIVE REPORT CARD & GRAPH) ================= */
+    function openReportCardModal(studentId, studentName) {
+      if (!selectedSchoolObj) return;
+
+      document.getElementById('rc-student-name').innerText = studentName;
+      document.getElementById('rc-school-name').innerText = selectedSchoolObj.n;
+      document.getElementById('rc-udise').innerText = selectedSchoolObj.c;
+      const classMap = { '4th': 'इयत्ता ४ थी', 'navodaya': 'इयत्ता ५ वी', '7th': 'इयत्ता ७ वी', 'nmms': 'इयत्ता ८ वी' };
+      document.getElementById('rc-class-name').innerText = classMap[currentEntryCategory] || '-';
+
+      const key = getSchoolDbKey();
+      const marksRow = document.getElementById('rc-marks-row');
+      const graphBars = document.getElementById('rc-graph-bars');
+      marksRow.innerHTML = '';
+      graphBars.innerHTML = '';
+
+      let promises = [];
+      for (let t = 1; t <= 10; t++) {
+        promises.push(db.ref(`results/${currentEntryCategory}/test_${t}/${key}`).once('value'));
+      }
+
+      Promise.all(promises).then(snapshots => {
+        let total = 0, count = 0;
+        snapshots.forEach((snap, idx) => {
+          const tNum = idx + 1;
+          const val = snap.val();
+          let m = '-';
+          if (val && val.students) {
+            const found = val.students.find(s => s.id === studentId || s.name === studentName);
+            if (found && found.marks !== '') {
+              m = parseFloat(found.marks);
+              total += m;
+              count++;
+            }
+          }
+          marksRow.innerHTML += `<td>${m}</td>`;
+
+          // Bar in graph
+          const heightPercent = m !== '-' ? m : 0;
+          graphBars.innerHTML += `
+            <div class="progress-col">
+              <span style="font-size:0.7rem; font-weight:700;">${m !== '-' ? m : ''}</span>
+              <div class="progress-bar-fill" style="height: ${heightPercent}%;"></div>
+              <span class="progress-col-label">T${tNum}</span>
+            </div>
+          `;
+        });
+
+        const avg = count > 0 ? (total / count).toFixed(1) : 0;
+        marksRow.innerHTML += `<td style="color:#0284c7;">${avg}%</td>`;
+
+        let remark = "उत्कृष्ट कामगिरी व सातत्यपूर्ण प्रगती!";
+        if (avg < 50) remark = "विशेष सरावाची व मार्गदर्शनाची आवश्यकता आहे.";
+        else if (avg < 75) remark = "चांगली प्रगती, गणितात अधिक सरावाची गरज.";
+        document.getElementById('rc-remark-text').innerText = remark;
+
+        document.getElementById('reportCardModal').style.display = 'flex';
+      });
+    }
+
+    function downloadReportCardPDF() {
+      const { jsPDF } = window.jspdf;
+      const card = document.getElementById('report-card-render');
+      html2canvas(card, { scale: 2 }).then(canvas => {
+        const imgData = canvas.toDataURL('image/jpeg', 0.85);
+        const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+        const imgWidth = 190;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        pdf.addImage(imgData, 'JPEG', 10, 15, imgWidth, imgHeight);
+        pdf.save(`ReportCard_${document.getElementById('rc-student-name').innerText}.pdf`);
+      });
+    }
+
+    /* ================= 6. प्रलंबित शाळा ट्रॅकर (PENDING TRACKER) ================= */
+    function openPendingSchoolsModal() {
+      const tbody = document.getElementById('pending-schools-body');
+      tbody.innerHTML = '';
+      document.getElementById('pending-subtitle').innerText = `चाचणी क्रमांक ${currentSelectedTest} साठी अद्याप माहिती न भरलेल्या शाळा:`;
+
+      if (BEED_SCHOOLS.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">शाळा डेटा उपलब्ध नाही.</td></tr>`;
+        document.getElementById('pendingSchoolsModal').style.display = 'flex';
+        return;
+      }
+
+      // ज्या शाळांचे निकाल चालू चाचणीत सेव्ह झालेले नाहीत
+      const filledUdises = new Set();
+      Object.values(currentRawResults).forEach(entry => {
+        if (entry.udise) filledUdises.add(String(entry.udise).trim());
+      });
+
+      const eligibleSchools = BEED_SCHOOLS.filter(s => isSchoolEligible(s, currentSelectedCategory));
+      const pendingSchools = eligibleSchools.filter(s => !filledUdises.has(s.c));
+
+      if (pendingSchools.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#166534; font-weight:700;">अभिनंदन! सर्व शाळांनी निकाल भरला आहे.</td></tr>`;
+      } else {
+        pendingSchools.slice(0, 100).forEach((s, idx) => {
+          tbody.innerHTML += `
+            <tr>
+              <td>${idx + 1}</td>
+              <td>${s.c}</td>
+              <td><strong>${s.n}</strong></td>
+              <td>${s.t}</td>
+              <td><span style="color:#dc2626; font-weight:700;"><i class="fa-solid fa-clock"></i> प्रलंबित</span></td>
+            </tr>
+          `;
+        });
+      }
+
+      document.getElementById('pendingSchoolsModal').style.display = 'flex';
+    }
+
+    /* ================= 7. सर्वोत्कृष्ट शाळा सन्मान पत्र ================= */
+    function openBestSchoolModal() {
+      if (!currentRawResults || Object.keys(currentRawResults).length === 0) {
+        alert("अद्याप चाचणीचा निकाल उपलब्ध नाही.");
+        return;
+      }
+
+      // सर्वाधिक सरासरी असलेली शाळा शोधणे
+      let bestSchool = null, highestAvg = 0;
+      Object.values(currentRawResults).forEach(entry => {
+        if (entry.students && entry.students.length > 0) {
+          let sum = 0, cnt = 0;
+          entry.students.forEach(st => {
+            if (st.marks !== '') { sum += parseFloat(st.marks); cnt++; }
+          });
+          const avg = cnt > 0 ? (sum / cnt) : 0;
+          if (avg > highestAvg) {
+            highestAvg = avg;
+            bestSchool = entry;
+          }
+        }
+      });
+
+      if (bestSchool) {
+        document.getElementById('bs-school-name').innerText = bestSchool.school;
+        document.getElementById('bs-taluka-name').innerText = bestSchool.taluka;
+        document.getElementById('bs-avg-score').innerText = highestAvg.toFixed(1) + "%";
+      }
+
+      const today = new Date();
+      document.getElementById('bs-date-text').innerText = `Date: ${today.getDate()}/${today.getMonth()+1}/${today.getFullYear()}`;
+      document.getElementById('bestSchoolModal').style.display = 'flex';
+    }
+
+    function downloadBestSchoolPDF() {
+      const { jsPDF } = window.jspdf;
+      const card = document.getElementById('best-school-card-render');
+      html2canvas(card, { scale: 1.8, useCORS: true }).then(canvas => {
+        const imgData = canvas.toDataURL('image/jpeg', 0.85);
+        const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+        pdf.addImage(imgData, 'JPEG', 10, 15, 277, (canvas.height * 277) / canvas.width);
+        pdf.save('Best_School_Certificate.pdf');
+      });
+    }
+
+    /* ================= 8. EXCEL / CSV DATA EXPORT ================= */
+    function exportDataToExcel() {
+      if (currentFetchedToppers.length === 0) {
+        alert("डाउनलोड करण्यासाठी निकाल उपलब्ध नाही.");
+        return;
+      }
+
+      let csvContent = "\uFEFFरँक,विद्यार्थ्याचे नाव,शाळा,UDISE कोड,तालुका,प्राप्त गुण\n";
+      currentFetchedToppers.forEach((st, idx) => {
+        csvContent += `"${idx+1}","${st.name}","${st.school}","${st.udise}","${st.taluka}","${st.marks}"\n`;
+      });
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `Beed_Exam_Results_Test${currentSelectedTest}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast('Excel/CSV निकाल यशस्वीरित्या डाऊनलोड झाला!');
+    }
+
+    /* ================= 9. बॅनर शेअर ================= */
     function openShareModal(type) {
       const listEl = document.getElementById('banner-top-list');
       listEl.innerHTML = '';
@@ -1249,7 +1572,6 @@
           `;
         });
       }
-
       document.getElementById('shareModal').style.display = 'flex';
     }
 
@@ -1259,18 +1581,13 @@
       html2canvas(card, { scale: 2, useCORS: true }).then(canvas => {
         const imgData = canvas.toDataURL('image/png');
         const pdf = new jsPDF('portrait', 'mm', 'a4');
-        const imgWidth = 190;
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-        pdf.addImage(imgData, 'PNG', 10, 20, imgWidth, imgHeight);
+        pdf.addImage(imgData, 'PNG', 10, 20, 190, (canvas.height * 190) / canvas.width);
         pdf.save('Abhinandan_Banner.pdf');
       });
     }
 
-    function closeModal(id) {
-      document.getElementById(id).style.display = 'none';
-    }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-    /* ================= 5. लॉगिन ================= */
     function openLoginModal(role) {
       const titles = {
         'eo': 'शिक्षणाधिकारी (प्राथमिक) लॉगिन',
@@ -1290,6 +1607,10 @@
       } else {
         alert('चुकीचा पासवर्ड!');
       }
+    }
+
+    function showSchoolConsolidatedReport() {
+      alert("एकत्रित अहवाल: सर्व विद्यार्थ्यांच्या समोरील 'प्रगती पुस्तक' बटनावर क्लिक करून वैयक्तिक अहवाल व आलेख पाहू शकता.");
     }
   </script>
 </body>
