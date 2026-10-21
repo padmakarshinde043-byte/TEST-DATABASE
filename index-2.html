@@ -130,15 +130,13 @@
 
     .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 2000; justify-content: center; align-items: center; padding: 12px; }
     .modal-content { background: white; padding: 16px; border-radius: 16px; width: 100%; max-width: 750px; max-height: 94vh; overflow-y: auto; }
-    .custom-dialog-box { background: white; border-radius: 16px; padding: 20px 18px; width: 100%; max-width: 380px; text-align: center; }
-
     .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 10px 20px; border-radius: 20px; font-size: 0.92rem; display: none; z-index: 3000; }
   </style>
 </head>
 <body>
 
-  <!-- Header (हेडरवर डबल क्लिक केल्यावर 2025 पिन विचारला जाईल) -->
-  <header class="app-header" id="mainHeaderDoubleAction">
+  <!-- Header (हेडरवर 1.5 सेकंद दाबून धरल्यावर पिन विचारला जाईल) -->
+  <header class="app-header" id="mainHeaderLongPressAction">
     <div class="brand-wrap">
       <img src="logo.jpeg" alt="Logo" class="brand-logo" onerror="this.style.display='none'">
       <div class="brand-text">
@@ -184,7 +182,7 @@
       </div>
     </div>
 
-    <!-- गुण भरा स्क्रीन (साधी व सुरक्षित) -->
+    <!-- गुण भरा स्क्रीन -->
     <div id="screen-entry" style="display:none;">
       <div class="app-card">
         <div class="app-card-title"><i class="fa-solid fa-school"></i> शाळा निवडा व गुण भरा</div>
@@ -193,7 +191,7 @@
     </div>
   </div>
 
-  <!-- 🌟 लपलेले गुप्त ॲडमिन टूल्स मोडल (हेडरवर डबल क्लिक व 2025 पिन टाकल्यावर उघडेल) -->
+  <!-- 🌟 लपलेले गुप्त ॲडमिन टूल्स मोडल (हेडरवर दाबून धरून 2025 पिन टाकल्यावर उघडेल) -->
   <div class="modal" id="secretAdminToolsModal">
     <div class="modal-content" style="border: 2.5px solid var(--sky);">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1.5px solid var(--border); padding-bottom:6px;">
@@ -281,19 +279,39 @@
       document.getElementById('nav-btn-entry').classList.toggle('active', view === 'entry');
     }
 
-    // 🌟 हेडरवर दोन वेळा क्लिक केल्यावर 2025 पिन विचारणे
+    // 🌟 हेडरवर 1.5 सेकंद दाबून धरल्यावर (Long Press) पिन विचारणे
     document.addEventListener('DOMContentLoaded', () => {
-      const headerEl = document.getElementById('mainHeaderDoubleAction');
+      const headerEl = document.getElementById('mainHeaderLongPressAction');
       if (headerEl) {
-        headerEl.addEventListener('dblclick', () => {
-          const pin = prompt("गुप्त ॲडमिन प्रवेश पिन टाका:");
-          if (pin === '2025') {
-            showToast('गुप्त ॲडमिन कक्ष उघडत आहे...');
-            document.getElementById('secretAdminToolsModal').style.display = 'flex';
-          } else if (pin !== null) {
-            alert('चुकीचा पिन क्रमांक!');
+        let pressTimer = null;
+
+        const startPress = (e) => {
+          if (pressTimer) clearTimeout(pressTimer);
+          pressTimer = setTimeout(() => {
+            const pin = prompt("गुप्त ॲडमिन प्रवेश पिन टाका:");
+            if (pin === '2025') {
+              showToast('गुप्त ॲडमिन कक्ष उघडत आहे...');
+              document.getElementById('secretAdminToolsModal').style.display = 'flex';
+            } else if (pin !== null) {
+              alert('चुकीचा पिन क्रमांक!');
+            }
+          }, 1500); // 1.5 सेकंद दाबून धरल्यानंतर ट्रिगर होईल
+        };
+
+        const cancelPress = () => {
+          if (pressTimer) {
+            clearTimeout(pressTimer);
+            pressTimer = null;
           }
-        });
+        };
+
+        headerEl.addEventListener('mousedown', startPress);
+        headerEl.addEventListener('mouseup', cancelPress);
+        headerEl.addEventListener('mouseleave', cancelPress);
+
+        headerEl.addEventListener('touchstart', startPress);
+        headerEl.addEventListener('touchend', cancelPress);
+        headerEl.addEventListener('touchmove', cancelPress);
       }
       loadDashboardPills();
     });
