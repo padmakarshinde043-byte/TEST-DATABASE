@@ -309,7 +309,7 @@
     }
     .udise-suggest-item:hover, .udise-suggest-item:active { background: var(--sky-light); }
 
-    /* Stats Grid */
+    /* Stats Grid & Animation Effect */
     .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
     .stat-box {
       background: white;
@@ -319,8 +319,18 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.02);
     }
     .stat-box p { font-size: 0.88rem; color: var(--text-muted); font-weight: 700; margin-bottom: 2px; }
-    .stat-box h2 { font-size: 1.6rem; font-weight: 800; font-family: 'Poppins', sans-serif; line-height: 1.2; }
+    .stat-box h2 { font-size: 1.6rem; font-weight: 800; font-family: 'Poppins', sans-serif; line-height: 1.2; transition: all 0.3s ease; }
     
+    @keyframes countPulse {
+      0% { transform: scale(0.95); opacity: 0.5; }
+      50% { transform: scale(1.03); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .stat-box h2.updating {
+      animation: countPulse 0.35s ease-out;
+      color: var(--kesari) !important;
+    }
+
     .stat-box-students { border-left: 5px solid #7c3aed; background: linear-gradient(to right, #faf5ff, #ffffff); }
     .stat-box-students h2 { color: #6b21a8; }
     .stat-box-schools { border-left: 5px solid #0284c7; background: linear-gradient(to right, #f0f9ff, #ffffff); }
@@ -1030,11 +1040,11 @@
       <div class="stats-grid">
         <div class="stat-box stat-box-students">
           <p>प्रविष्ट विद्यार्थी</p>
-          <h2 id="stat-total-students">...</h2>
+          <h2 id="stat-total-students">0</h2>
         </div>
         <div class="stat-box stat-box-schools">
           <p>गुण भरलेल्या शाळा</p>
-          <h2 id="stat-active-schools">...</h2>
+          <h2 id="stat-active-schools">0/0</h2>
         </div>
       </div>
 
@@ -1102,7 +1112,7 @@
         </select>
       </div>
 
-      <!-- १. शाळा निवडा (सुटसुटीत, कंसाशिवाय व दुबार सिलेक्टशिवाय) -->
+      <!-- १. शाळा निवडा -->
       <div class="app-card">
         <div class="app-card-title"><i class="fa-solid fa-school" style="color:var(--sky);"></i> 1. शाळा निवडा</div>
         
@@ -1997,9 +2007,6 @@
     let flashTimer = null;
     let BEED_ALL_SCHOOLS = [];
     let PRE_LOCK_CALCULATED_DATA = null;
-
-    /* कॅशिंग व अचूक आकडेवारीसाठी ग्लोबल्स */
-    let DASH_STATS_MEMORY_CACHE = {};
     let currentActiveDashboardRef = null;
 
     function toggleStudentAddCard() {
@@ -3479,19 +3486,31 @@
       });
     }
 
-    /* सुधारित आणि १००% अचूक आकडेवारी गणना */
+    /* ॲनिमेशन आणि झटपट कॅशिंगसह डॅशबोर्ड आकडे लोडर (इतर कोणतीही यंत्रणा न बदलता) */
+    function updateStatWithAnimation(elementId, newValueText) {
+      const el = document.getElementById(elementId);
+      if (!el) return;
+      if (el.innerText !== String(newValueText)) {
+        el.innerText = newValueText;
+        el.classList.add('updating');
+        setTimeout(() => { el.classList.remove('updating'); }, 350);
+      }
+    }
+
     function listenLiveDashboardData() {
-      const cacheKey = `${currentSelectedCategory}_test_${currentSelectedTest}`;
+      const cacheKey = `dash_stats_${currentSelectedCategory}_test_${currentSelectedTest}`;
       const totalEligibleSchools = getTotalEligibleSchoolsForCategory(currentSelectedCategory);
 
-      // १. मेमरी कॅशमध्ये अचूक संख्या असल्यास तात्काळ दाखवा
-      if (DASH_STATS_MEMORY_CACHE[cacheKey]) {
-        const c = DASH_STATS_MEMORY_CACHE[cacheKey];
-        document.getElementById('stat-total-students').innerText = c.students;
-        document.getElementById('stat-active-schools').innerText = `${c.active}/${totalEligibleSchools}`;
+      const cachedData = localStorage.getItem(cacheKey);
+      if (cachedData) {
+        try {
+          const parsed = JSON.parse(cachedData);
+          updateStatWithAnimation('stat-total-students', parsed.students);
+          updateStatWithAnimation('stat-active-schools', `${parsed.active}/${totalEligibleSchools}`);
+        } catch(e) {}
       } else {
-        document.getElementById('stat-total-students').innerText = '...';
-        document.getElementById('stat-active-schools').innerText = `.../${totalEligibleSchools}`;
+        updateStatWithAnimation('stat-total-students', '0');
+        updateStatWithAnimation('stat-active-schools', `0/${totalEligibleSchools}`);
       }
 
       if (currentActiveDashboardRef) {
@@ -3499,7 +3518,6 @@
         currentActiveDashboardRef = null;
       }
 
-      // २. प्रत्यक्ष निकाल पाथवरून सर्व प्रविष्ट विद्यार्थी आणि शाळा मोजणे
       const refPath = `results/${currentSelectedCategory}/test_${currentSelectedTest}`;
       currentActiveDashboardRef = db.ref(refPath);
 
@@ -3529,15 +3547,15 @@
           });
         }
 
-        // कॅशमध्ये अचूक संख्या ठेवणे
-        DASH_STATS_MEMORY_CACHE[cacheKey] = {
+        const statsPayload = {
           students: allStudentsCount,
           active: submittedSchoolsSet.size
         };
 
-        // पडद्यावर अचूक आकडे दाखवणे
-        document.getElementById('stat-total-students').innerText = allStudentsCount;
-        document.getElementById('stat-active-schools').innerText = `${submittedSchoolsSet.size}/${totalEligibleSchools}`;
+        localStorage.setItem(cacheKey, JSON.stringify(statsPayload));
+
+        updateStatWithAnimation('stat-total-students', allStudentsCount);
+        updateStatWithAnimation('stat-active-schools', `${submittedSchoolsSet.size}/${totalEligibleSchools}`);
 
         renderDeclaredResultsOnDashboard();
       });
