@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>सराव चाचणी गुण संकलन व डॅशबोर्ड - 2 | जिल्हा परिषद बीड</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&family=Yatra+One&family=Rozha+One&family=Kalam:wght@700&family=Gotu&family=Modak&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
+  <style>
+    :root {
+      --sky: #0284c7;
+      --sky-light: #e0f2fe;
+      --sky-dark: #0369a1;
+      --kesari: #ea580c;
+      --kesari-light: #ffedd5;
+      --kesari-dark: #c2410c;
+      --accent-green: #059669;
+      --accent-green-light: #d1fae5;
+      --gold: #d97706;
+      --gold-light: #fef3c7;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #cbd5e1;
+      --danger: #dc2626;
+      --whatsapp: #25d366;
+      --radius: 14px;
+      --shadow: 0 3px 10px rgba(15, 23, 42, 0.05);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Mukta', 'Aparajita', sans-serif; -webkit-tap-highlight-color: transparent; }
+    body { background-color: var(--bg); color: var(--text); padding-bottom: 95px; min-height: 100vh; overflow-x: hidden; }
+
+    /* Header */
+    .app-header {
+      background: white;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 2.5px solid var(--sky);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+      user-select: none;
+      cursor: pointer;
+    }
+    .brand-wrap { display: flex; align-items: center; gap: 10px; }
+    .brand-logo { width: 44px; height: 44px; border-radius: 8px; object-fit: contain; }
+    .brand-text h1 { font-size: 1.24rem; font-weight: 800; color: var(--sky-dark); line-height: 1.2; }
+    .brand-text p { font-size: 0.88rem; color: var(--sky); font-weight: 700; }
+
+    .app-container { max-width: 650px; margin: 0 auto; padding: 12px; }
+
+    .app-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      border: 1.5px solid #e2e8f0;
+      box-shadow: var(--shadow);
+    }
+    .app-card-title {
+      font-size: 1.08rem;
+      font-weight: 800;
+      color: #334155;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      border-bottom: 1.5px solid #f1f5f9;
+      padding-bottom: 6px;
+    }
+
+    .dropdown-group { margin-bottom: 10px; }
+    .dropdown-label { font-size: 1.02rem; font-weight: 800; color: var(--sky-dark); margin-bottom: 5px; display: flex; align-items: center; gap: 6px; }
+    .luxury-dropdown {
+      width: 100%; height: 50px; border-radius: 12px; border: 2px solid var(--sky);
+      background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230284c7'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E") no-repeat right 16px center;
+      background-size: 24px; padding: 0 45px 0 14px; font-size: 1.1rem; font-weight: 800; color: #0f172a; outline: none; appearance: none;
+    }
+
+    .test-capsule-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .test-capsule-chip {
+      background: #ffffff; border: 1.5px solid #cbd5e1; padding: 8px 10px; border-radius: 14px; cursor: pointer;
+      display: flex; align-items: center; justify-content: flex-start; gap: 8px;
+    }
+    .test-capsule-chip.active { background: linear-gradient(135deg, #059669 0%, #047857 100%); color: white; border-color: #047857; }
+    .capsule-badge-icon { width: 32px; height: 32px; border-radius: 50%; background: #e2e8f0; color: #0284c7; display: flex; align-items: center; justify-content: center; }
+
+    .form-group { margin-bottom: 12px; display: flex; flex-direction: column; gap: 4px; position: relative; }
+    .form-group label { font-size: 0.96rem; font-weight: 700; color: #334155; }
+    .form-control { width: 100%; height: 48px; padding: 0 12px; border-radius: 10px; border: 1.5px solid var(--border); background: white; font-size: 1.05rem; outline: none; color: var(--text); }
+    
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .app-btn { width: 100%; height: 48px; border-radius: 10px; border: none; font-weight: 800; font-size: 1rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+    .btn-primary { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); color: white; }
+    .btn-success { background: linear-gradient(135deg, #059669 0%, #047857 100%); color: white; }
+    .btn-gold { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; }
+    .btn-danger { background: var(--danger); color: white; }
+
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+    .stat-box { background: white; border-radius: 12px; padding: 10px 14px; border: 1.5px solid #e2e8f0; }
+    .stat-box p { font-size: 0.88rem; color: var(--text-muted); font-weight: 700; }
+    .stat-box h2 { font-size: 1.6rem; font-weight: 800; font-family: 'Poppins', sans-serif; }
+
+    .topper-card { background: white; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 10px 14px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; }
+    .topper-rank { width: 34px; height: 34px; border-radius: 50%; background: #ede9fe; color: #6b21a8; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+    .topper-score-badge { background: #d1fae5; color: #065f46; padding: 3px 10px; border-radius: 12px; font-weight: 800; }
+
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 0; right: 0; height: 68px; background: #ffffff; border-top: 2px solid #cbd5e1;
+      display: flex; justify-content: space-around; align-items: center; z-index: 1000; padding: 6px 14px; gap: 12px;
+    }
+    .nav-item {
+      flex: 1; display: flex; align-items: center; justify-content: center; height: 50px; background: #f8fafc;
+      border-radius: 12px; color: #64748b; cursor: pointer; gap: 8px; font-size: 1.05rem; font-weight: 800;
+    }
+    .nav-item.active { background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); color: #ffffff; }
+
+    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 2000; justify-content: center; align-items: center; padding: 12px; }
+    .modal-content { background: white; padding: 16px; border-radius: 16px; width: 100%; max-width: 750px; max-height: 94vh; overflow-y: auto; }
+    .custom-dialog-box { background: white; border-radius: 16px; padding: 20px 18px; width: 100%; max-width: 380px; text-align: center; }
+
+    .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 10px 20px; border-radius: 20px; font-size: 0.92rem; display: none; z-index: 3000; }
+  </style>
+</head>
+<body>
+
+  <!-- Header (हेडरवर डबल क्लिक केल्यावर 2025 पिन विचारला जाईल) -->
+  <header class="app-header" id="mainHeaderDoubleAction">
+    <div class="brand-wrap">
+      <img src="logo.jpeg" alt="Logo" class="brand-logo" onerror="this.style.display='none'">
+      <div class="brand-text">
+        <h1>जिल्हा परिषद, बीड - शिक्षण विभाग (Index 2)</h1>
+        <p>सराव चाचणी गुण संकलन व गुणवत्ता डॅशबोर्ड</p>
+      </div>
+    </div>
+  </header>
+
+  <div class="app-container">
+    <div id="screen-dashboard">
+      <div class="dropdown-group">
+        <label class="dropdown-label"><i class="fa-solid fa-graduation-cap"></i> परीक्षा निवडा:</label>
+        <select class="luxury-dropdown" id="dashboard-category-select" onchange="selectDashboardCategoryBySelect(this.value)">
+          <option value="navodaya">नवोदय प्रवेश परीक्षा (5 वी)</option>
+          <option value="4th">4 थी शिष्यवृत्ती परीक्षा</option>
+          <option value="7th">7 वी शिष्यवृत्ती परीक्षा</option>
+          <option value="nmms">NMMS शिष्यवृत्ती परीक्षा (8 वी)</option>
+        </select>
+      </div>
+
+      <div class="app-card">
+        <p class="dropdown-label" style="font-size: 0.96rem; margin-bottom: 6px;"><i class="fa-solid fa-file-signature"></i> चाचणी क्रमांक निवडा:</p>
+        <div class="test-capsule-grid" id="dash-test-pills"></div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-box" style="border-left: 5px solid #7c3aed;">
+          <p>प्रविष्ट विद्यार्थी</p>
+          <h2 id="stat-total-students" style="color: #6b21a8;">0</h2>
+        </div>
+        <div class="stat-box" style="border-left: 5px solid #0284c7;">
+          <p>गुण भरलेल्या शाळा</p>
+          <h2 id="stat-active-schools" style="color: #075985;">0/0</h2>
+        </div>
+      </div>
+
+      <div class="app-card">
+        <h3 class="app-card-title"><i class="fa-solid fa-award" style="color:var(--gold);"></i> अधिकृत गुणवत्ता यादी</h3>
+        <div id="dashboard-toppers-container">
+          <p style="text-align:center; color:var(--text-muted); padding:16px;">डेटा लोड होत आहे...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- गुण भरा स्क्रीन (साधी व सुरक्षित) -->
+    <div id="screen-entry" style="display:none;">
+      <div class="app-card">
+        <div class="app-card-title"><i class="fa-solid fa-school"></i> शाळा निवडा व गुण भरा</div>
+        <p style="font-size: 0.92rem; color: #64748b;">येथे शिक्षक आपल्या शाळेचे गुण भरू शकतात.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🌟 लपलेले गुप्त ॲडमिन टूल्स मोडल (हेडरवर डबल क्लिक व 2025 पिन टाकल्यावर उघडेल) -->
+  <div class="modal" id="secretAdminToolsModal">
+    <div class="modal-content" style="border: 2.5px solid var(--sky);">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1.5px solid var(--border); padding-bottom:6px;">
+        <h3 style="color:#0f2b5c; font-size:1.1rem;"><i class="fa-solid fa-user-shield" style="color:var(--sky);"></i> ॲडमिन विशेष व्यवस्थापन कक्ष</h3>
+        <button onclick="closeModal('secretAdminToolsModal')" style="border:none; background:#f1f5f9; width:34px; height:34px; border-radius:8px; font-size:1.3rem; cursor:pointer; color:#64748b;">&times;</button>
+      </div>
+
+      <!-- १. शाळा पिन व मोबाईल नंबर शोधा / रिसेट करा -->
+      <div class="app-card" style="border-left: 5px solid #059669; margin-bottom: 12px;">
+        <div class="app-card-title" style="font-size: 0.98rem;"><i class="fa-solid fa-key" style="color:#059669;"></i> शाळा पिन व मुख्याध्यापक नंबर शोधा व रिसेट करा</div>
+        <div class="grid-2" style="margin-bottom: 6px;">
+          <input type="text" id="quick-udise-input" class="form-control" placeholder="शाळेचा UDISE कोड टाका..." style="height:42px;" maxlength="11">
+          <button class="app-btn btn-primary" style="height:42px; font-size:0.9rem;" onclick="quickSearchSchoolAuth()"><i class="fa-solid fa-magnifying-glass"></i> माहिती पहा</button>
+        </div>
+        <div id="quick-result-box" style="background:#f0fdf4; border:1px solid #bbf7d0; padding:8px 12px; border-radius:8px; font-size:0.9rem; color:#166534; display:none; margin-bottom:8px;"></div>
+        
+        <div id="quick-update-sec" style="display:none; border-top:1px dashed #cbd5e1; padding-top:8px;">
+          <div class="grid-2" style="margin-bottom:6px;">
+            <input type="password" id="quick-new-pin" class="form-control" maxlength="4" placeholder="नवीन 4-अंकी पिन" style="height:40px; text-align:center; font-weight:800;">
+            <input type="tel" id="quick-new-mobile" class="form-control" maxlength="10" placeholder="नवीन 10-अंकी नंबर" style="height:40px; text-align:center; font-weight:800;">
+          </div>
+          <button class="app-btn btn-success" style="height:40px; font-size:0.9rem;" onclick="quickUpdateSchoolAuth()"><i class="fa-solid fa-floppy-disk"></i> पिन व नंबर अपडेट करा</button>
+        </div>
+      </div>
+
+      <!-- २. संशयास्पद किंवा डेमो (ABCD) एन्ट्री डिलीट करणे -->
+      <div class="app-card" style="border-left: 5px solid #d97706; margin-bottom:0;">
+        <div class="app-card-title" style="font-size: 0.98rem;"><i class="fa-solid fa-triangle-exclamation" style="color:var(--gold);"></i> संशयास्पद किंवा डेमो (ABCD) एन्ट्री डिलीट कक्ष</div>
+        <div class="grid-2" style="margin-bottom: 6px;">
+          <select class="form-control" id="quick-exam-cat" style="height:42px; font-size:0.9rem;">
+            <option value="navodaya">नवोदय प्रवेश परीक्षा (5 वी)</option>
+            <option value="4th">4 थी शिष्यवृत्ती परीक्षा</option>
+            <option value="7th">7 वी शिष्यवृत्ती परीक्षा</option>
+            <option value="nmms">NMMS शिष्यवृत्ती परीक्षा (8 वी)</option>
+          </select>
+          <input type="number" id="quick-test-no" class="form-control" value="6" min="1" max="20" style="height:42px; font-weight:800; text-align:center;" placeholder="चाचणी क्र.">
+        </div>
+        <button class="app-btn btn-gold" style="height:40px; font-size:0.9rem; margin-bottom:8px;" onclick="quickLoadReviewStudents()"><i class="fa-solid fa-eye"></i> टॉप स्टुडंट्स तपासा व डिलीट करा</button>
+        <div id="quick-review-container" style="max-height:220px; overflow-y:auto;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" id="nav-btn-dash" onclick="switchTab('dashboard')">
+      <i class="fa-solid fa-chart-line"></i> <span>डॅशबोर्ड</span>
+    </button>
+    <button class="nav-item" id="nav-btn-entry" onclick="switchTab('entry')">
+      <i class="fa-solid fa-pen-to-square"></i> <span>गुण भरा</span>
+    </button>
+  </nav>
+
+  <div class="toast" id="toastMsg">माहिती सेव्ह झाली!</div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBrKGEMc9uxBoZ4VIcNfOXq7xt_IZmluDE",
+      authDomain: "test-database-34c8a.firebaseapp.com",
+      projectId: "test-database-34c8a",
+      storageBucket: "test-database-34c8a.firebasestorage.app",
+      messagingSenderId: "245228014027",
+      appId: "1:245228014027:web:fa439be5e1739868a74e4e",
+      databaseURL: "https://test-database-34c8a-default-rtdb.firebaseio.com"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    function showToast(msg) {
+      const t = document.getElementById('toastMsg');
+      t.innerText = msg;
+      t.style.display = 'block';
+      setTimeout(() => { t.style.display = 'none'; }, 2200);
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).style.display = 'none';
+    }
+
+    function switchTab(view) {
+      document.getElementById('screen-dashboard').style.display = (view === 'dashboard') ? 'block' : 'none';
+      document.getElementById('screen-entry').style.display = (view === 'entry') ? 'block' : 'none';
+      document.getElementById('nav-btn-dash').classList.toggle('active', view === 'dashboard');
+      document.getElementById('nav-btn-entry').classList.toggle('active', view === 'entry');
+    }
+
+    // 🌟 हेडरवर दोन वेळा क्लिक केल्यावर 2025 पिन विचारणे
+    document.addEventListener('DOMContentLoaded', () => {
+      const headerEl = document.getElementById('mainHeaderDoubleAction');
+      if (headerEl) {
+        headerEl.addEventListener('dblclick', () => {
+          const pin = prompt("गुप्त ॲडमिन प्रवेश पिन टाका:");
+          if (pin === '2025') {
+            showToast('गुप्त ॲडमिन कक्ष उघडत आहे...');
+            document.getElementById('secretAdminToolsModal').style.display = 'flex';
+          } else if (pin !== null) {
+            alert('चुकीचा पिन क्रमांक!');
+          }
+        });
+      }
+      loadDashboardPills();
+    });
+
+    function loadDashboardPills() {
+      const cont = document.getElementById('dash-test-pills');
+      if (!cont) return;
+      cont.innerHTML = '';
+      for (let i = 6; i <= 10; i++) {
+        cont.innerHTML += `
+          <div class="test-capsule-chip ${i === 6 ? 'active' : ''}">
+            <div class="capsule-badge-icon"><i class="fa-solid fa-calendar-check"></i></div>
+            <div class="capsule-text-wrap">
+              <span class="capsule-text-title">चाचणी ${i}</span>
+              <span class="capsule-text-sub">सराव परीक्षा</span>
+            </div>
+          </div>`;
+      }
+    }
+
+    function selectDashboardCategoryBySelect(cat) {
+      loadDashboardPills();
+    }
+
+    let quickTargetUdise = '';
+    let quickReviewCat = '';
+    let quickReviewTest = '';
+
+    function quickSearchSchoolAuth() {
+      const udise = document.getElementById('quick-udise-input').value.trim();
+      const resBox = document.getElementById('quick-result-box');
+      const updateSec = document.getElementById('quick-update-sec');
+
+      if (!udise || udise.length < 4) { alert('कृपया वैध UDISE कोड टाका!'); return; }
+      quickTargetUdise = udise;
+
+      db.ref(`school_auth/${udise}`).once('value', (snap) => {
+        const auth = snap.val();
+        if (auth && auth.pin) {
+          resBox.style.display = 'block';
+          updateSec.style.display = 'block';
+          resBox.innerHTML = `<strong>UDISE: ${udise}</strong> | 🔒 पिन: <strong>${auth.pin}</strong> | 📱 मोबाईल: <strong>${auth.mobile || 'नाही'}</strong>`;
+        } else {
+          db.ref(`school_pins/${udise}`).once('value', (snapOld) => {
+            const oldPin = snapOld.val();
+            if (oldPin) {
+              resBox.style.display = 'block';
+              updateSec.style.display = 'block';
+              resBox.innerHTML = `<strong>UDISE: ${udise}</strong> | 🔒 जुना पिन: <strong>${oldPin}</strong> | मोबाईल नोंदणीकृत नाही`;
+            } else {
+              resBox.style.display = 'block';
+              updateSec.style.display = 'none';
+              resBox.innerHTML = `<span style="color:#b91c1c;">माहिती सापडली नाही.</span>`;
+            }
+          });
+        }
+      });
+    }
+
+    function quickUpdateSchoolAuth() {
+      const newPin = document.getElementById('quick-new-pin').value.trim();
+      const newMobile = document.getElementById('quick-new-mobile').value.trim();
+      if (!quickTargetUdise || newPin.length !== 4 || newMobile.length !== 10) { alert('कृपया 4-अंकी पिन आणि 10-अंकी मोबाईल नंबर अचूक भरा!'); return; }
+
+      db.ref(`school_auth/${quickTargetUdise}`).set({ pin: newPin, mobile: newMobile, updatedAt: new Date().toISOString() }).then(() => {
+        db.ref(`school_pins/${quickTargetUdise}`).set(newPin);
+        showToast('पिन व नंबर यशस्वीरीत्या अपडेट झाला!');
+        quickSearchSchoolAuth();
+      });
+    }
+
+    function quickLoadReviewStudents() {
+      quickReviewCat = document.getElementById('quick-exam-cat').value;
+      quickReviewTest = document.getElementById('quick-test-no').value;
+      const container = document.getElementById('quick-review-container');
+
+      db.ref(`results/${quickReviewCat}/test_${quickReviewTest}`).once('value', (snap) => {
+        const data = snap.val() || {};
+        let allEntries = [];
+
+        Object.keys(data).forEach(schoolKey => {
+          const entry = data[schoolKey];
+          if (entry.students && Array.isArray(entry.students)) {
+            entry.students.forEach(st => {
+              if (st.marks !== '' && String(st.marks).toUpperCase() !== 'AB') {
+                allEntries.push({ schoolKey, studentId: st.id, name: st.name, school: entry.school || '', marks: parseFloat(st.marks) || 0 });
+              }
+            });
+          }
+        });
+
+        allEntries.sort((a, b) => b.marks - a.marks);
+        if (allEntries.length === 0) { container.innerHTML = `<p style="text-align:center; color:#64748b; padding:8px;">गुण आढळले नाहीत.</p>`; return; }
+
+        container.innerHTML = allEntries.map((st, idx) => `
+          <div class="topper-card" style="padding:6px 10px; margin-bottom:4px;">
+            <div><strong>#${idx + 1} ${st.name}</strong> (${st.marks} गुण) - <span style="font-size:0.75rem; color:#64748b;">${st.school}</span></div>
+            <button class="app-btn btn-danger" style="width:auto; height:26px; font-size:0.7rem; padding:0 8px;" onclick="quickDeleteStudent('${st.schoolKey}', ${st.studentId}, '${st.name}')">डिलिट</button>
+          </div>
+        `).join('');
+      });
+    }
+
+    function quickDeleteStudent(schoolKey, studentId, studentName) {
+      if (confirm(`"${studentName}" ही एन्ट्री डिलीट करायची का?`)) {
+        db.ref(`results/${quickReviewCat}/test_${quickReviewTest}/${schoolKey}/students`).once('value', (snap) => {
+          let students = (snap.val() || []).filter(s => s.id !== studentId);
+          db.ref(`results/${quickReviewCat}/test_${quickReviewTest}/${schoolKey}/students`).set(students).then(() => {
+            showToast('डिलिट केले!');
+            quickLoadReviewStudents();
+          });
+        });
+      }
+    }
+  </script>
+</body>
+</html>
