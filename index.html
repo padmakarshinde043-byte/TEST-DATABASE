@@ -61,38 +61,6 @@
 
     .app-container { max-width: 650px; margin: 0 auto; padding: 12px; }
 
-    /* ५ सेकंद टिकणारा हिरव्या रंगाचा फ्लॅश मेसेज */
-    .flash-notice-banner {
-      display: none;
-      background: linear-gradient(135deg, #059669 0%, #047857 100%);
-      color: white;
-      padding: 12px 16px;
-      border-radius: 12px;
-      margin-bottom: 12px;
-      box-shadow: 0 6px 16px rgba(5, 150, 105, 0.3);
-      border: 1.5px solid #a7f3d0;
-      animation: slideDownNotice 0.3s ease-out forwards;
-      position: relative;
-    }
-    @keyframes slideDownNotice {
-      from { transform: translateY(-10px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-    .flash-notice-content { display: flex; align-items: flex-start; gap: 10px; }
-    .flash-notice-content i { font-size: 1.6rem; color: #fef08a; margin-top: 2px; }
-    .flash-notice-text h4 { font-size: 1.05rem; font-weight: 800; color: #fef08a; margin-bottom: 2px; }
-    .flash-notice-text p { font-size: 0.94rem; font-weight: 600; line-height: 1.45; color: #ffffff; }
-    .flash-close-btn {
-      position: absolute;
-      top: 8px;
-      right: 12px;
-      background: transparent;
-      border: none;
-      color: white;
-      font-size: 1.3rem;
-      cursor: pointer;
-    }
-
     /* विभाग कार्ड्स */
     .app-card {
       background: var(--surface);
@@ -309,7 +277,7 @@
     }
     .udise-suggest-item:hover, .udise-suggest-item:active { background: var(--sky-light); }
 
-    /* Stats Grid & Animation Effect */
+    /* Stats Grid */
     .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
     .stat-box {
       background: white;
@@ -319,18 +287,8 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.02);
     }
     .stat-box p { font-size: 0.88rem; color: var(--text-muted); font-weight: 700; margin-bottom: 2px; }
-    .stat-box h2 { font-size: 1.6rem; font-weight: 800; font-family: 'Poppins', sans-serif; line-height: 1.2; transition: all 0.3s ease; }
+    .stat-box h2 { font-size: 1.6rem; font-weight: 800; font-family: 'Poppins', sans-serif; line-height: 1.2; }
     
-    @keyframes countPulse {
-      0% { transform: scale(0.95); opacity: 0.5; }
-      50% { transform: scale(1.03); opacity: 1; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-    .stat-box h2.updating {
-      animation: countPulse 0.35s ease-out;
-      color: var(--kesari) !important;
-    }
-
     .stat-box-students { border-left: 5px solid #7c3aed; background: linear-gradient(to right, #faf5ff, #ffffff); }
     .stat-box-students h2 { color: #6b21a8; }
     .stat-box-schools { border-left: 5px solid #0284c7; background: linear-gradient(to right, #f0f9ff, #ffffff); }
@@ -914,48 +872,6 @@
       width: 100%;
     }
 
-    /* ॲडमिन कस्टमायझर टूलबार */
-    .designer-toolbar-card {
-      background: #f8fafc;
-      border: 2px solid #cbd5e1;
-      border-radius: 12px;
-      padding: 12px;
-      margin-bottom: 12px;
-    }
-    .designer-tabs-wrap {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 12px;
-      border-bottom: 1.5px solid #cbd5e1;
-      padding-bottom: 8px;
-    }
-    .des-tab-btn {
-      flex: 1;
-      padding: 8px;
-      border-radius: 8px;
-      border: 1.5px solid #cbd5e1;
-      background: white;
-      font-weight: 800;
-      font-size: 0.88rem;
-      cursor: pointer;
-      color: #475569;
-    }
-    .des-tab-btn.active {
-      background: var(--sky);
-      color: white;
-      border-color: var(--sky-dark);
-    }
-    .slider-control-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 8px;
-    }
-    .slider-control-row label { font-size: 0.85rem; font-weight: 700; color: #334155; min-width: 130px; }
-    .slider-control-row input[type="range"] { flex: 1; height: 6px; }
-    .slider-val-badge { font-size: 0.8rem; font-weight: 800; font-family:'Poppins', sans-serif; color: var(--sky-dark); min-width: 45px; text-align: right; }
-
     /* शाळेच्या रेकॉर्डसाठी Multi-page A4 शीट */
     .school-record-page {
       background: white;
@@ -1004,8 +920,8 @@
 <body>
 
   <!-- Top App Bar -->
-  <header class="app-header">
-    <div class="brand-wrap" onclick="handleSecretAdminTrigger()">
+  <header class="app-header" id="mainHeaderLongPressAction">
+    <div class="brand-wrap">
       <img src="logo.jpeg" alt="Logo" class="brand-logo" onerror="this.style.display='none'">
       <div class="brand-text">
         <h1>जिल्हा परिषद, बीड - शिक्षण विभाग</h1>
@@ -1088,18 +1004,6 @@
 
     <!-- ================= 2. गुण नोंदणी स्क्रीन (शिक्षक पोर्टल) ================= -->
     <div id="screen-entry" style="display:none;">
-
-      <!-- ५ सेकंदांचा हिरवा फ्लॅश मेसेज -->
-      <div class="flash-notice-banner" id="flash-entry-notice">
-        <button class="flash-close-btn" onclick="closeFlashNotice()">&times;</button>
-        <div class="flash-notice-content">
-          <i class="fa-solid fa-calendar-check"></i>
-          <div class="flash-notice-text">
-            <h4>📢 अत्यंत महत्त्वाची सूचना</h4>
-            <p>शनिवारी होणाऱ्या चाचणीचे गुण <strong>पुढील गुरुवारपूर्वी</strong> भरण्यात यावेत. गुरुवारी सायंकाळी चाचणीचे निकाल आणि गुणवत्ता याद्या जाहीर करण्यात येतील.</p>
-          </div>
-        </div>
-      </div>
 
       <!-- परीक्षा निवडक ड्रॉपडाऊन -->
       <div class="dropdown-group">
@@ -1218,358 +1122,6 @@
           <i class="fa-solid fa-headset" style="color: var(--sky); margin-right: 4px;"></i>
           तांत्रिक अडचणी करिता संपर्क: <a href="tel:7219123699" style="color: var(--sky-dark); text-decoration: none; font-weight: 700; font-family: 'Poppins', sans-serif;">7219123699</a>
         </div>
-      </div>
-    </div>
-
-    <!-- ================= 3. गुप्त शिक्षणाधिकारी प्रशासकीय कक्ष ================= -->
-    <div id="screen-admin-backend" style="display:none;">
-      <div class="app-card" style="border: 2px solid var(--sky); background: #f0fdf4;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-          <h3 style="color:#065f46; font-size:1.1rem;"><i class="fa-solid fa-user-shield"></i> शिक्षणाधिकारी (प्राथमिक) प्रशासकीय कक्ष</h3>
-          <button class="app-btn btn-outline" style="width:auto; height:30px; font-size:0.8rem; padding:0 10px;" onclick="switchTab('dashboard')">बंद करा</button>
-        </div>
-        <p style="font-size:0.86rem; color:#475569;">
-          येथून आपण चाचणी निकाल जाहीर व लॉक करण्यापूर्वी तात्पुरते जिल्हा व तालुका टॉपर्स तपासू शकता, प्रमाणपत्र/बॅनर लेआउट हाताने ड्रॅग करून सेट करू शकता, तसेच चालू चाचणी ठरवणे, नवीन चाचण्या जोडणे व त्यांची नावे बदलू शकता.
-        </p>
-      </div>
-
-      <!-- ०. चाचणी व्यवस्थापन -->
-      <div class="app-card" style="border-left: 5px solid #0284c7;">
-        <div class="app-card-title"><i class="fa-solid fa-list-check" style="color:var(--sky);"></i> ⚙️ चाचणी व्यवस्थापन (Active Test व नवीन चाचण्या)</div>
-        
-        <div class="form-group" style="margin-bottom:10px;">
-          <label>परीक्षेचा प्रकार निवडा:</label>
-          <select class="form-control" id="admin-tmanage-category" onchange="onAdminTManageCategoryChange()">
-            <option value="navodaya">नवोदय प्रवेश परीक्षा (5 वी)</option>
-            <option value="4th">4 थी शिष्यवृत्ती परीक्षा</option>
-            <option value="7th">7 वी शिष्यवृत्ती परीक्षा</option>
-            <option value="nmms">NMMS शिष्यवृत्ती परीक्षा (8 वी)</option>
-          </select>
-        </div>
-
-        <!-- अ. चालू चाचणी निश्चित करणे -->
-        <div style="background:#f0f9ff; border:1.5px solid #bae6fd; border-radius:10px; padding:10px; margin-bottom:10px;">
-          <div style="font-weight:800; font-size:0.92rem; color:#0369a1; margin-bottom:4px;">
-            <i class="fa-solid fa-toggle-on"></i> १. सध्या शाळांसाठी कोणती चाचणी सुरू ठेवायची?
-          </div>
-          <p style="font-size:0.8rem; color:#475569; margin-bottom:6px;">
-            येथून निवडलेली चाचणी सर्व शाळांच्या 'गुण भरा' स्क्रीनवर थेट सक्रिय होईल.
-          </p>
-          <div class="grid-2">
-            <select class="form-control" id="admin-active-test-select"></select>
-            <button class="app-btn btn-primary" onclick="saveAdminActiveTest()">
-              <i class="fa-solid fa-circle-check"></i> ही चाचणी सुरू करा
-            </button>
-          </div>
-        </div>
-
-        <!-- ब. सध्याच्या चाचणीचे नाव बदलणे -->
-        <div style="background:#fffbeb; border:1.5px solid #fde68a; border-radius:10px; padding:10px; margin-bottom:10px;">
-          <div style="font-weight:800; font-size:0.92rem; color:#92400e; margin-bottom:4px;">
-            <i class="fa-solid fa-pen"></i> २. चाचणीचे नाव बदला (उदा. महारिव्हिजन चाचणी)
-          </div>
-          <div class="grid-2" style="margin-bottom:6px;">
-            <div>
-              <label style="font-size:0.82rem; font-weight:700;">चाचणी निवडा:</label>
-              <select class="form-control" id="admin-rename-test-select" onchange="onAdminRenameTestSelectChange()"></select>
-            </div>
-            <div>
-              <label style="font-size:0.82rem; font-weight:700;">नवीन नाव द्या:</label>
-              <input type="text" class="form-control" id="admin-rename-test-input" placeholder="उदा. महारिव्हिजन चाचणी 1">
-            </div>
-          </div>
-          <button class="app-btn btn-gold" onclick="saveTestRenaming()">
-            <i class="fa-solid fa-floppy-disk"></i> चाचणीचे नाव जतन करा
-          </button>
-        </div>
-
-        <!-- क. नवीन चाचणी जोडणे -->
-        <div style="background:#f0fdf4; border:1.5px solid #bbf7d0; border-radius:10px; padding:10px;">
-          <div style="font-weight:800; font-size:0.92rem; color:#166534; margin-bottom:4px;">
-            <i class="fa-solid fa-plus-circle"></i> ३. नवीन चाचणी जोडा (पुढील क्रमांक व सानुकूल नाव)
-          </div>
-          <div class="grid-2" style="margin-bottom:6px;">
-            <div>
-              <label style="font-size:0.82rem; font-weight:700;">चाचणी क्रमांक (Auto):</label>
-              <input type="number" class="form-control locked" id="admin-add-test-no" readonly>
-            </div>
-            <div>
-              <label style="font-size:0.82rem; font-weight:700;">चाचणीचे नाव:</label>
-              <input type="text" class="form-control" id="admin-add-test-name" placeholder="उदा. महारिव्हिजन चाचणी">
-            </div>
-          </div>
-          <button class="app-btn btn-success" onclick="addNewTestDefinition()">
-            <i class="fa-solid fa-plus"></i> नवीन चाचणी यादीत जोडा
-          </button>
-        </div>
-      </div>
-
-      <!-- १. निकाल तपासणे व लॉक करणे विभाग -->
-      <div class="app-card" style="border-left: 5px solid #059669;">
-        <div class="app-card-title"><i class="fa-solid fa-clipboard-check" style="color:#059669;"></i> गुणवत्ता यादी तपासणी व अधिकृत निकाल घोषणा</div>
-        
-        <div class="grid-2">
-          <div class="form-group">
-            <label>परीक्षेचा प्रकार निवडा:</label>
-            <select class="form-control" id="admin-lock-category" onchange="updateAdminLockTestOptions(); updateAdminMaxMarksInfo();">
-              <option value="navodaya">नवोदय प्रवेश परीक्षा (5 वी)</option>
-              <option value="4th">4 थी शिष्यवृत्ती परीक्षा</option>
-              <option value="7th">7 वी शिष्यवृत्ती परीक्षा</option>
-              <option value="nmms">NMMS शिष्यवृत्ती परीक्षा (8 वी)</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>चाचणी निवडा:</label>
-            <select class="form-control" id="admin-lock-test" onchange="updateAdminMaxMarksInfo()"></select>
-          </div>
-        </div>
-
-        <div style="margin-bottom:10px; font-weight:700; font-size:0.86rem; color:#0369a1;" id="admin-max-marks-info">
-          * या चाचणीचे कमाल गुण लोड होत आहेत...
-        </div>
-
-        <button class="app-btn btn-gold" style="margin-bottom:8px;" onclick="openPreLockReviewModal()">
-          <i class="fa-solid fa-eye"></i> १. आधी तात्पुरते जिल्हा व तालुका टॉपर्स तपासा (Live Preview)
-        </button>
-
-        <button class="app-btn btn-primary" onclick="declareAndLockResults()">
-          <i class="fa-solid fa-shield-halved"></i> २. खात्री झाली, आता निकाल अधिकृतपणे जाहीर व लॉक करा
-        </button>
-      </div>
-
-      <!-- २. डिझायनर कक्ष (Collapsible) -->
-      <div class="app-card" style="border-left: 5px solid #6366f1;">
-        <div class="collapsible-card-header" onclick="toggleDesignerSection()">
-          <div class="app-card-title" style="margin:0; border:none; padding:0;">
-            <i class="fa-solid fa-wand-magic-sparkles" style="color:#6366f1;"></i> 🎨 प्रमाणपत्र व बॅनर लाइव्ह व्हिज्युअल डिझायनर
-          </div>
-          <span class="toggle-btn-badge" id="btn-toggle-designer">
-            <i class="fa-solid fa-chevron-down"></i> डिझायनर उघडा
-          </span>
-        </div>
-
-        <div id="body-designer-section" style="display:none; margin-top:14px; border-top:1.2px solid #f1f5f9; padding-top:10px;">
-          <div class="designer-tabs-wrap">
-            <button class="des-tab-btn active" id="btn-des-tab-cert" onclick="switchDesignerTab('cert')">
-              <i class="fa-solid fa-certificate"></i> प्रमाणपत्र डिझायनर
-            </button>
-            <button class="des-tab-btn" id="btn-des-tab-banner" onclick="switchDesignerTab('banner')">
-              <i class="fa-solid fa-trophy"></i> बॅनर डिझायनर
-            </button>
-          </div>
-
-          <!-- विभाग अ: प्रमाणपत्र सेटिंग्ज -->
-          <div id="section-designer-cert">
-            <div class="designer-toolbar-card">
-              
-              <div class="form-group" style="margin-bottom:8px;">
-                <label>प्रमाणपत्र मुख्य शीर्षक:</label>
-                <input type="text" class="form-control" id="tmpl-cert-title" value="गुणवत्ता सन्मान प्रमाणपत्र" oninput="updateLiveDesigner()">
-              </div>
-              
-              <div class="grid-2" style="margin-bottom:8px;">
-                <div>
-                  <label style="font-size:0.84rem; font-weight:700; color:#4338ca;"><i class="fa-solid fa-font"></i> मुख्य शीर्षक फॉन्ट:</label>
-                  <select class="form-control" id="tmpl-cert-title-font" onchange="updateLiveDesigner()">
-                    <option value="'Mukta', sans-serif">मुक्ता (Mukta - आधुनिक व स्वच्छ)</option>
-                    <option value="'Rozha One', serif" selected>रोझा वन (Rozha One - शाही ठळक)</option>
-                    <option value="'Yatra One', cursive">यात्रा वन (Yatra One - पारंपरिक कॅलिग्राफी)</option>
-                    <option value="'Gotu', sans-serif">गोटू (Gotu - कोरीव व भव्य)</option>
-                    <option value="'Modak', cursive">मोदक (Modak - अत्यंत उठावदार)</option>
-                  </select>
-                </div>
-                <div>
-                  <label style="font-size:0.84rem; font-weight:700; color:#991b1b;"><i class="fa-solid fa-signature"></i> विद्यार्थ्याचे नाव फॉन्ट:</label>
-                  <select class="form-control" id="tmpl-cert-name-font" onchange="updateLiveDesigner()">
-                    <option value="'Yatra One', cursive" selected>यात्रा वन (Yatra One - सुंदर वळणदार)</option>
-                    <option value="'Kalam', cursive">कलम (Kalam - हस्ताक्षरासारखे नैसर्गिक)</option>
-                    <option value="'Rozha One', serif">रोझा वन (Rozha One - शाही)</option>
-                    <option value="'Gotu', sans-serif">गोटू (Gotu - स्वच्छ)</option>
-                    <option value="'Mukta', sans-serif">मुक्ता (Mukta - साधे)</option>
-                  </select>
-                </div>
-              </div>
-
-              <div class="form-group" style="margin-bottom:6px;">
-                <label>प्रमाणपत्र वाक्यरचना (शरीर मजकूर):</label>
-                <textarea class="form-control" id="tmpl-cert-body" rows="3" style="height:auto; font-size:0.88rem;" oninput="updateLiveDesigner()"></textarea>
-                <span style="font-size:0.72rem; color:#64748b;">* व्हेरिएबल्स: {NAME}, {CLASS}, {SCHOOL}, {UDISE}, {TALUKA}, {EXAM}, {TEST}, {MARKS}, {TOTAL}, {RANK}</span>
-              </div>
-              <div class="form-group" style="margin-bottom:6px;">
-                <label>तळटीप स्वाक्षरी पदनाम:</label>
-                <input type="text" class="form-control" id="tmpl-cert-sign" value="शिक्षणाधिकारी (प्राथमिक), जिल्हा परिषद बीड" oninput="updateLiveDesigner()">
-              </div>
-
-              <div class="slider-control-row">
-                <label>मजकूर फॉन्ट आकार:</label>
-                <input type="range" id="slider-cert-font" min="12" max="24" value="16" oninput="applyDesignerStyles()">
-                <span class="slider-val-badge" id="val-cert-font">16px</span>
-              </div>
-              <div class="slider-control-row">
-                <label>ओळींमधील अंतर (Line-Height):</label>
-                <input type="range" id="slider-cert-lh" min="1.2" max="2.6" step="0.1" value="1.85" oninput="applyDesignerStyles()">
-                <span class="slider-val-badge" id="val-cert-lh">1.85</span>
-              </div>
-
-              <div class="form-group" style="margin-top:8px;">
-                <label><i class="fa-solid fa-image" style="color:var(--sky);"></i> प्रमाणपत्र बॅकग्राउंड इमेज अपलोड करा (JPG/PNG):</label>
-                <input type="file" id="input-cert-bg-file" accept="image/*" class="form-control" style="padding-top:6px;" onchange="handleCertBgUpload(this)">
-              </div>
-            </div>
-
-            <div style="background:#e2e8f0; padding:8px; border-radius:12px; overflow-x:auto; margin-bottom:10px;">
-              <div class="cert-container-box designer-active-box" id="admin-live-cert-designer">
-                <div class="draggable-element" id="drag-cert-title" style="top:44px; left:130px; text-align:center; width:560px; font-size:1.95rem; font-weight:800; color:#0f2b5c;">
-                  गुणवत्ता सन्मान प्रमाणपत्र
-                </div>
-                <div class="draggable-element" id="drag-cert-date" style="top:104px; right:36px; font-size:0.86rem; font-weight:600; color:#334155; font-family:'Poppins', sans-serif;">
-                  Date: 15/10/2026
-                </div>
-                <div class="draggable-element" id="drag-cert-name" style="top:142px; left:55px; width:710px; text-align:center; font-family:'Yatra One', cursive; font-size:1.75rem; color:#991b1b; text-decoration:underline;">
-                  Puja Pravin Patil
-                </div>
-                <div class="draggable-element" id="drag-cert-body" style="top:198px; left:55px; width:710px; text-align:center; font-size:1.02rem; line-height:1.85; color:#1e293b; font-weight:500; word-spacing: 2px;">
-                  गौरवपूर्वक प्रमाणित करण्यात येते की, विद्यार्थी / विद्यार्थिनी <strong>Puja Pravin Patil</strong> (इयत्ता 5 वी (नवोदय)), शाळा: <strong>ZPPS BHIM NAGAR KITTI ADGAON</strong> (UDISE: 27270710302), तालुका: <strong>माजलगाव</strong> या विद्यार्थिनीने नवोदय सराव परीक्षेत घवघवीत यश संपादन केले आहे.
-                </div>
-                <div class="draggable-element" id="drag-cert-badges" style="top:332px; left:55px; width:710px; display:flex; justify-content:center; gap:20px;">
-                  <div class="gold-capsule-badge">
-                    <i class="fa-solid fa-star"></i> प्राप्त गुण: 99 / 100
-                  </div>
-                  <div class="gold-capsule-badge" id="admin-sample-rank-badge">
-                    <i class="fa-solid fa-trophy"></i> सावरगाव केंद्रात क्रमांक #1
-                  </div>
-                </div>
-                <div class="draggable-element" id="drag-cert-ribbon" style="top:405px; left:55px; width:710px; text-align:center;">
-                  <div class="cert-congrats-ribbon">
-                    ✨ आपण मिळवलेल्या या यशाबद्दल आपले हार्दिक अभिनंदन आणि उज्ज्वल भविष्याकरिता मन:पूर्वक शुभेच्छा! ✨
-                  </div>
-                </div>
-                <div class="draggable-element" id="drag-cert-sign" style="top:470px; right:35px; text-align:right; font-size:0.88rem; font-weight:800; color:#0f2b5c;">
-                  शिक्षणाधिकारी (प्राथमिक), जिल्हा परिषद बीड
-                </div>
-              </div>
-            </div>
-
-            <div style="display:flex; flex-direction:column; gap:8px;">
-              <button class="app-btn btn-primary" onclick="saveCertTemplateToFirebase()">
-                <i class="fa-solid fa-floppy-disk"></i> 📄 प्रमाणपत्र डिझाईन सेव्ह करा
-              </button>
-              <div class="grid-2">
-                <button class="app-btn btn-outline" style="border-color:#ef4444; color:#ef4444;" onclick="resetCertLayoutToDefault()">
-                  <i class="fa-solid fa-arrow-rotate-left"></i> मूळ लेआउट पूर्ववत करा
-                </button>
-                <button class="app-btn btn-success" onclick="downloadAdminSampleCertificatePDF()">
-                  <i class="fa-solid fa-file-pdf"></i> नमुना प्रमाणपत्र PDF डाऊनलोड
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- विभाग ब: बॅनर सेटिंग्ज -->
-          <div id="section-designer-banner" style="display:none;">
-            <div class="designer-toolbar-card">
-              <div class="form-group" style="margin-bottom:6px;">
-                <label>बॅनर मुख्य मथळा:</label>
-                <input type="text" class="form-control" id="tmpl-banner-title" value="बीड जिल्हा सराव परीक्षा टॉपर्स" oninput="updateLiveDesigner()">
-              </div>
-              <div class="form-group" style="margin-bottom:6px;">
-                <label>वरचा बॅज मजकूर:</label>
-                <input type="text" class="form-control" id="tmpl-banner-badge" value="💐 हार्दिक अभिनंदन ! हार्दिक अभिनंदन ! 💐" oninput="updateLiveDesigner()">
-              </div>
-              <div class="form-group" style="margin-bottom:6px;">
-                <label>तळटीप सौजन्य (Footer):</label>
-                <input type="text" class="form-control" id="tmpl-banner-footer" value="🎯 शिक्षण विभाग, जिल्हा परिषद बीड" oninput="updateLiveDesigner()">
-              </div>
-
-              <div class="slider-control-row">
-                <label>मथळा फॉन्ट आकार:</label>
-                <input type="range" id="slider-banner-font" min="18" max="34" value="26" oninput="applyDesignerStyles()">
-                <span class="slider-val-badge" id="val-banner-font">26px</span>
-              </div>
-              <div class="slider-control-row">
-                <label>बॅनर मधील अंतर (Gap):</label>
-                <input type="range" id="slider-banner-gap" min="3" max="14" value="6" oninput="applyDesignerStyles()">
-                <span class="slider-val-badge" id="val-banner-gap">6px</span>
-              </div>
-            </div>
-
-            <div style="background:#e2e8f0; padding:10px; border-radius:12px; overflow-x:auto; margin-bottom:10px; display:flex; justify-content:center;">
-              <div class="banner-preview-box" id="admin-live-banner-designer">
-                <div class="banner-top-header">
-                  <p class="banner-dept-title">जिल्हा परिषद, बीड — शिक्षण विभाग</p>
-                  <div class="banner-exam-badge" id="banner-designer-exam-name">नवोदय विद्यालय प्रवेश पात्रता सराव परीक्षा</div>
-                  <h2 class="banner-heading-main" id="banner-designer-title-txt">पाटोदा तालुका Top 10 गुणवत्ता यादी</h2>
-                  <p class="banner-subheading">चाचणी निकाल</p>
-                  <div>
-                    <span class="banner-congrats-tag" id="banner-designer-badge-txt">💐 हार्दिक अभिनंदन ! हार्दिक अभिनंदन ! 💐</span>
-                  </div>
-                </div>
-
-                <div class="banner-topper-grid" id="banner-designer-topper-grid">
-                  <div class="banner-row">
-                    <div>🥇 <span class="b-std-name">१. गणेश रामहरी उबाळे</span> <span class="b-sch-name">(ZPPS JAREWADI)</span></div>
-                    <div class="b-marks-badge">95/100 गुण</div>
-                  </div>
-                  <div class="banner-row">
-                    <div>🥈 <span class="b-std-name">२. धनश्री संदीप आरसुळ</span> <span class="b-sch-name">(ZPPS JAREWADI)</span></div>
-                    <div class="b-marks-badge">95/100 गुण</div>
-                  </div>
-                  <div class="banner-row">
-                    <div>🥉 <span class="b-std-name">३. सिद्धेश संदिपराव वेदरे</span> <span class="b-sch-name">(ZPPS JAREWADI)</span></div>
-                    <div class="b-marks-badge">92.5/100 गुण</div>
-                  </div>
-                </div>
-
-                <div class="banner-footer-auth">
-                  <span id="banner-designer-footer-txt">🎯 शिक्षण विभाग, जिल्हा परिषद बीड</span>
-                  <span>🏆 जिल्हा परिषद बीड</span>
-                </div>
-              </div>
-            </div>
-
-            <div style="display:flex; flex-direction:column; gap:8px;">
-              <button class="app-btn btn-primary" onclick="saveBannerTemplateToFirebase()">
-                <i class="fa-solid fa-trophy"></i> 🏆 बॅनर डिझाईन सेव्ह करा
-              </button>
-              <div class="grid-2">
-                <button class="app-btn btn-outline" style="border-color:#ef4444; color:#ef4444;" onclick="resetBannerLayoutToDefault()">
-                  <i class="fa-solid fa-arrow-rotate-left"></i> मूळ लेआउट पूर्ववत करा
-                </button>
-                <button class="app-btn btn-gold" onclick="downloadAdminSampleBannerPDF()">
-                  <i class="fa-solid fa-download"></i> नमुना बॅनर PDF डाऊनलोड
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- ४. चाचणीनिहाय एकूण गुण सेट करा -->
-      <div class="app-card" style="border-left: 5px solid var(--gold);">
-        <div class="app-card-title"><i class="fa-solid fa-sliders" style="color:var(--gold);"></i> चाचणीनिहाय एकूण गुण (Max Marks) सेट करा</div>
-        <div class="grid-2">
-          <div class="form-group">
-            <label>परीक्षेचा प्रकार:</label>
-            <select class="form-control" id="admin-mm-category" onchange="updateAdminTestOptions(); loadCurrentCustomMaxMarks();">
-              <option value="navodaya">नवोदय प्रवेश परीक्षा (5 वी)</option>
-              <option value="4th">4 थी शिष्यवृत्ती परीक्षा</option>
-              <option value="7th">7 वी शिष्यवृत्ती परीक्षा</option>
-              <option value="nmms">NMMS शिष्यवृत्ती परीक्षा (8 वी)</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>चाचणी निवडा:</label>
-            <select class="form-control" id="admin-mm-test" onchange="loadCurrentCustomMaxMarks()"></select>
-          </div>
-        </div>
-        <div class="form-group">
-          <label>एकूण गुण (Max Marks):</label>
-          <input type="number" class="form-control" id="admin-mm-input" placeholder="उदा. 50 किंवा 100" style="font-size:1.1rem; font-weight:800; font-family:'Poppins', sans-serif;">
-        </div>
-        <button class="app-btn btn-gold" onclick="saveCustomMaxMarks()">
-          <i class="fa-solid fa-floppy-disk"></i> या चाचणीचे एकूण गुण निश्चित करा
-        </button>
       </div>
     </div>
 
@@ -1701,25 +1253,46 @@
     </div>
   </div>
 
-  <!-- विद्यार्थी नाव बदल Modal -->
-  <div class="modal" id="editStudentModal">
-    <div class="modal-content" style="max-width:380px;">
-      <h3 style="margin-bottom:10px; font-size:1.08rem; color:#334155;"><i class="fa-solid fa-pen-to-square" style="color:var(--sky);"></i> विद्यार्थ्याचे नाव बदला</h3>
-      <input type="hidden" id="edit-std-id">
-      <div class="form-group">
-        <label>विद्यार्थ्याचे संपूर्ण नाव:</label>
-        <input type="text" id="edit-std-name" class="form-control" oninput="enforceMarathiText(this)">
+  <!-- 🌟 लपलेले गुप्त ॲडमिन टूल्स मोडल (हेडरवर 1.5 सेकंद दाबून धरल्यावर उघडेल) -->
+  <div class="modal" id="secretAdminToolsModal">
+    <div class="modal-content" style="border: 2.5px solid var(--sky);">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1.5px solid var(--border); padding-bottom:6px;">
+        <h3 style="color:#0f2b5c; font-size:1.1rem;"><i class="fa-solid fa-user-shield" style="color:var(--sky);"></i> ॲडमिन विशेष व्यवस्थापन कक्ष</h3>
+        <button onclick="closeModal('secretAdminToolsModal')" style="border:none; background:#f1f5f9; width:34px; height:34px; border-radius:8px; font-size:1.3rem; cursor:pointer; color:#64748b;">&times;</button>
       </div>
-      <div class="form-group">
-        <label>लिंग</label>
-        <select id="edit-std-gender" class="form-control">
-          <option value="मुलगा">मुलगा</option>
-          <option value="मुलगी">मुलगी</option>
-        </select>
+
+      <!-- १. शाळा पिन व मोबाईल नंबर शोधा / रिसेट करा -->
+      <div class="app-card" style="border-left: 5px solid #059669; margin-bottom: 12px;">
+        <div class="app-card-title" style="font-size: 0.98rem;"><i class="fa-solid fa-key" style="color:#059669;"></i> शाळा पिन व मुख्याध्यापक नंबर शोधा व रिसेट करा</div>
+        <div class="grid-2" style="margin-bottom: 6px;">
+          <input type="text" id="quick-udise-input" class="form-control" placeholder="शाळेचा UDISE कोड टाका..." style="height:42px;" maxlength="11">
+          <button class="app-btn btn-primary" style="height:42px; font-size:0.9rem;" onclick="quickSearchSchoolAuth()"><i class="fa-solid fa-magnifying-glass"></i> माहिती पहा</button>
+        </div>
+        <div id="quick-result-box" style="background:#f0fdf4; border:1px solid #bbf7d0; padding:8px 12px; border-radius:8px; font-size:0.9rem; color:#166534; display:none; margin-bottom:8px;"></div>
+        
+        <div id="quick-update-sec" style="display:none; border-top:1px dashed #cbd5e1; padding-top:8px;">
+          <div class="grid-2" style="margin-bottom:6px;">
+            <input type="password" id="quick-new-pin" class="form-control" maxlength="4" placeholder="नवीन 4-अंकी पिन" style="height:40px; text-align:center; font-weight:800;">
+            <input type="tel" id="quick-new-mobile" class="form-control" maxlength="10" placeholder="नवीन 10-अंकी नंबर" style="height:40px; text-align:center; font-weight:800;">
+          </div>
+          <button class="app-btn btn-success" style="height:40px; font-size:0.9rem;" onclick="quickUpdateSchoolAuth()"><i class="fa-solid fa-floppy-disk"></i> पिन व नंबर अपडेट करा</button>
+        </div>
       </div>
-      <div class="grid-2" style="margin-top:12px;">
-        <button class="app-btn btn-outline" onclick="closeModal('editStudentModal')">रद्द करा</button>
-        <button class="app-btn btn-primary" onclick="saveEditedStudent()">जतन करा</button>
+
+      <!-- २. संशयास्पद किंवा डेमो (ABCD) एन्ट्री डिलीट करणे -->
+      <div class="app-card" style="border-left: 5px solid #d97706; margin-bottom:0;">
+        <div class="app-card-title" style="font-size: 0.98rem;"><i class="fa-solid fa-triangle-exclamation" style="color:var(--gold);"></i> संशयास्पद किंवा डेमो (ABCD) एन्ट्री डिलीट कक्ष</div>
+        <div class="grid-2" style="margin-bottom: 6px;">
+          <select class="form-control" id="quick-exam-cat" style="height:42px; font-size:0.9rem;">
+            <option value="navodaya">नवोदय प्रवेश परीक्षा (5 वी)</option>
+            <option value="4th">4 थी शिष्यवृत्ती परीक्षा</option>
+            <option value="7th">7 वी शिष्यवृत्ती परीक्षा</option>
+            <option value="nmms">NMMS शिष्यवृत्ती परीक्षा (8 वी)</option>
+          </select>
+          <input type="number" id="quick-test-no" class="form-control" value="6" min="1" max="20" style="height:42px; font-weight:800; text-align:center;" placeholder="चाचणी क्र.">
+        </div>
+        <button class="app-btn btn-gold" style="height:40px; font-size:0.9rem; margin-bottom:8px;" onclick="quickLoadReviewStudents()"><i class="fa-solid fa-eye"></i> टॉप स्टुडंट्स तपासा व डिलीट करा</button>
+        <div id="quick-review-container" style="max-height:220px; overflow-y:auto;"></div>
       </div>
     </div>
   </div>
@@ -2008,6 +1581,22 @@
     let BEED_ALL_SCHOOLS = [];
     let PRE_LOCK_CALCULATED_DATA = null;
     let currentActiveDashboardRef = null;
+
+    // 🌟 Top 10 Tie-Handling Helper Function (समान गुणांच्या विद्यार्थ्यांसाठी)
+    function getTopWithTies(sortedList, limit = 10) {
+      if (!sortedList || sortedList.length === 0) return [];
+      if (sortedList.length <= limit) return sortedList;
+      const cutoffMark = sortedList[limit - 1].marks;
+      let result = [];
+      for (let i = 0; i < sortedList.length; i++) {
+        if (i < limit || sortedList[i].marks === cutoffMark) {
+          result.push(sortedList[i]);
+        } else {
+          break;
+        }
+      }
+      return result;
+    }
 
     function toggleStudentAddCard() {
       const body = document.getElementById('body-student-add-section');
@@ -2529,22 +2118,6 @@
       setTimeout(() => { t.style.display = 'none'; }, 2200);
     }
 
-    function triggerFlashNotice() {
-      const banner = document.getElementById('flash-entry-notice');
-      if (!banner) return;
-      banner.style.display = 'block';
-      clearTimeout(flashTimer);
-      flashTimer = setTimeout(() => {
-        closeFlashNotice();
-      }, 5000);
-    }
-
-    function closeFlashNotice() {
-      const banner = document.getElementById('flash-entry-notice');
-      if (banner) banner.style.display = 'none';
-      clearTimeout(flashTimer);
-    }
-
     function switchTab(view) {
       document.getElementById('screen-dashboard').style.display = (view === 'dashboard') ? 'block' : 'none';
       document.getElementById('screen-entry').style.display = (view === 'entry') ? 'block' : 'none';
@@ -2554,7 +2127,6 @@
       document.getElementById('nav-btn-entry').classList.toggle('active', view === 'entry');
       
       if (view === 'entry') {
-        triggerFlashNotice();
         const autoTest = getAutoActiveTest(currentEntryCategory);
         document.getElementById('entry-test-no').value = autoTest;
         updateEntryNotice(autoTest);
@@ -2581,22 +2153,41 @@
       if (badge) badge.innerText = `${maxM} पैकी गुण`;
     }
 
-    function handleSecretAdminTrigger() {
-      adminClickCount++;
-      clearTimeout(adminClickTimer);
-      adminClickTimer = setTimeout(() => { adminClickCount = 0; }, 1000);
+    // 🌟 Header Long Press (1.5 seconds) for Secret Admin Panel
+    document.addEventListener('DOMContentLoaded', () => {
+      const headerEl = document.getElementById('mainHeaderLongPressAction');
+      if (headerEl) {
+        let pressTimer = null;
 
-      if (adminClickCount === 3) {
-        adminClickCount = 0;
-        const pin = prompt("शिक्षणाधिकारी (प्राथमिक) गुप्त ॲडमिन पिन टाका:");
-        if (pin === 'beed2026' || pin === '2026' || pin === 'admin') {
-          showToast('शिक्षणाधिकारी कक्ष उघडत आहे...');
-          switchTab('admin');
-        } else if (pin !== null) {
-          showCustomAlert('चुकीचा पिन क्रमांक!');
-        }
+        const startPress = (e) => {
+          if (pressTimer) clearTimeout(pressTimer);
+          pressTimer = setTimeout(() => {
+            const pin = prompt("गुप्त ॲडमिन प्रवेश पिन टाका:");
+            if (pin === '2025') {
+              showToast('गुप्त ॲडमिन कक्ष उघडत आहे...');
+              document.getElementById('secretAdminToolsModal').style.display = 'flex';
+            } else if (pin !== null) {
+              alert('चुकीचा पिन क्रमांक!');
+            }
+          }, 1500);
+        };
+
+        const cancelPress = () => {
+          if (pressTimer) {
+            clearTimeout(pressTimer);
+            pressTimer = null;
+          }
+        };
+
+        headerEl.addEventListener('mousedown', startPress);
+        headerEl.addEventListener('mouseup', cancelPress);
+        headerEl.addEventListener('mouseleave', cancelPress);
+
+        headerEl.addEventListener('touchstart', startPress);
+        headerEl.addEventListener('touchend', cancelPress);
+        headerEl.addEventListener('touchmove', cancelPress);
       }
-    }
+    });
 
     function loadSchoolsData() {
       fetch('schools.json')
@@ -2618,14 +2209,10 @@
     }
 
     function initTalukaDropdowns() {
-      const triTalSelect = document.getElementById('tri-taluka-select');
       const preLockTalSelect = document.getElementById('pre-lock-taluka-select');
-
-      if (triTalSelect) triTalSelect.innerHTML = '';
       if (preLockTalSelect) preLockTalSelect.innerHTML = '<option value="">-- तालुका Toppers निवडा --</option>';
 
       TALUKA_LIST.forEach(t => {
-        if (triTalSelect) triTalSelect.innerHTML += `<option value="${t}">${t} तालुका</option>`;
         if (preLockTalSelect) preLockTalSelect.innerHTML += `<option value="${t}">${t} तालुका</option>`;
       });
     }
@@ -3486,7 +3073,6 @@
       });
     }
 
-    /* ॲनिमेशन आणि झटपट कॅशिंगसह डॅशबोर्ड आकडे लोडर (इतर कोणतीही यंत्रणा न बदलता) */
     function updateStatWithAnimation(elementId, newValueText) {
       const el = document.getElementById(elementId);
       if (!el) return;
@@ -3651,10 +3237,11 @@
     function renderStudentsCards(list, maxM, rankPrefix) {
       const cont = document.getElementById('dashboard-toppers-container');
       list.forEach((st, idx) => {
-        const fullRankText = `${rankPrefix} #${idx + 1}`;
+        const displayRank = idx < 9 ? (idx + 1) : 10;
+        const fullRankText = `${rankPrefix} #${displayRank}`;
         cont.innerHTML += `
           <div class="topper-card">
-            <div class="topper-rank">#${idx + 1}</div>
+            <div class="topper-rank">#${displayRank}</div>
             <div class="topper-details">
               <h4>${st.name}</h4>
               <p>${st.school} (${st.taluka || '-'})</p>
@@ -3713,10 +3300,11 @@
       document.getElementById('banner-render-footer').innerText = BANNER_CONFIG.footer || "🎯 शिक्षण विभाग, जिल्हा परिषद बीड";
 
       toppersList.forEach((st, idx) => {
-        const medal = (idx === 0) ? '🥇 ' : (idx === 1) ? '🥈 ' : (idx === 2) ? '🥉 ' : '🎖️ ';
+        const displayRank = idx < 9 ? (idx + 1) : 10;
+        const medal = (displayRank === 1) ? '🥇 ' : (displayRank === 2) ? '🥈 ' : (displayRank === 3) ? '🥉 ' : '🎖️ ';
         listEl.innerHTML += `
           <div class="banner-row">
-            <div>${medal} <span class="b-std-name">${idx + 1}. ${st.name}</span> <span class="b-sch-name">(${st.school})</span></div>
+            <div>${medal} <span class="b-std-name">${displayRank}. ${st.name}</span> <span class="b-sch-name">(${st.school})</span></div>
             <div class="b-marks-badge">${st.marks}/${maxM} गुण</div>
           </div>
         `;
@@ -3973,12 +3561,12 @@
         });
 
         allStudents.sort((a,b) => b.marks - a.marks);
-        const districtToppers = allStudents.slice(0, 10);
+        const districtToppers = getTopWithTies(allStudents, 10);
 
         let talukaToppers = {};
         Object.keys(talukaWise).forEach(tName => {
           talukaWise[tName].sort((a,b) => b.marks - a.marks);
-          talukaToppers[tName] = talukaWise[tName].slice(0, 10);
+          talukaToppers[tName] = getTopWithTies(talukaWise[tName], 10);
         });
 
         PRE_LOCK_CALCULATED_DATA = {
@@ -4008,9 +3596,10 @@
       }
 
       list.forEach((st, idx) => {
+        const displayRank = idx < 9 ? (idx + 1) : 10;
         area.innerHTML += `
           <div class="topper-card">
-            <div class="topper-rank">#${idx + 1}</div>
+            <div class="topper-rank">#${displayRank}</div>
             <div class="topper-details">
               <h4>${st.name}</h4>
               <p>${st.school} (${st.taluka})</p>
@@ -4037,9 +3626,10 @@
       }
 
       tToppers.forEach((st, idx) => {
+        const displayRank = idx < 9 ? (idx + 1) : 10;
         area.innerHTML += `
           <div class="topper-card">
-            <div class="topper-rank">#${idx + 1}</div>
+            <div class="topper-rank">#${displayRank}</div>
             <div class="topper-details">
               <h4>${st.name}</h4>
               <p>${st.school}</p>
@@ -4088,12 +3678,12 @@
           });
 
           allStudents.sort((a,b) => b.marks - a.marks);
-          const districtToppers = allStudents.slice(0, 10);
+          const districtToppers = getTopWithTies(allStudents, 10);
 
           let talukaToppers = {};
           Object.keys(talukaWise).forEach(tName => {
             talukaWise[tName].sort((a,b) => b.marks - a.marks);
-            talukaToppers[tName] = talukaWise[tName].slice(0, 10);
+            talukaToppers[tName] = getTopWithTies(talukaWise[tName], 10);
           });
 
           const payload = {
