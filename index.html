@@ -2009,6 +2009,21 @@
     let PRE_LOCK_CALCULATED_DATA = null;
     let currentActiveDashboardRef = null;
 
+    /* Top 10 Tie-Handling Helper */
+    function getTop10WithTies(sortedArr) {
+      if (sortedArr.length <= 10) return sortedArr;
+      const tenthMarks = sortedArr[9].marks;
+      let res = [];
+      for (let i = 0; i < sortedArr.length; i++) {
+        if (i < 10 || sortedArr[i].marks === tenthMarks) {
+          res.push(sortedArr[i]);
+        } else {
+          break;
+        }
+      }
+      return res;
+    }
+
     function toggleStudentAddCard() {
       const body = document.getElementById('body-student-add-section');
       const btn = document.getElementById('btn-toggle-std-add');
@@ -3486,7 +3501,7 @@
       });
     }
 
-    /* ॲनिमेशन आणि झटपट कॅशिंगसह डॅशबोर्ड आकडे लोडर (इतर कोणतीही यंत्रणा न बदलता) */
+    /* ॲनिमेशन आणि झटपट कॅशिंगसह डॅशबोर्ड आकडे लोडर */
     function updateStatWithAnimation(elementId, newValueText) {
       const el = document.getElementById(elementId);
       if (!el) return;
@@ -3651,10 +3666,11 @@
     function renderStudentsCards(list, maxM, rankPrefix) {
       const cont = document.getElementById('dashboard-toppers-container');
       list.forEach((st, idx) => {
-        const fullRankText = `${rankPrefix} #${idx + 1}`;
+        const displayRank = idx < 9 ? (idx + 1) : 10;
+        const fullRankText = `${rankPrefix} #${displayRank}`;
         cont.innerHTML += `
           <div class="topper-card">
-            <div class="topper-rank">#${idx + 1}</div>
+            <div class="topper-rank">#${displayRank}</div>
             <div class="topper-details">
               <h4>${st.name}</h4>
               <p>${st.school} (${st.taluka || '-'})</p>
@@ -3713,10 +3729,11 @@
       document.getElementById('banner-render-footer').innerText = BANNER_CONFIG.footer || "🎯 शिक्षण विभाग, जिल्हा परिषद बीड";
 
       toppersList.forEach((st, idx) => {
+        const displayRank = idx < 9 ? (idx + 1) : 10;
         const medal = (idx === 0) ? '🥇 ' : (idx === 1) ? '🥈 ' : (idx === 2) ? '🥉 ' : '🎖️ ';
         listEl.innerHTML += `
           <div class="banner-row">
-            <div>${medal} <span class="b-std-name">${idx + 1}. ${st.name}</span> <span class="b-sch-name">(${st.school})</span></div>
+            <div>${medal} <span class="b-std-name">${displayRank}. ${st.name}</span> <span class="b-sch-name">(${st.school})</span></div>
             <div class="b-marks-badge">${st.marks}/${maxM} गुण</div>
           </div>
         `;
@@ -3973,12 +3990,12 @@
         });
 
         allStudents.sort((a,b) => b.marks - a.marks);
-        const districtToppers = allStudents.slice(0, 10);
+        const districtToppers = getTop10WithTies(allStudents);
 
         let talukaToppers = {};
         Object.keys(talukaWise).forEach(tName => {
           talukaWise[tName].sort((a,b) => b.marks - a.marks);
-          talukaToppers[tName] = talukaWise[tName].slice(0, 10);
+          talukaToppers[tName] = getTop10WithTies(talukaWise[tName]);
         });
 
         PRE_LOCK_CALCULATED_DATA = {
@@ -4008,9 +4025,10 @@
       }
 
       list.forEach((st, idx) => {
+        const displayRank = idx < 9 ? (idx + 1) : 10;
         area.innerHTML += `
           <div class="topper-card">
-            <div class="topper-rank">#${idx + 1}</div>
+            <div class="topper-rank">#${displayRank}</div>
             <div class="topper-details">
               <h4>${st.name}</h4>
               <p>${st.school} (${st.taluka})</p>
@@ -4037,9 +4055,10 @@
       }
 
       tToppers.forEach((st, idx) => {
+        const displayRank = idx < 9 ? (idx + 1) : 10;
         area.innerHTML += `
           <div class="topper-card">
-            <div class="topper-rank">#${idx + 1}</div>
+            <div class="topper-rank">#${displayRank}</div>
             <div class="topper-details">
               <h4>${st.name}</h4>
               <p>${st.school}</p>
@@ -4088,12 +4107,12 @@
           });
 
           allStudents.sort((a,b) => b.marks - a.marks);
-          const districtToppers = allStudents.slice(0, 10);
+          const districtToppers = getTop10WithTies(allStudents);
 
           let talukaToppers = {};
           Object.keys(talukaWise).forEach(tName => {
             talukaWise[tName].sort((a,b) => b.marks - a.marks);
-            talukaToppers[tName] = talukaWise[tName].slice(0, 10);
+            talukaToppers[tName] = getTop10WithTies(talukaWise[tName]);
           });
 
           const payload = {
