@@ -998,25 +998,53 @@
       display: none;
       z-index: 3000;
       box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-    }
-/* नवोदय ऑनलाईन चाचण्या स्पेशल बॅनर स्टाईल */
+    }/* नवोदय ऑनलाईन चाचण्या कॉम्पॅक्ट व फिक्कट रंगाचे बॅनर */
     .navodaya-special-banner {
-      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      background: linear-gradient(135deg, #818cf8 0%, #a78bfa 100%);
       color: white;
-      border-radius: 14px;
-      padding: 14px 18px;
-      margin-bottom: 10px;
+      border-radius: 8px;
+      padding: 6px 10px;
+      margin-bottom: 6px;
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 8px;
       cursor: pointer;
-      box-shadow: 0 4px 15px rgba(79, 70, 229, 0.35);
-      border: 2px solid #a5b4fc;
+      box-shadow: 0 1px 4px rgba(129, 140, 248, 0.2);
+      border: 1px solid #c7d2fe;
       transition: transform 0.2s, box-shadow 0.2s;
     }
     .navodaya-special-banner:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(79, 70, 229, 0.5);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(129, 140, 248, 0.3);
+    }
+    .banner-icon-pulse {
+      font-size: 1.1rem;
+      background: rgba(255, 255, 255, 0.25);
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: #fef08a;
+    }
+    .banner-text-content { flex: 1; }
+    .banner-text-content h3 {
+      font-size: 0.88rem;
+      font-weight: 700;
+      margin-bottom: 0px;
+      color: #fef08a;
+    }
+    .banner-text-content p {
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: #f9fafb;
+      line-height: 1.2;
+    }
+    .banner-arrow-icon {
+      font-size: 0.9rem;
+      color: #fef08a;
     }
     .banner-icon-pulse {
       font-size: 1.8rem;
