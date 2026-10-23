@@ -3558,10 +3558,36 @@
       }
     }
 
+function listenDeclaredResults() {
+      // १. पेज उघडताच इंटरनेटची वाट न पाहाता कॅश केलेले निकाल व टॉपर्स तत्काळ दाखवा
+      const cachedDeclared = localStorage.getItem('cache_declared_toppers');
+      if (cachedDeclared) {
+        try {
+          DECLARED_DATA_STORE = JSON.parse(cachedDeclared);
+          currentSelectedTest = getInitialDeclaredTestForDashboard(currentSelectedCategory);
+          buildDashboardTestPills();
+          renderDeclaredResultsOnDashboard();
+        } catch(e) {}
+      }
+
+      db.ref('declared_toppers').on('value', (snap) => {
+        DECLARED_DATA_STORE = snap.val() || {};
+        // २. नवीन निकाल येताच तो मोबाईलच्या LocalStorage मध्ये कायमस्वरूपी (Static) सेव्ह करा
+        localStorage.setItem('cache_declared_toppers', JSON.stringify(DECLARED_DATA_STORE));
+        
+        // ३. सर्वात मोठ्या क्रमांकाची (नुकतीच जाहीर झालेली) चाचणी आपोआप निवडा
+        currentSelectedTest = getInitialDeclaredTestForDashboard(currentSelectedCategory);
+        buildDashboardTestPills();
+        listenLiveDashboardData();
+        renderDeclaredResultsOnDashboard();
+      });
+    }
+
     function listenLiveDashboardData() {
       const cacheKey = `dash_stats_${currentSelectedCategory}_test_${currentSelectedTest}`;
       const totalEligibleSchools = getTotalEligibleSchoolsForCategory(currentSelectedCategory);
 
+      // एकदा जाहीर झालेला निकाल बदलत नसल्यामुळे, त्याची आकडेवारी देखील लोकल स्टोरेजवरून सेकंदाच्या आत दाखवा
       const cachedData = localStorage.getItem(cacheKey);
       if (cachedData) {
         try {
@@ -3613,22 +3639,12 @@
           active: submittedSchoolsSet.size
         };
 
+        // आकडेवारी कॅशमध्ये जतन करा जेणेकरून नंतर लोड होण्यास वेळ लागणार नाही
         localStorage.setItem(cacheKey, JSON.stringify(statsPayload));
 
         updateStatWithAnimation('stat-total-students', allStudentsCount);
         updateStatWithAnimation('stat-active-schools', `${submittedSchoolsSet.size}/${totalEligibleSchools}`);
 
-        renderDeclaredResultsOnDashboard();
-      });
-    }
-
-    function listenDeclaredResults() {
-      db.ref('declared_toppers').on('value', (snap) => {
-        DECLARED_DATA_STORE = snap.val() || {};
-        
-        currentSelectedTest = getInitialDeclaredTestForDashboard(currentSelectedCategory);
-        buildDashboardTestPills();
-        listenLiveDashboardData();
         renderDeclaredResultsOnDashboard();
       });
     }
