@@ -1571,6 +1571,19 @@
           <i class="fa-solid fa-floppy-disk"></i> या चाचणीचे एकूण गुण निश्चित करा
         </button>
       </div>
+      <!-- ५. शाळा पिन व मोबाईल नंबर शोध कक्ष -->
+    <div class="app-card" style="border-left: 5px solid #7c3aed;">
+      <div class="app-card-title"><i class="fa-solid fa-key" style="color:#7c3aed;"></i> शाळा पिन व मोबाईल नंबर शोधा (UDISE द्वारे)</div>
+      <div class="form-group" style="margin-bottom:8px;">
+        <label>शाळेचा UDISE कोड टाका:</label>
+        <input type="text" class="form-control" id="admin-lookup-udise" placeholder="उदा. 27270710302" style="font-family:'Poppins', sans-serif; font-weight:800;" maxlength="11">
+      </div>
+      <button class="app-btn btn-primary" style="background:linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%); margin-bottom:10px;" onclick="adminLookupSchoolPin()">
+        <i class="fa-solid fa-magnifying-glass"></i> पिन आणि मोबाईल नंबर शोधा
+      </button>
+      <div id="admin-lookup-result" style="background:#faf5ff; border:1.5px solid #d8b4fe; border-radius:10px; padding:10px; display:none; font-size:0.92rem; color:#4c1d95; line-height:1.5;">
+      </div>
+    </div>
     </div>
 
     <!-- व्यावसायिक वेबसाइट तळटीप (Copyright Footer) -->
