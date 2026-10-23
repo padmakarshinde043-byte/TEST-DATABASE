@@ -786,7 +786,7 @@
     .banner-preview-box {
       width: 720px;
       min-width: 720px;
-      height: 1020px;
+      height: auto;
       min-height: 1020px;
       background: #ffffff;
       border: 5px solid #d97706;
@@ -795,7 +795,7 @@
       box-shadow: 0 10px 30px rgba(217, 119, 6, 0.18);
       position: relative;
       margin: 0 auto;
-      overflow: hidden;
+      overflow: visible;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -3729,7 +3729,7 @@
       document.getElementById('banner-render-footer').innerText = BANNER_CONFIG.footer || "🎯 शिक्षण विभाग, जिल्हा परिषद बीड";
 
       toppersList.forEach((st, idx) => {
-        const displayRank = idx < 9 ? (idx + 1) : 10;
+        const displayRank = idx + 1;
         const medal = (idx === 0) ? '🥇 ' : (idx === 1) ? '🥈 ' : (idx === 2) ? '🥉 ' : '🎖️ ';
         listEl.innerHTML += `
           <div class="banner-row">
