@@ -1950,7 +1950,7 @@
       return minStart;
     }
 
-    function listenTestDefinitionsAndActive() {
+function listenTestDefinitionsAndActive() {
       // पेज उघडताच तत्काळ दाखवण्यासाठी कॅश केलेले चाचणीचे नाव लोड करा
       const cachedDefs = localStorage.getItem('cache_test_definitions');
       if (cachedDefs) {
@@ -1976,21 +1976,10 @@
         refreshAdminTestManagerUI();
       });
 
+      // 'active_tests' चा एकच आणि अधिकृत लिसनर (डुप्लिकेट काढला आहे)
       db.ref('active_tests').on('value', (snap) => {
         ACTIVE_TESTS_STORE = snap.val() || {};
         localStorage.setItem('cache_active_tests', JSON.stringify(ACTIVE_TESTS_STORE));
-        if (currentEntryCategory) {
-          const aTest = getAutoActiveTest(currentEntryCategory);
-          const inp = document.getElementById('entry-test-no');
-          if (inp) inp.value = aTest;
-          updateEntryNotice(aTest);
-        }
-        buildDashboardTestPills();
-        refreshAdminTestManagerUI();
-      });
-
-      db.ref('active_tests').on('value', (snap) => {
-        ACTIVE_TESTS_STORE = snap.val() || {};
         if (currentEntryCategory) {
           const aTest = getAutoActiveTest(currentEntryCategory);
           const inp = document.getElementById('entry-test-no');
