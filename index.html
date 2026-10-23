@@ -1572,6 +1572,19 @@
         </button>
       </div>
     </div>
+    <!-- ५. शाळा पिन व मोबाईल नंबर शोध कक्ष -->
+      <div class="app-card" style="border-left: 5px solid #7c3aed;">
+        <div class="app-card-title"><i class="fa-solid fa-key" style="color:#7c3aed;"></i> शाळा पिन व मोबाईल नंबर शोधा (UDISE द्वारे)</div>
+        <div class="form-group" style="margin-bottom:8px;">
+          <label>शाळेचा UDISE कोड टाका:</label>
+          <input type="text" class="form-control" id="admin-lookup-udise" placeholder="उदा. 27270710302" style="font-family:'Poppins', sans-serif; font-weight:800;" maxlength="11">
+        </div>
+        <button class="app-btn btn-primary" style="background:linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%); margin-bottom:10px;" onclick="adminLookupSchoolPin()">
+          <i class="fa-solid fa-magnifying-glass"></i> पिन आणि मोबाईल नंबर शोधा
+        </button>
+        <div id="admin-lookup-result" style="background:#faf5ff; border:1.5px solid #d8b4fe; border-radius:10px; padding:10px; display:none; font-size:0.92rem; color:#4c1d95; line-height:1.5;">
+        </div>
+      </div>
 
     <!-- व्यावसायिक वेबसाइट तळटीप (Copyright Footer) -->
     <footer class="site-legal-footer">
@@ -1604,11 +1617,14 @@
         <button onclick="closeModal('preLockReviewModal')" style="border:none; background:none; font-size:1.4rem; cursor:pointer;">&times;</button>
       </div>
 
-      <div style="margin-bottom:10px; display:flex; gap:6px; overflow-x:auto;">
-        <button class="app-btn btn-primary" style="height:36px; font-size:0.88rem;" onclick="renderPreLockDistrictReview()">बीड जिल्हा Toppers</button>
+      <div style="margin-bottom:10px; display:flex; gap:6px; overflow-x:auto; align-items:center;">
+        <button class="app-btn btn-primary" style="height:36px; font-size:0.88rem;" onclick="renderPreLockDistrictReview()">बीड जिल्हा</button>
         <select class="form-control" id="pre-lock-taluka-select" style="height:36px; font-size:0.88rem; width:auto; font-weight:700;" onchange="renderPreLockTalukaReview(this.value)">
-          <option value="">-- तालुका Toppers निवडा --</option>
+          <option value="">-- तालुका निवडा --</option>
         </select>
+        <button class="app-btn btn-danger" style="height:36px; font-size:0.84rem; background:#dc2626; width:auto; padding:0 12px; white-space:nowrap;" onclick="renderPreLockSchoolsCleanup()">
+          <i class="fa-solid fa-trash-can"></i> नोंदी तपासा/डिलीट
+        </button>
       </div>
 
       <div id="pre-lock-content-area" style="max-height:60vh; overflow-y:auto; padding:4px;"></div>
@@ -4397,6 +4413,79 @@
     }
 
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+function renderPreLockSchoolsCleanup() {
+      const cat = document.getElementById('admin-lock-category').value;
+      const testNo = document.getElementById('admin-lock-test').value;
+      const area = document.getElementById('pre-lock-content-area');
+      area.innerHTML = `
+        <h4 style="color:#dc2626; font-size:1.02rem; margin-bottom:6px;"><i class="fa-solid fa-triangle-exclamation"></i> संशयास्पद किंवा चुकीच्या नोंदी डिलीट करा:</h4>
+        <p style="font-size:0.84rem; color:#64748b; margin-bottom:10px;">येथे या चाचणीचे गुण भरलेल्या सर्व शाळांची यादी आहे. जर एखादी नोंद <strong>'demo', 'abcd'</strong> किंवा चुकीची असेल, तर समोर 'डिलीट करा' दाबून ती काढून टाका.</p>
+        <div id="pre-lock-schools-list">माहिती लोड होत आहे...</div>
+      `;
+
+      db.ref(`results/${cat}/test_${testNo}`).once('value', (snap) => {
+        const data = snap.val() || {};
+        const listContainer = document.getElementById('pre-lock-schools-list');
+        if (!listContainer) return;
+        const keys = Object.keys(data);
+        if (keys.length === 0) {
+          listContainer.innerHTML = `<p style="text-align:center; color:#64748b; padding:12px;">कोणतीही नोंद सापडली नाही.</p>`;
+          return;
+        }
+        listContainer.innerHTML = '';
+        keys.forEach(schoolKey => {
+          const entry = data[schoolKey];
+          let studentCount = 0;
+          if (entry.students && Array.isArray(entry.students)) {
+            studentCount = entry.students.filter(s => s.marks !== '' && String(s.marks).toUpperCase() !== 'AB').length;
+          }
+          listContainer.innerHTML += `
+            <div style="background:white; border:1.5px solid #cbd5e1; border-radius:10px; padding:10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; gap:8px;">
+              <div style="overflow:hidden;">
+                <strong style="font-size:0.98rem; color:#0f172a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block;">${entry.school || 'अज्ञात शाळा'}</strong>
+                <span style="font-size:0.82rem; color:#64748b;">UDISE: <strong>${entry.udise || schoolKey}</strong> | तालुका: ${entry.taluka || '-'} | गुण भरलेले: ${studentCount}</span>
+              </div>
+              <button class="app-btn btn-danger" style="height:32px; width:auto; padding:0 12px; font-size:0.8rem; flex-shrink:0;" onclick="deleteSchoolTestSubmission('${cat}', '${testNo}', '${schoolKey}', '${entry.school || 'शाळा'}')">
+                <i class="fa-solid fa-trash"></i> डिलीट
+              </button>
+            </div>
+          `;
+        });
+      });
+    }
+
+    function deleteSchoolTestSubmission(cat, testNo, schoolKey, schoolName) {
+      showCustomConfirm(`तुम्हाला "${schoolName}" या शाळेची या चाचणीतील सर्व गुण नोंदणी कायमची डिलीट करायची आहे का?`, () => {
+        db.ref(`results/${cat}/test_${testNo}/${schoolKey}`).remove().then(() => {
+          showToast('शाळेची नोंद यशस्वीरित्या डिलीट केली!');
+          renderPreLockSchoolsCleanup();
+        }).catch(err => {
+          showCustomAlert('त्रुटी: ' + err.message);
+        });
+      });
+    }
+function adminLookupSchoolPin() {
+      const udise = document.getElementById('admin-lookup-udise').value.trim();
+      const resBox = document.getElementById('admin-lookup-result');
+      if (!udise || udise.length < 4) {
+        showCustomAlert('कृपया वैध UDISE कोड टाका!');
+        return;
+      }
+      db.ref(`school_auth/${udise}`).once('value', (snap) => {
+        const data = snap.val();
+        resBox.style.display = 'block';
+        if (data) {
+          resBox.innerHTML = `
+            <strong><i class="fa-solid fa-circle-check" style="color:#059669;"></i> शाळेची सुरक्षित माहिती सापडली:</strong><br>
+            📌 सुरक्षा पिन (PIN): <span style="font-family:'Poppins', sans-serif; font-weight:800; color:#dc2626; font-size:1.15rem; background:white; padding:1px 8px; border-radius:4px; border:1px solid #cbd5e1;">${data.pin || 'उपलब्ध नाही'}</span><br>
+            📱 WhatsApp नंबर: <span style="font-family:'Poppins', sans-serif; font-weight:800; color:#047857; font-size:1.05rem;">${data.mobile || 'उपलब्ध नाही'}</span><br>
+            🕒 शेवटी अपडेट: ${data.updatedAt ? new Date(data.updatedAt).toLocaleString('mr-IN') : 'निश्चित नाही'}
+          `;
+        } else {
+          resBox.innerHTML = `<span style="color:#dc2626; font-weight:700;"><i class="fa-solid fa-triangle-exclamation"></i> या UDISE कोडसाठी कोणतीही पिन नोंदणी झालेली नाही (शाळेने अजून पिन सेट केला नाही).</span>`;
+        }
+      });
+    }
   </script>
 </body>
 </html>
