@@ -999,6 +999,55 @@
       z-index: 3000;
       box-shadow: 0 4px 12px rgba(0,0,0,0.25);
     }
+/* नवोदय ऑनलाईन चाचण्या स्पेशल बॅनर स्टाईल */
+    .navodaya-special-banner {
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      color: white;
+      border-radius: 14px;
+      padding: 14px 18px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(79, 70, 229, 0.35);
+      border: 2px solid #a5b4fc;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .navodaya-special-banner:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(79, 70, 229, 0.5);
+    }
+    .banner-icon-pulse {
+      font-size: 1.8rem;
+      background: rgba(255, 255, 255, 0.2);
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: #fef08a;
+    }
+    .banner-text-content { flex: 1; }
+    .banner-text-content h3 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      margin-bottom: 2px;
+      color: #fef08a;
+      letter-spacing: 0.3px;
+    }
+    .banner-text-content p {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #e0e7ff;
+      line-height: 1.35;
+    }
+    .banner-arrow-icon {
+      font-size: 1.2rem;
+      color: #fef08a;
+    }
   </style>
 </head>
 <body>
@@ -1035,7 +1084,15 @@
         <p class="dropdown-label" style="font-size: 0.96rem; margin-bottom: 6px;"><i class="fa-solid fa-file-signature"></i> चाचणी क्रमांक निवडा:</p>
         <div class="test-capsule-grid" id="dash-test-pills"></div>
       </div>
-
+<div id="navodaya-banner-tab" class="navodaya-special-banner" onclick="window.open('https://nvs.savezpschools.in/', '_blank')" style="display: none;">
+  <div class="banner-icon-pulse"><i class="fa-solid fa-globe"></i></div>
+  <div class="banner-text-content" style="flex:1;">
+    <h3 style="color:#fef08a; font-size:1.15rem; font-weight:800; margin-bottom:2px;">नवोदय online चाचण्या</h3>
+    <p style="color:#e0e7ff; font-size:0.85rem; font-weight:600; line-height:1.35;">दिनांक 11 नोव्हेंबर पासून दररोज एक चाचणी सोडवण्यासाठी उपलब्ध होईल.</p>
+  </div>
+  <div class="banner-arrow-icon" style="color:#fef08a; font-size:1.2rem;"><i class="fa-solid fa-arrow-right"></i></div>
+</div>
+      
       <!-- विभाग ३: आकडेवारी (Stats Grid) -->
       <div class="stats-grid">
         <div class="stat-box stat-box-students">
@@ -2706,6 +2763,8 @@ function listenTestDefinitionsAndActive() {
             </div>
           </button>`;
       });
+const banner = document.getElementById('navodaya-banner-tab');
+  if (banner) banner.style.display = (currentSelectedCategory === 'navodaya') ? 'flex' : 'none';      
     }
 
     function buildEntryTestOptions() {
