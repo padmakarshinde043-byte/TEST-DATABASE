@@ -1935,11 +1935,41 @@
     }
 
     function listenTestDefinitionsAndActive() {
+      // पेज उघडताच तत्काळ दाखवण्यासाठी कॅश केलेले चाचणीचे नाव लोड करा
+      const cachedDefs = localStorage.getItem('cache_test_definitions');
+      if (cachedDefs) {
+        try { TEST_DEFINITIONS_STORE = JSON.parse(cachedDefs); } catch(e) {}
+      }
+      const cachedActive = localStorage.getItem('cache_active_tests');
+      if (cachedActive) {
+        try { ACTIVE_TESTS_STORE = JSON.parse(cachedActive); } catch(e) {}
+      }
+      
+      // पेज ओपन होताच कोणत्याही डिलेविना चाचण्यांची नावे तत्काळ प्रदर्शिंत करा
+      buildDashboardTestPills();
+      updateAdminTestOptions();
+      updateAdminLockTestOptions();
+      refreshAdminTestManagerUI();
+
       db.ref('test_definitions').on('value', (snap) => {
         TEST_DEFINITIONS_STORE = snap.val() || {};
+        localStorage.setItem('cache_test_definitions', JSON.stringify(TEST_DEFINITIONS_STORE));
         buildDashboardTestPills();
         updateAdminTestOptions();
         updateAdminLockTestOptions();
+        refreshAdminTestManagerUI();
+      });
+
+      db.ref('active_tests').on('value', (snap) => {
+        ACTIVE_TESTS_STORE = snap.val() || {};
+        localStorage.setItem('cache_active_tests', JSON.stringify(ACTIVE_TESTS_STORE));
+        if (currentEntryCategory) {
+          const aTest = getAutoActiveTest(currentEntryCategory);
+          const inp = document.getElementById('entry-test-no');
+          if (inp) inp.value = aTest;
+          updateEntryNotice(aTest);
+        }
+        buildDashboardTestPills();
         refreshAdminTestManagerUI();
       });
 
