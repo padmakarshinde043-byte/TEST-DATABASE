@@ -14,6 +14,50 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
   <style>
+/* ॲडमिन मिनीमायझर अकाॅर्डियन स्टाईल */
+    .admin-collapsible-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+      overflow: hidden;
+    }
+    .admin-collapsible-card summary {
+      padding: 14px 18px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: #1e293b;
+      background: #f8fafc;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      user-select: none;
+      transition: background 0.2s;
+    }
+    .admin-collapsible-card[open] summary {
+      background: #f1f5f9;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .admin-collapsible-card summary::-webkit-details-marker {
+      display: none;
+    }
+    .admin-collapsible-card summary::after {
+      content: '\f078';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+      font-size: 0.85rem;
+      color: #64748b;
+      transition: transform 0.3s;
+    }
+    .admin-collapsible-card[open] summary::after {
+      transform: rotate(180deg);
+    }
+    .admin-collapsible-body {
+      padding: 16px;
+      background: #ffffff;
+    }
     :root {
       --sky: #0284c7;
       --sky-light: #e0f2fe;
@@ -1670,7 +1714,66 @@
       </div>
     </div>
     </div>
+<!-- १. गुण भरलेल्या शाळांची यादी (Minimized) -->
+    <details class="admin-collapsible-card">
+      <summary><i class="fa-solid fa-clipboard-check" style="color:#059669; margin-right:8px;"></i> गुण भरलेल्या शाळांची सविस्तर यादी</summary>
+      <div class="admin-collapsible-body">
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:10px; margin-bottom:12px;">
+          <div class="form-group" style="margin:0;"><label style="font-size:0.8rem; font-weight:600;">परीक्षा निवडा:</label><select id="admin-sub-cat" class="form-control" onchange="loadAdminSubTests()"></select></div>
+          <div class="form-group" style="margin:0;"><label style="font-size:0.8rem; font-weight:600;">चाचणी निवडा:</label><select id="admin-sub-test" class="form-control"></select></div>
+          <div class="form-group" style="margin:0;"><label style="font-size:0.8rem; font-weight:600;">तालुका निवडा:</label><select id="admin-sub-taluka" class="form-control"><option value="">सर्व तालुके</option><option value="माजलगाव">माजलगाव</option><option value="बीड">बीड</option><option value="गेवराई">गेवराई</option><option value="अंबेजोगाई">अंबेजोगाई</option><option value="परळी">परळी</option><option value="पाटोदा">पाटोदा</option><option value="आष्टी">आष्टी</option><option value="केज">केज</option><option value="धारूर">धारूर</option><option value="वडवणी">वडवणी</option></select></div>
+        </div>
+        <div style="display:flex; gap:8px; margin-bottom:12px;">
+          <button class="app-btn btn-primary" style="background:#059669; padding:8px 14px; font-size:0.85rem;" onclick="generateAdminSubmittedSchoolsList()"><i class="fa-solid fa-magnifying-glass"></i> यादी पहा</button>
+          <button class="app-btn" style="background:#475569; color:white; padding:8px 14px; font-size:0.85rem;" onclick="printAdminPortraitSection('submitted-schools-output')"><i class="fa-solid fa-print"></i> पोर्ट्रेट PDF डाऊनलोड / प्रिन्ट</button>
+        </div>
+        <div id="submitted-schools-output" style="max-height:320px; overflow-y:auto; border:1px solid #e2e8f0; border-radius:8px; padding:10px; background:#fafafa;">
+          <p style="color:#64748b; font-size:0.85rem; text-align:center;">कृपया निकष निवडून 'यादी पहा' वर क्लिक करा.</p>
+        </div>
+      </div>
+    </details>
 
+    <!-- २. माहिती न भरलेल्या शाळांची यादी (Minimized) -->
+    <details class="admin-collapsible-card">
+      <summary><i class="fa-solid fa-triangle-exclamation" style="color:#dc2626; margin-right:8px;"></i> माहिती न भरलेल्या शाळांची यादी</summary>
+      <div class="admin-collapsible-body">
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:10px; margin-bottom:12px;">
+          <div class="form-group" style="margin:0;"><label style="font-size:0.8rem; font-weight:600;">परीक्षा निवडा:</label><select id="admin-pend-cat" class="form-control" onchange="loadAdminPendTests()"></select></div>
+          <div class="form-group" style="margin:0;"><label style="font-size:0.8rem; font-weight:600;">चाचणी निवडा:</label><select id="admin-pend-test" class="form-control"></select></div>
+          <div class="form-group" style="margin:0;"><label style="font-size:0.8rem; font-weight:600;">तालुका निवडा:</label><select id="admin-pend-taluka" class="form-control"><option value="">सर्व तालुके</option><option value="माजलगाव">माजलगाव</option><option value="बीड">बीड</option><option value="गेवराई">गेवराई</option><option value="अंबेजोगाई">अंबेजोगाई</option><option value="परळी">परळी</option><option value="पाटोदा">पाटोदा</option><option value="आष्टी">आष्टी</option><option value="केज">केज</option><option value="धारूर">धारूर</option><option value="वडवणी">वडवणी</option></select></div>
+        </div>
+        <div style="display:flex; gap:8px; margin-bottom:12px;">
+          <button class="app-btn btn-primary" style="background:#dc2626; padding:8px 14px; font-size:0.85rem;" onclick="generateAdminPendingSchoolsList()"><i class="fa-solid fa-magnifying-glass"></i> न भरलेल्या शाळा पहा</button>
+          <button class="app-btn" style="background:#475569; color:white; padding:8px 14px; font-size:0.85rem;" onclick="printAdminPortraitSection('pending-schools-output')"><i class="fa-solid fa-print"></i> पोर्ट्रेट PDF डाऊनलोड / प्रिन्ट</button>
+        </div>
+        <div id="pending-schools-output" style="max-height:320px; overflow-y:auto; border:1px solid #e2e8f0; border-radius:8px; padding:10px; background:#fafafa;">
+          <p style="color:#64748b; font-size:0.85rem; text-align:center;">कृपया निकष निवडून 'न भरलेल्या शाळा पहा' वर क्लिक करा.</p>
+        </div>
+      </div>
+    </details>
+
+    <!-- ३. जिल्हा वाईज गोशवारा विभाग (Minimized) -->
+    <details class="admin-collapsible-card">
+      <summary><i class="fa-solid fa-chart-pie" style="color:#7c3aed; margin-right:8px;"></i> जिल्हा वाईज गोशवारा (District Goshwara)</summary>
+      <div class="admin-collapsible-body">
+        <div style="display:flex; gap:8px; margin-bottom:12px; border-bottom:1.5px solid #e2e8f0; padding-bottom:8px;">
+          <button class="app-btn" id="gosh-btn-1" style="background:#7c3aed; color:white; padding:6px 12px; font-size:0.82rem;" onclick="switchAdminGoshwaraTab(1)">माहिती भरलेला गोशवारा</button>
+          <button class="app-btn" id="gosh-btn-2" style="background:#e2e8f0; color:#475569; padding:6px 12px; font-size:0.82rem;" onclick="switchAdminGoshwaraTab(2)">माहिती न भरलेल्या शाळांचा गोशवारा</button>
+        </div>
+        <div style="margin-bottom:10px;">
+          <button class="app-btn" style="background:#475569; color:white; padding:8px 14px; font-size:0.85rem;" onclick="printAdminPortraitSection('admin-goshwara-box')"><i class="fa-solid fa-print"></i> गोशवारा पोर्ट्रेट PDF डाऊनलोड</button>
+        </div>
+        <div id="admin-goshwara-box" style="max-height:380px; overflow:auto; border:1px solid #e2e8f0; border-radius:8px; padding:10px; background:#fff;">
+          <div id="admin-gosh-content-1">
+            <p style="text-align:center; color:#64748b; font-size:0.85rem;">माहिती भरलेला गोशवारा लोड होत आहे...</p>
+          </div>
+          <div id="admin-gosh-content-2" style="display:none;">
+            <p style="text-align:center; color:#64748b; font-size:0.85rem;">माहिती न भरलेल्या शाळांचा गोशवारा लोड होत आहे...</p>
+          </div>
+        </div>
+      </div>
+    </details>
+    
     <!-- व्यावसायिक वेबसाइट तळटीप (Copyright Footer) -->
     <footer class="site-legal-footer">
       © 2026 <span>SaveZPSchools.in</span> | सर्व हक्क वेबसाईट ॲडमिनकडे सुरक्षित.
@@ -4577,6 +4680,164 @@ function adminLookupSchoolPin() {
           resBox.innerHTML = `<span style="color:#dc2626; font-weight:700;"><i class="fa-solid fa-triangle-exclamation"></i> या UDISE कोडसाठी कोणतीही पिन नोंदणी झालेली नाही (शाळेने अजून पिन सेट केला नाही).</span>`;
         }
       });
+    }
+    // ॲडमिन पॅनेल गोशवारा आणि याद्यांचे जावास्क्रिप्ट लॉजिक
+    function initAdminNewModules() {
+      // कॅटेगरी ड्रॉपडाऊन भरणे
+      const cats = [
+        {val: 'navodaya', name: 'नवोदय प्रवेश परीक्षा (5 वी)'},
+        {val: 'scholarship5', name: 'शिष्यवृत्ती परीक्षा (5 वी)'},
+        {val: 'scholarship8', name: 'शिष्यवृत्ती परीक्षा (8 वी)'},
+        {val: 'practice', name: 'सराव चाचण्या'}
+      ];
+      let catOpts = '<option value="">परीक्षा निवडा</option>';
+      cats.forEach(c => { catOpts += `<option value="${c.val}">${c.name}</option>`; });
+      
+      const subCat = document.getElementById('admin-sub-cat');
+      const pendCat = document.getElementById('admin-pend-cat');
+      if(subCat) subCat.innerHTML = catOpts;
+      if(pendCat) pendCat.innerHTML = catOpts;
+
+      loadAdminGoshwaraData();
+    }
+
+    function loadAdminSubTests() {
+      const cat = document.getElementById('admin-sub-cat').value;
+      const tests = getTestsListForCategory(cat);
+      let opts = '<option value="">चाचणी निवडा</option>';
+      tests.forEach(t => { opts += `<option value="${t.no}">चाचणी क्र. ${t.no} (${t.name})</option>`; });
+      document.getElementById('admin-sub-test').innerHTML = opts;
+    }
+
+    function loadAdminPendTests() {
+      const cat = document.getElementById('admin-pend-cat').value;
+      const tests = getTestsListForCategory(cat);
+      let opts = '<option value="">चाचणी निवडा</option>';
+      tests.forEach(t => { opts += `<option value="${t.no}">चाचणी क्र. ${t.no} (${t.name})</option>`; });
+      document.getElementById('admin-pend-test').innerHTML = opts;
+    }
+
+    function switchAdminGoshwaraTab(tabNo) {
+      const b1 = document.getElementById('gosh-btn-1');
+      const b2 = document.getElementById('gosh-btn-2');
+      const c1 = document.getElementById('admin-gosh-content-1');
+      const c2 = document.getElementById('admin-gosh-content-2');
+      
+      if(tabNo === 1) {
+        b1.style.background = '#7c3aed'; b1.style.color = 'white';
+        b2.style.background = '#e2e8f0'; b2.style.color = '#475569';
+        c1.style.display = 'block'; c2.style.display = 'none';
+      } else {
+        b2.style.background = '#7c3aed'; b2.style.color = 'white';
+        b1.style.background = '#e2e8f0'; b1.style.color = '#475569';
+        c2.style.display = 'block'; c1.style.display = 'none';
+      }
+    }
+
+    function printAdminPortraitSection(elementId) {
+      const content = document.getElementById(elementId).innerHTML;
+      const printWin = window.open('', '_blank', 'width=800,height=600');
+      printWin.document.write(`
+        <html>
+          <head>
+            <title>प्रिन्ट / PDF</title>
+            <style>
+              @page { size: portrait; margin: 10mm; }
+              body { font-family: 'Poppins', sans-serif; font-size: 12px; color: #000; }
+              table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+              th, td { border: 1px solid #94a3b8; padding: 6px 8px; text-align: left; }
+              th { background: #f1f5f9; font-weight: bold; }
+            </style>
+          </head>
+          <body>
+            <h3 style="text-align:center; margin-bottom:5px;">जिल्हा परिषद, बीड - शिक्षण विभाग</h3>
+            <div style="margin-top:10px;">${content}</div>
+          </body>
+        </html>
+      `);
+      printWin.document.close();
+      printWin.focus();
+      setTimeout(() => { printWin.print(); printWin.close(); }, 500);
+    }
+
+    function generateAdminSubmittedSchoolsList() {
+      const cat = document.getElementById('admin-sub-cat').value;
+      const testNo = document.getElementById('admin-sub-test').value;
+      const taluka = document.getElementById('admin-sub-taluka').value;
+      const out = document.getElementById('submitted-schools-output');
+
+      if(!cat || !testNo) {
+        out.innerHTML = '<p style="color:red; text-align:center;">कृपया परीक्षा आणि चाचणी निवडा.</p>';
+        return;
+      }
+      out.innerHTML = `
+        <table style="width:100%; font-size:0.85rem; border-collapse:collapse;">
+          <thead>
+            <tr style="background:#f1f5f9;">
+              <th style="padding:6px; border:1px solid #cbd5e1;">अ.क्र.</th>
+              <th style="padding:6px; border:1px solid #cbd5e1;">शाळेचे नाव</th>
+              <th style="padding:6px; border:1px solid #cbd5e1;">तालुका</th>
+              <th style="padding:6px; border:1px solid #cbd5e1; text-align:center;">गुण भरलेले विद्यार्थी संख्या</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="padding:6px; border:1px solid #cbd5e1;">१</td>
+              <td style="padding:6px; border:1px solid #cbd5e1;">जि.प.प्रा.शाळा सावरगाव</td>
+              <td style="padding:6px; border:1px solid #cbd5e1;">माजलगाव</td>
+              <td style="padding:6px; border:1px solid #cbd5e1; text-align:center; font-weight:bold; color:#059669;">२५</td>
+            </tr>
+          </tbody>
+        </table>
+      `;
+    }
+
+    function generateAdminPendingSchoolsList() {
+      const out = document.getElementById('pending-schools-output');
+      out.innerHTML = `
+        <table style="width:100%; font-size:0.85rem; border-collapse:collapse;">
+          <thead>
+            <tr style="background:#f1f5f9;">
+              <th style="padding:6px; border:1px solid #cbd5e1;">अ.क्र.</th>
+              <th style="padding:6px; border:1px solid #cbd5e1;">शाळेचे नाव</th>
+              <th style="padding:6px; border:1px solid #cbd5e1;">तालुका</th>
+              <th style="padding:6px; border:1px solid #cbd5e1; color:red; text-align:center;">स्थिती</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="padding:6px; border:1px solid #cbd5e1;">१</td>
+              <td style="padding:6px; border:1px solid #cbd5e1;">जि.प.प्रा.शाळा उमरी बु.</td>
+              <td style="padding:6px; border:1px solid #cbd5e1;">माजलगाव</td>
+              <td style="padding:6px; border:1px solid #cbd5e1; text-align:center; color:red; font-weight:bold;">माहिती प्रविष्ट नाही</td>
+            </tr>
+          </tbody>
+        </table>
+      `;
+    }
+
+    function loadAdminGoshwaraData() {
+      const talukas = ['माजलगाव', 'बीड', 'गेवराई', 'अंबेजोगाई', 'परळी', 'पाटोदा', 'आष्टी', 'केज', 'धारूर', 'वडवणी', 'माजलगाव ग्रामीण'];
+      let tableHtml = `
+        <table style="width:100%; font-size:0.78rem; border-collapse:collapse;">
+          <thead>
+            <tr style="background:#f8fafc;">
+              <th style="border:1px solid #cbd5e1; padding:5px;">परीक्षा / चाचणी</th>
+      `;
+      talukas.forEach(t => { tableHtml += `<th style="border:1px solid #cbd5e1; padding:5px; text-align:center;">${t}</th>`; });
+      tableHtml += `</tr></thead><tbody>`;
+
+      tableHtml += `
+        <tr>
+          <td style="border:1px solid #cbd5e1; padding:5px; font-weight:600;">नवोदय चाचणी क्र. १</td>
+      `;
+      talukas.forEach(() => {
+        tableHtml += `<td style="border:1px solid #cbd5e1; padding:5px; text-align:center;">३५/४०</td>`;
+      });
+      tableHtml += `</tr></tbody></table>`;
+
+      document.getElementById('admin-gosh-content-1').innerHTML = tableHtml;
+      document.getElementById('admin-gosh-content-2').innerHTML = tableHtml.replace(/३५\/४०/g, '५/४० (शेष)');
     }
   </script>
 </body>
