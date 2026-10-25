@@ -1174,18 +1174,17 @@
     <!-- ================= 2. गुण नोंदणी स्क्रीन (शिक्षक पोर्टल) ================= -->
     <div id="screen-entry" style="display:none;">
 
-      <!-- ५ सेकंदांचा हिरवा फ्लॅश मेसेज -->
-      <div class="flash-notice-banner" id="flash-entry-notice">
-        <button class="flash-close-btn" onclick="closeFlashNotice()">&times;</button>
-        <div class="flash-notice-content">
-          <i class="fa-solid fa-calendar-check"></i>
-          <div class="flash-notice-text">
-            <h4>📢 अत्यंत महत्त्वाची सूचना</h4>
-            <p>शनिवारी होणाऱ्या चाचणीचे गुण <strong>पुढील गुरुवारपूर्वी</strong> भरण्यात यावेत. गुरुवारी सायंकाळी चाचणीचे निकाल आणि गुणवत्ता याद्या जाहीर करण्यात येतील.</p>
-          </div>
-        </div>
+      <!-- गुण भरा टॅबसाठी कस्टम क्लोज करण्यायोग्य नोटिस बॅनर -->
+  <div class="flash-notice-banner" id="dynamic-custom-notice-banner" style="display: none;">
+    <button class="flash-close-btn" onclick="closeCustomNoticeBanner()">&times;</button>
+    <div class="flash-notice-content">
+      <i class="fa-solid fa-bell" style="color:#fef08a;"></i>
+      <div class="flash-notice-text">
+        <h4 style="color:#fef08a;">📢 महत्त्वाची सूचना</h4>
+        <p id="custom-notice-body-txt"></p>
       </div>
-
+    </div>
+  </div>
       <!-- परीक्षा निवडक ड्रॉपडाऊन -->
       <div class="dropdown-group">
         <label class="dropdown-label"><i class="fa-solid fa-pen-to-square"></i> परीक्षा निवडा (गुण भरण्यासाठी):</label>
@@ -1667,6 +1666,17 @@
         <i class="fa-solid fa-magnifying-glass"></i> पिन आणि मोबाईल नंबर शोधा
       </button>
       <div id="admin-lookup-result" style="background:#faf5ff; border:1.5px solid #d8b4fe; border-radius:10px; padding:10px; display:none; font-size:0.92rem; color:#4c1d95; line-height:1.5;">
+      <!-- ६. गुण भरा टॅब कस्टम मेसेज मॅनेजर (फक्त ॲडमिन पॅनेलमध्ये दिसेल) -->
+  <div class="app-card" style="border-left: 5px solid #059669; margin-top: 12px;">
+    <div class="app-card-title"><i class="fa-solid fa-message" style="color:#059669;"></i> गुण भरा टॅब कस्टम मेसेज मॅनेजर</div>
+    <div class="form-group" style="margin-bottom:8px;">
+      <label>कस्टम मेसेजचा मजकूर (रिकामे ठेवल्यास गुण भरा टॅबवर काहीही दिसणार नाही):</label>
+      <textarea class="form-control" id="admin-custom-msg-input" rows="3" placeholder="उदा. कृपया सर्व शाळांनी वेळेत गुण भरावेत..." style="height:auto; font-size:0.95rem;"></textarea>
+    </div>
+    <button class="app-btn btn-success" onclick="saveAdminCustomNotice()">
+      <i class="fa-solid fa-floppy-disk"></i> कस्टम मेसेज जतन करा
+    </button>
+  </div>
       </div>
     </div>
     </div>
@@ -3004,13 +3014,16 @@ const banner = document.getElementById('navodaya-banner-tab');
           fetchedSchoolHmMobile = hmMobile;
           closeModal('schoolPinModal');
           showToast('शाळा पिन व मुख्याध्यापक नंबर यशस्वीरीत्या सेट झाला!');
-          proceedWithSchoolSelection(pendingSchoolToLock);
+        proceedWithSchoolSelection(pendingSchoolToLock);
+        showSuccessFlashToast("Login Successful...!");
+      });
         });
       } else {
         if (enteredPin === String(fetchedSchoolSecurityPin)) {
           closeModal('schoolPinModal');
           showToast('पिन पडताळणी यशस्वी!');
           proceedWithSchoolSelection(pendingSchoolToLock);
+          showSuccessFlashToast("Login Successful...!");
         } else {
           showCustomAlert('चुकीचा सुरक्षा पिन!');
         }
@@ -4576,6 +4589,61 @@ function adminLookupSchoolPin() {
         } else {
           resBox.innerHTML = `<span style="color:#dc2626; font-weight:700;"><i class="fa-solid fa-triangle-exclamation"></i> या UDISE कोडसाठी कोणतीही पिन नोंदणी झालेली नाही (शाळेने अजून पिन सेट केला नाही).</span>`;
         }
+      });
+    }
+    // २ सेकंद झटपट फडकून बंद होणारा ग्रीन फ्लॅश टोस्ट मेसेज
+    function showSuccessFlashToast(msg) {
+      const t = document.getElementById('toastMsg');
+      if (!t) return;
+      t.innerText = msg;
+      t.style.background = '#059669'; // हिरवा रंग (Success)
+      t.style.display = 'block';
+      setTimeout(() => { 
+        t.style.display = 'none'; 
+        t.style.background = '#1e293b'; // मूळ रंग पूर्ववत
+      }, 2000); // अचूक २ सेकंद
+    }
+
+    // फायरबेसवरून कस्टम मेसेज लोड करणे
+    function listenCustomNotice() {
+      db.ref('admin_custom_notice').on('value', (snap) => {
+        const msg = snap.val();
+        const banner = document.getElementById('dynamic-custom-notice-banner');
+        const bodyTxt = document.getElementById('custom-notice-body-txt');
+        const adminInput = document.getElementById('admin-custom-msg-input');
+        
+        if (adminInput && msg) {
+          adminInput.value = msg;
+        }
+
+        if (banner && bodyTxt) {
+          if (msg && msg.trim() !== '') {
+            bodyTxt.innerHTML = msg.replace(/\n/g, '<br>');
+            banner.style.display = 'block';
+          } else {
+            banner.style.display = 'none';
+          }
+        }
+      });
+    }
+
+    // शाळेला हा मेसेज बंद करता येण्यासाठी क्लोज बटणाचे लॉजिक
+    function closeCustomNoticeBanner() {
+      const banner = document.getElementById('dynamic-custom-notice-banner');
+      if (banner) banner.style.display = 'none';
+    }
+
+    // ॲडमिन पॅनेलमधून मेसेज सेव्ह करणे
+    function saveAdminCustomNotice() {
+      const inp = document.getElementById('admin-custom-msg-input');
+      if (!inp) return;
+      const val = inp.value.trim();
+
+      db.ref('admin_custom_notice').set(val).then(() => {
+        showToast('कस्टम मेसेज यशस्वीरीत्या सेव्ह झाला!');
+        showCustomAlert(val === '' ? 'कस्टम मेसेज काढून टाकण्यात आला आहे. आता गुण भरा टॅबवर कोणताच मेसेज दिसणार नाही.' : 'यशस्वी! गुण भरा टॅबवरील कस्टम मेसेज अपडेट झाला आहे.');
+      }).catch(err => {
+        showCustomAlert('त्रुटी: ' + err.message);
       });
     }
   </script>
