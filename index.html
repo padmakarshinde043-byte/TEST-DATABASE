@@ -61,7 +61,7 @@
 
     .app-container { max-width: 650px; margin: 0 auto; padding: 12px; }
 
-    /* ५ सेकंद टिकणारा हिरव्या रंगाचा फ्लॅश मेसेज */
+    /* फ्लॅश मेसेज */
     .flash-notice-banner {
       display: none;
       background: linear-gradient(135deg, #059669 0%, #047857 100%);
@@ -998,7 +998,8 @@
       display: none;
       z-index: 3000;
       box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-    }/* नवोदय ऑनलाईन चाचण्या कॉम्पॅक्ट व फिक्कट रंगाचे बॅनर */
+    }
+    /* नवोदय ऑनलाईन चाचण्या कॉम्पॅक्ट व फिक्कट रंगाचे बॅनर */
     .navodaya-special-banner {
       background: linear-gradient(135deg, #818cf8 0%, #a78bfa 100%);
       color: white;
@@ -1016,35 +1017,6 @@
     .navodaya-special-banner:hover {
       transform: translateY(-1px);
       box-shadow: 0 2px 8px rgba(129, 140, 248, 0.3);
-    }
-    .banner-icon-pulse {
-      font-size: 1.1rem;
-      background: rgba(255, 255, 255, 0.25);
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      color: #fef08a;
-    }
-    .banner-text-content { flex: 1; }
-    .banner-text-content h3 {
-      font-size: 0.88rem;
-      font-weight: 700;
-      margin-bottom: 0px;
-      color: #fef08a;
-    }
-    .banner-text-content p {
-      font-size: 0.72rem;
-      font-weight: 500;
-      color: #f9fafb;
-      line-height: 1.2;
-    }
-    .banner-arrow-icon {
-      font-size: 0.9rem;
-      color: #fef08a;
     }
     .banner-icon-pulse {
       font-size: 1.8rem;
@@ -1112,14 +1084,14 @@
         <p class="dropdown-label" style="font-size: 0.96rem; margin-bottom: 6px;"><i class="fa-solid fa-file-signature"></i> चाचणी क्रमांक निवडा:</p>
         <div class="test-capsule-grid" id="dash-test-pills"></div>
       </div>
-<div id="navodaya-banner-tab" class="navodaya-special-banner" onclick="window.open('https://nvs.savezpschools.in/', '_blank')" style="display: none;">
-  <div class="banner-icon-pulse"><i class="fa-solid fa-globe"></i></div>
-  <div class="banner-text-content" style="flex:1;">
-    <h3 style="color:#fef08a; font-size:1.15rem; font-weight:800; margin-bottom:2px;">नवोदय online चाचण्या</h3>
-    <p style="color:#e0e7ff; font-size:0.85rem; font-weight:600; line-height:1.35;">दिनांक 11 नोव्हेंबर पासून दररोज एक चाचणी सोडवण्यासाठी उपलब्ध होईल.</p>
-  </div>
-  <div class="banner-arrow-icon" style="color:#fef08a; font-size:1.2rem;"><i class="fa-solid fa-arrow-right"></i></div>
-</div>
+      <div id="navodaya-banner-tab" class="navodaya-special-banner" onclick="window.open('https://nvs.savezpschools.in/', '_blank')" style="display: none;">
+        <div class="banner-icon-pulse"><i class="fa-solid fa-globe"></i></div>
+        <div class="banner-text-content" style="flex:1;">
+          <h3 style="color:#fef08a; font-size:1.15rem; font-weight:800; margin-bottom:2px;">नवोदय online चाचण्या</h3>
+          <p style="color:#e0e7ff; font-size:0.85rem; font-weight:600; line-height:1.35;">दिनांक 11 नोव्हेंबर पासून दररोज एक चाचणी सोडवण्यासाठी उपलब्ध होईल.</p>
+        </div>
+        <div class="banner-arrow-icon" style="color:#fef08a; font-size:1.2rem;"><i class="fa-solid fa-arrow-right"></i></div>
+      </div>
       
       <!-- विभाग ३: आकडेवारी (Stats Grid) -->
       <div class="stats-grid">
@@ -1175,16 +1147,17 @@
     <div id="screen-entry" style="display:none;">
 
       <!-- गुण भरा टॅबसाठी कस्टम क्लोज करण्यायोग्य नोटिस बॅनर -->
-  <div class="flash-notice-banner" id="dynamic-custom-notice-banner" style="display: none;">
-    <button class="flash-close-btn" onclick="closeCustomNoticeBanner()">&times;</button>
-    <div class="flash-notice-content">
-      <i class="fa-solid fa-bell" style="color:#fef08a;"></i>
-      <div class="flash-notice-text">
-        <h4 style="color:#fef08a;">📢 महत्त्वाची सूचना</h4>
-        <p id="custom-notice-body-txt"></p>
+      <div class="flash-notice-banner" id="dynamic-custom-notice-banner" style="display: none;">
+        <button class="flash-close-btn" onclick="closeCustomNoticeBanner()">&times;</button>
+        <div class="flash-notice-content">
+          <i class="fa-solid fa-bell" style="color:#fef08a;"></i>
+          <div class="flash-notice-text">
+            <h4 style="color:#fef08a;">📢 महत्त्वाची सूचना</h4>
+            <p id="custom-notice-body-txt"></p>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
+
       <!-- परीक्षा निवडक ड्रॉपडाऊन -->
       <div class="dropdown-group">
         <label class="dropdown-label"><i class="fa-solid fa-pen-to-square"></i> परीक्षा निवडा (गुण भरण्यासाठी):</label>
@@ -1655,30 +1628,33 @@
           <i class="fa-solid fa-floppy-disk"></i> या चाचणीचे एकूण गुण निश्चित करा
         </button>
       </div>
+
       <!-- ५. शाळा पिन व मोबाईल नंबर शोध कक्ष -->
-    <div class="app-card" style="border-left: 5px solid #7c3aed;">
-      <div class="app-card-title"><i class="fa-solid fa-key" style="color:#7c3aed;"></i> शाळा पिन व मोबाईल नंबर शोधा (UDISE द्वारे)</div>
-      <div class="form-group" style="margin-bottom:8px;">
-        <label>शाळेचा UDISE कोड टाका:</label>
-        <input type="text" class="form-control" id="admin-lookup-udise" placeholder="उदा. 27270710302" style="font-family:'Poppins', sans-serif; font-weight:800;" maxlength="11">
+      <div class="app-card" style="border-left: 5px solid #7c3aed;">
+        <div class="app-card-title"><i class="fa-solid fa-key" style="color:#7c3aed;"></i> शाळा पिन व मोबाईल नंबर शोधा (UDISE द्वारे)</div>
+        <div class="form-group" style="margin-bottom:8px;">
+          <label>शाळेचा UDISE कोड टाका:</label>
+          <input type="text" class="form-control" id="admin-lookup-udise" placeholder="उदा. 27270710302" style="font-family:'Poppins', sans-serif; font-weight:800;" maxlength="11">
+        </div>
+        <button class="app-btn btn-primary" style="background:linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%); margin-bottom:10px;" onclick="adminLookupSchoolPin()">
+          <i class="fa-solid fa-magnifying-glass"></i> पिन आणि मोबाईल नंबर शोधा
+        </button>
+        <div id="admin-lookup-result" style="background:#faf5ff; border:1.5px solid #d8b4fe; border-radius:10px; padding:10px; display:none; font-size:0.92rem; color:#4c1d95; line-height:1.5;">
+        </div>
       </div>
-      <button class="app-btn btn-primary" style="background:linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%); margin-bottom:10px;" onclick="adminLookupSchoolPin()">
-        <i class="fa-solid fa-magnifying-glass"></i> पिन आणि मोबाईल नंबर शोधा
-      </button>
-      <div id="admin-lookup-result" style="background:#faf5ff; border:1.5px solid #d8b4fe; border-radius:10px; padding:10px; display:none; font-size:0.92rem; color:#4c1d95; line-height:1.5;">
+
       <!-- ६. गुण भरा टॅब कस्टम मेसेज मॅनेजर (फक्त ॲडमिन पॅनेलमध्ये दिसेल) -->
-  <div class="app-card" style="border-left: 5px solid #059669; margin-top: 12px;">
-    <div class="app-card-title"><i class="fa-solid fa-message" style="color:#059669;"></i> गुण भरा टॅब कस्टम मेसेज मॅनेजर</div>
-    <div class="form-group" style="margin-bottom:8px;">
-      <label>कस्टम मेसेजचा मजकूर (रिकामे ठेवल्यास गुण भरा टॅबवर काहीही दिसणार नाही):</label>
-      <textarea class="form-control" id="admin-custom-msg-input" rows="3" placeholder="उदा. कृपया सर्व शाळांनी वेळेत गुण भरावेत..." style="height:auto; font-size:0.95rem;"></textarea>
-    </div>
-    <button class="app-btn btn-success" onclick="saveAdminCustomNotice()">
-      <i class="fa-solid fa-floppy-disk"></i> कस्टम मेसेज जतन करा
-    </button>
-  </div>
+      <div class="app-card" style="border-left: 5px solid #059669; margin-top: 12px;">
+        <div class="app-card-title"><i class="fa-solid fa-message" style="color:#059669;"></i> गुण भरा टॅब कस्टम मेसेज मॅनेजर</div>
+        <div class="form-group" style="margin-bottom:8px;">
+          <label>कस्टम मेसेजचा मजकूर (रिकामे ठेवल्यास गुण भरा टॅबवर काहीही दिसणार नाही):</label>
+          <textarea class="form-control" id="admin-custom-msg-input" rows="3" placeholder="उदा. कृपया सर्व शाळांनी वेळेत गुण भरावेत..." style="height:auto; font-size:0.95rem;"></textarea>
+        </div>
+        <button class="app-btn btn-success" onclick="saveAdminCustomNotice()">
+          <i class="fa-solid fa-floppy-disk"></i> कस्टम मेसेज जतन करा
+        </button>
       </div>
-    </div>
+
     </div>
 
     <!-- व्यावसायिक वेबसाइट तळटीप (Copyright Footer) -->
@@ -1954,7 +1930,7 @@
         <div class="progress-bar-container" id="rc-graph-bars" style="display:flex; gap:6px; align-items:flex-end; height:120px; border-bottom:2px solid #cbd5e1; padding-bottom:3px; margin-top:6px;"></div>
 
         <div style="margin-top:10px; padding:6px 12px; background:#f0fdf4; border-radius:6px; border:1px solid #bbf7d0; font-size:0.9rem;">
-          अंतिम शेरा: <strong id="rc-remark-text" style="color:#166534;">उत्कृष्ट कामगिरी!</strong>
+          अ अंतिम शेरा: <strong id="rc-remark-text" style="color:#166534;">उत्कृष्ट कामगिरी!</strong>
         </div>
       </div>
 
@@ -2045,8 +2021,7 @@
       return minStart;
     }
 
-function listenTestDefinitionsAndActive() {
-      // पेज उघडताच तत्काळ दाखवण्यासाठी कॅश केलेले चाचणीचे नाव लोड करा
+    function listenTestDefinitionsAndActive() {
       const cachedDefs = localStorage.getItem('cache_test_definitions');
       if (cachedDefs) {
         try { TEST_DEFINITIONS_STORE = JSON.parse(cachedDefs); } catch(e) {}
@@ -2056,7 +2031,6 @@ function listenTestDefinitionsAndActive() {
         try { ACTIVE_TESTS_STORE = JSON.parse(cachedActive); } catch(e) {}
       }
       
-      // पेज ओपन होताच कोणत्याही डिलेविना चाचण्यांची नावे तत्काळ प्रदर्शिंत करा
       buildDashboardTestPills();
       updateAdminTestOptions();
       updateAdminLockTestOptions();
@@ -2071,7 +2045,6 @@ function listenTestDefinitionsAndActive() {
         refreshAdminTestManagerUI();
       });
 
-      // 'active_tests' चा एकच आणि अधिकृत लिसनर (डुप्लिकेट काढला आहे)
       db.ref('active_tests').on('value', (snap) => {
         ACTIVE_TESTS_STORE = snap.val() || {};
         localStorage.setItem('cache_active_tests', JSON.stringify(ACTIVE_TESTS_STORE));
@@ -2139,7 +2112,6 @@ function listenTestDefinitionsAndActive() {
     let PRE_LOCK_CALCULATED_DATA = null;
     let currentActiveDashboardRef = null;
 
-    /* Top 10 Tie-Handling Helper */
     function getTop10WithTies(sortedArr) {
       if (sortedArr.length <= 10) return sortedArr;
       const tenthMarks = sortedArr[9].marks;
@@ -2605,6 +2577,7 @@ function listenTestDefinitionsAndActive() {
       listenCustomTemplates();
       initAdminPanelOptions();
       initAllDraggables();
+      listenCustomNotice();
 
       try { history.pushState({ page: 'home' }, ''); } catch(e) {}
     }
@@ -2674,22 +2647,6 @@ function listenTestDefinitionsAndActive() {
       setTimeout(() => { t.style.display = 'none'; }, 2200);
     }
 
-    function triggerFlashNotice() {
-      const banner = document.getElementById('flash-entry-notice');
-      if (!banner) return;
-      banner.style.display = 'block';
-      clearTimeout(flashTimer);
-      flashTimer = setTimeout(() => {
-        closeFlashNotice();
-      }, 5000);
-    }
-
-    function closeFlashNotice() {
-      const banner = document.getElementById('flash-entry-notice');
-      if (banner) banner.style.display = 'none';
-      clearTimeout(flashTimer);
-    }
-
     function switchTab(view) {
       document.getElementById('screen-dashboard').style.display = (view === 'dashboard') ? 'block' : 'none';
       document.getElementById('screen-entry').style.display = (view === 'entry') ? 'block' : 'none';
@@ -2699,7 +2656,6 @@ function listenTestDefinitionsAndActive() {
       document.getElementById('nav-btn-entry').classList.toggle('active', view === 'entry');
       
       if (view === 'entry') {
-        triggerFlashNotice();
         const autoTest = getAutoActiveTest(currentEntryCategory);
         document.getElementById('entry-test-no').value = autoTest;
         updateEntryNotice(autoTest);
@@ -2801,8 +2757,8 @@ function listenTestDefinitionsAndActive() {
             </div>
           </button>`;
       });
-const banner = document.getElementById('navodaya-banner-tab');
-  if (banner) banner.style.display = (currentSelectedCategory === 'navodaya') ? 'flex' : 'none';      
+      const banner = document.getElementById('navodaya-banner-tab');
+      if (banner) banner.style.display = (currentSelectedCategory === 'navodaya') ? 'flex' : 'none';      
     }
 
     function buildEntryTestOptions() {
@@ -3014,9 +2970,8 @@ const banner = document.getElementById('navodaya-banner-tab');
           fetchedSchoolHmMobile = hmMobile;
           closeModal('schoolPinModal');
           showToast('शाळा पिन व मुख्याध्यापक नंबर यशस्वीरीत्या सेट झाला!');
-        proceedWithSchoolSelection(pendingSchoolToLock);
-        showSuccessFlashToast("Login Successful...!");
-      });
+          proceedWithSchoolSelection(pendingSchoolToLock);
+          showSuccessFlashToast("Login Successful...!");
         });
       } else {
         if (enteredPin === String(fetchedSchoolSecurityPin)) {
@@ -3451,6 +3406,7 @@ const banner = document.getElementById('navodaya-banner-tab');
 
         targetDbRef.set(payload).then(() => {
           showToast('सर्व गुण सुरक्षित सेव्ह झाले!');
+          showSuccessFlashToast("सर्व विद्यार्थ्यांचे गुण सेव्ह झाले आहेत...!");
           loadStudentMarksForSelectedTest();
         }).catch(err => {
           showCustomAlert('त्रुटी: ' + err.message);
@@ -3636,7 +3592,6 @@ const banner = document.getElementById('navodaya-banner-tab');
       });
     }
 
-    /* ॲनिमेशन आणि झटपट कॅशिंगसह डॅशबोर्ड आकडे लोडर */
     function updateStatWithAnimation(elementId, newValueText) {
       const el = document.getElementById(elementId);
       if (!el) return;
@@ -3647,8 +3602,7 @@ const banner = document.getElementById('navodaya-banner-tab');
       }
     }
 
-function listenDeclaredResults() {
-      // १. पेज उघडताच इंटरनेटची वाट न पाहाता कॅश केलेले निकाल व टॉपर्स तत्काळ दाखवा
+    function listenDeclaredResults() {
       const cachedDeclared = localStorage.getItem('cache_declared_toppers');
       if (cachedDeclared) {
         try {
@@ -3661,10 +3615,8 @@ function listenDeclaredResults() {
 
       db.ref('declared_toppers').on('value', (snap) => {
         DECLARED_DATA_STORE = snap.val() || {};
-        // २. नवीन निकाल येताच तो मोबाईलच्या LocalStorage मध्ये कायमस्वरूपी (Static) सेव्ह करा
         localStorage.setItem('cache_declared_toppers', JSON.stringify(DECLARED_DATA_STORE));
         
-        // ३. सर्वात मोठ्या क्रमांकाची (नुकतीच जाहीर झालेली) चाचणी आपोआप निवडा
         currentSelectedTest = getInitialDeclaredTestForDashboard(currentSelectedCategory);
         buildDashboardTestPills();
         listenLiveDashboardData();
@@ -3676,7 +3628,6 @@ function listenDeclaredResults() {
       const cacheKey = `dash_stats_${currentSelectedCategory}_test_${currentSelectedTest}`;
       const totalEligibleSchools = getTotalEligibleSchoolsForCategory(currentSelectedCategory);
 
-      // एकदा जाहीर झालेला निकाल बदलत नसल्यामुळे, त्याची आकडेवारी देखील लोकल स्टोरेजवरून सेकंदाच्या आत दाखवा
       const cachedData = localStorage.getItem(cacheKey);
       if (cachedData) {
         try {
@@ -3728,7 +3679,6 @@ function listenDeclaredResults() {
           active: submittedSchoolsSet.size
         };
 
-        // आकडेवारी कॅशमध्ये जतन करा जेणेकरून नंतर लोड होण्यास वेळ लागणार नाही
         localStorage.setItem(cacheKey, JSON.stringify(statsPayload));
 
         updateStatWithAnimation('stat-total-students', allStudentsCount);
@@ -4365,16 +4315,16 @@ function listenDeclaredResults() {
 
       let bodyHtml = CERT_CONFIG.body || "";
       bodyHtml = bodyHtml.replace(/{NAME}/g, name)
-                         .replace(/{CLASS}/g, className)
-                         .replace(/{SCHOOL}/g, school)
-                         .replace(/{UDISE}/g, udise)
-                         .replace(/{TALUKA}/g, taluka)
-                         .replace(/{PRONOUN}/g, pronoun)
-                         .replace(/{EXAM}/g, examTitle)
-                         .replace(/{TEST}/g, testDisplayName)
-                         .replace(/{MARKS}/g, marks)
-                         .replace(/{TOTAL}/g, totalM)
-                         .replace(/{RANK}/g, rankText);
+                       .replace(/{CLASS}/g, className)
+                       .replace(/{SCHOOL}/g, school)
+                       .replace(/{UDISE}/g, udise)
+                       .replace(/{TALUKA}/g, taluka)
+                       .replace(/{PRONOUN}/g, pronoun)
+                       .replace(/{EXAM}/g, examTitle)
+                       .replace(/{TEST}/g, testDisplayName)
+                       .replace(/{MARKS}/g, marks)
+                       .replace(/{TOTAL}/g, totalM)
+                       .replace(/{RANK}/g, rankText);
 
       const renderBody = document.getElementById('cert-render-body');
       renderBody.innerHTML = bodyHtml;
@@ -4518,7 +4468,8 @@ function listenDeclaredResults() {
     }
 
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-function renderPreLockSchoolsCleanup() {
+    
+    function renderPreLockSchoolsCleanup() {
       const cat = document.getElementById('admin-lock-category').value;
       const testNo = document.getElementById('admin-lock-test').value;
       const area = document.getElementById('pre-lock-content-area');
@@ -4569,7 +4520,8 @@ function renderPreLockSchoolsCleanup() {
         });
       });
     }
-function adminLookupSchoolPin() {
+
+    function adminLookupSchoolPin() {
       const udise = document.getElementById('admin-lookup-udise').value.trim();
       const resBox = document.getElementById('admin-lookup-result');
       if (!udise || udise.length < 4) {
@@ -4591,6 +4543,7 @@ function adminLookupSchoolPin() {
         }
       });
     }
+
     // २ सेकंद झटपट फडकून बंद होणारा ग्रीन फ्लॅश टोस्ट मेसेज
     function showSuccessFlashToast(msg) {
       const t = document.getElementById('toastMsg');
