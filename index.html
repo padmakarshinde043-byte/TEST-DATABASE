@@ -1954,6 +1954,11 @@
       "गेवराई", "केज", "माजलगाव", "परळी", "पाटोदा", "शिरूर कासार", "वडवणी"
     ];
 
+    const ENGLISH_TALUKA_LIST = [
+      "AMBAJOGAI", "ASHTI", "BEED", "DHARUR", "GEORAI", 
+      "KAIJ", "MAJALGAON", "PARLI", "PATODA", "SHIRUR", "URC BEED", "WADWANI"
+    ];
+
     const firebaseConfig = {
       apiKey: "AIzaSyBrKGEMc9uxBoZ4VIcNfOXq7xt_IZmluDE",
       authDomain: "test-database-34c8a.firebaseapp.com",
@@ -2825,19 +2830,47 @@
         talukaGridWrap.style.display = 'block';
         gridLabel.innerHTML = `<i class="fa-solid fa-hand-pointer" style="color:var(--sky);"></i> ज्या तालुक्याचे Top 10 पाहायचे आहेत तो तालुका निवडा:`;
         selectedTopperTaluka = TALUKA_LIST[0];
+        build12Taluka4ColGridInMarathi();
         const firstBtn = document.getElementById(`btn-taluka-${selectedTopperTaluka}`);
         if (firstBtn) firstBtn.classList.add('active');
         renderDeclaredResultsOnDashboard();
       } else if (tab === 'kendra') {
         talukaGridWrap.style.display = 'block';
-        gridLabel.innerHTML = `<i class="fa-solid fa-hand-pointer" style="color:#d97706;"></i> प्रथम तालुका निवडा (ज्या केंद्राचे टॉपर्स पाहायचे आहेत):`;
+        gridLabel.innerHTML = `<i class="fa-solid fa-hand-pointer" style="color:#d97706;"></i> प्रथम तालुका निवडा (इंग्रजी नावे):`;
         if (!window.selectedKendraTaluka) {
-          window.selectedKendraTaluka = TALUKA_LIST[0];
+          window.selectedKendraTaluka = ENGLISH_TALUKA_LIST[0];
         }
+        build12Taluka4ColGridInEnglish();
         const firstBtn = document.getElementById(`btn-taluka-${window.selectedKendraTaluka}`);
         if (firstBtn) firstBtn.classList.add('active');
         renderKendraViewForTaluka(window.selectedKendraTaluka);
       }
+    }
+
+    function build12Taluka4ColGridInMarathi() {
+      const cont = document.getElementById('taluka-4col-container');
+      if (!cont) return;
+      cont.innerHTML = '';
+      TALUKA_LIST.forEach(tName => {
+        cont.innerHTML += `
+          <button class="taluka-4col-btn" id="btn-taluka-${tName}" onclick="handleTalukaSelection('${tName}', this)">
+            ${tName}
+          </button>
+        `;
+      });
+    }
+
+    function build12Taluka4ColGridInEnglish() {
+      const cont = document.getElementById('taluka-4col-container');
+      if (!cont) return;
+      cont.innerHTML = '';
+      ENGLISH_TALUKA_LIST.forEach(tName => {
+        cont.innerHTML += `
+          <button class="taluka-4col-btn" id="btn-taluka-${tName}" onclick="handleTalukaSelection('${tName}', this)">
+            ${tName}
+          </button>
+        `;
+      });
     }
 
     function handleTalukaSelection(tName, btn) {
@@ -2861,7 +2894,8 @@
       const declaredCat = DECLARED_DATA_STORE[currentSelectedCategory];
       const testKey = `test_${currentSelectedTest}`;
       const testData = declaredCat ? declaredCat[testKey] : null;
-      const kendraMap = (testData && testData.kendraToppers) ? testData.kendraToppers : {};
+      
+      let kendraMap = (testData && testData.kendraToppers) ? testData.kendraToppers : {};
 
       let talukaKendras = [];
       if (BEED_ALL_SCHOOLS && BEED_ALL_SCHOOLS.length > 0) {
@@ -2872,6 +2906,41 @@
           }
         });
         talukaKendras = Array.from(uniqueK).sort();
+      }
+
+      if (Object.keys(kendraMap).length === 0 && currentRawResults) {
+        let kendraWiseTemp = {};
+        Object.values(currentRawResults).forEach(entry => {
+          if (entry.students && Array.isArray(entry.students)) {
+            const schoolUdise = String(entry.udise).trim();
+            const foundSchool = BEED_ALL_SCHOOLS.find(s => s.c === schoolUdise);
+            const kendraName = foundSchool ? foundSchool.k : (CLUSTER_MAPPING_MAP[schoolUdise] || entry.kendra || 'इतर');
+            const talukaNameVal = foundSchool ? foundSchool.t : (entry.taluka || 'इतर');
+
+            if (talukaNameVal.toUpperCase() === talukaName.toUpperCase()) {
+              entry.students.forEach(st => {
+                if (st.marks !== '' && String(st.marks).toUpperCase() !== 'AB') {
+                  const marksNum = parseFloat(st.marks) || 0;
+                  const rec = {
+                    name: st.name,
+                    school: entry.school,
+                    taluka: talukaNameVal,
+                    kendra: kendraName,
+                    udise: schoolUdise,
+                    marks: marksNum,
+                    gender: st.gender || 'मुलगा'
+                  };
+                  if (!kendraWiseTemp[kendraName]) kendraWiseTemp[kendraName] = [];
+                  kendraWiseTemp[kendraName].push(rec);
+                }
+              });
+            }
+          }
+        });
+        Object.keys(kendraWiseTemp).forEach(kName => {
+          kendraWiseTemp[kName].sort((a,b) => b.marks - a.marks);
+          kendraMap[kName] = getTop10WithTies(kendraWiseTemp[kName]);
+        });
       }
 
       if (talukaKendras.length === 0) {
@@ -2886,7 +2955,7 @@
       let html = `
         <div style="background:#fffbeb; border:1.5px solid #fde68a; border-radius:12px; padding:10px; margin-bottom:12px;">
           <p style="font-size:0.92rem; font-weight:800; color:#92400e; margin-bottom:6px;">
-            <i class="fa-solid fa-school-flag"></i> ${talukaName} तालुक्यातील केंद्र निवडा:
+            <i class="fa-solid fa-school-flag"></i> ${talukaName} केंद्र निवडा:
           </p>
           <div style="display:flex; flex-wrap:wrap; gap:6px;">
       `;
@@ -2895,7 +2964,7 @@
         const isActive = (kName === window.selectedTopperKendra);
         html += `
           <button class="app-btn ${isActive ? 'btn-gold' : 'btn-outline'}" style="width:auto; height:36px; padding:0 12px; font-size:0.85rem; border-radius:8px;" onclick="selectKendraTab('${kName}')">
-            ${kName} केंद्र
+            ${kName}
           </button>
         `;
       });
@@ -2914,7 +2983,7 @@
       cont.innerHTML = html;
 
       if (kToppers.length === 0) {
-        cont.innerHTML += `<p style="text-align:center; color:#64748b; padding:20px; background:#f8fafc; border-radius:10px;">या केंद्राचा निकाल अद्याप जाहीर झालेला नाही.</p>`;
+        cont.innerHTML += `<p style="text-align:center; color:#64748b; padding:20px; background:#f8fafc; border-radius:10px;">या चाचणीचा किंवा केंद्राचा निकाल अद्याप उपलब्ध नाही.</p>`;
         return;
       }
 
@@ -3787,7 +3856,7 @@
       cont.innerHTML = '';
 
       if (currentTriTab === 'kendra') {
-        renderKendraViewForTaluka(window.selectedKendraTaluka || TALUKA_LIST[0]);
+        renderKendraViewForTaluka(window.selectedKendraTaluka || ENGLISH_TALUKA_LIST[0]);
         return;
       }
 
@@ -4273,7 +4342,9 @@
           Object.values(data).forEach(entry => {
             if (entry.students && Array.isArray(entry.students)) {
               const schoolUdise = String(entry.udise).trim();
-              const kendraName = CLUSTER_MAPPING_MAP[schoolUdise] || entry.kendra || 'इतर';
+              const foundSchool = BEED_ALL_SCHOOLS.find(s => s.c === schoolUdise);
+              const kendraName = foundSchool ? foundSchool.k : (CLUSTER_MAPPING_MAP[schoolUdise] || entry.kendra || 'इतर');
+              const talukaName = foundSchool ? foundSchool.t : (entry.taluka || 'इतर');
 
               entry.students.forEach(st => {
                 if (st.marks !== '' && String(st.marks).toUpperCase() !== 'AB') {
@@ -4281,7 +4352,7 @@
                   const rec = {
                     name: st.name,
                     school: entry.school,
-                    taluka: entry.taluka || 'इतर',
+                    taluka: talukaName,
                     kendra: kendraName,
                     udise: schoolUdise,
                     marks: marksNum,
@@ -4289,8 +4360,8 @@
                   };
                   allStudents.push(rec);
 
-                  if (!talukaWise[entry.taluka]) talukaWise[entry.taluka] = [];
-                  talukaWise[entry.taluka].push(rec);
+                  if (!talukaWise[talukaName]) talukaWise[talukaName] = [];
+                  talukaWise[talukaName].push(rec);
 
                   if (!kendraWise[kendraName]) kendraWise[kendraName] = [];
                   kendraWise[kendraName].push(rec);
