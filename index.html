@@ -1930,7 +1930,7 @@
         <div class="progress-bar-container" id="rc-graph-bars" style="display:flex; gap:6px; align-items:flex-end; height:120px; border-bottom:2px solid #cbd5e1; padding-bottom:3px; margin-top:6px;"></div>
 
         <div style="margin-top:10px; padding:6px 12px; background:#f0fdf4; border-radius:6px; border:1px solid #bbf7d0; font-size:0.9rem;">
-          अ अंतिम शेरा: <strong id="rc-remark-text" style="color:#166534;">उत्कृष्ट कामगिरी!</strong>
+          अंतिम शेरा: <strong id="rc-remark-text" style="color:#166534;">उत्कृष्ट कामगिरी!</strong>
         </div>
       </div>
 
@@ -2109,6 +2109,7 @@
 
     let flashTimer = null;
     let BEED_ALL_SCHOOLS = [];
+    let CLUSTER_MAPPING_MAP = {};
     let PRE_LOCK_CALCULATED_DATA = null;
     let currentActiveDashboardRef = null;
 
@@ -2700,6 +2701,7 @@
     }
 
     function loadSchoolsData() {
+      // १. गुण भरण्यासाठी मूळ शाळा लोड करणे (जुनी schools.json)
       fetch('schools.json')
         .then(res => res.json())
         .then(data => {
@@ -2713,9 +2715,18 @@
           }));
           listenLiveDashboardData();
         })
-        .catch(err => {
-          console.error("schools.json त्रुटी:", err);
-        });
+        .catch(err => console.error("schools.json त्रुटी:", err));
+
+      // २. केंद्र ओळखण्यासाठी नवीन फाईल (schools_cluster.json) लोड करणे
+      fetch('schools_cluster.json')
+        .then(res => res.json())
+        .then(data => {
+          data.forEach(s => {
+            const udiseCode = String(s.udise).trim();
+            CLUSTER_MAPPING_MAP[udiseCode] = s.kendra ? s.kendra.trim() : 'इतर';
+          });
+        })
+        .catch(err => console.log("schools_cluster.json त्रुटी:", err));
     }
 
     function initTalukaDropdowns() {
@@ -2809,18 +2820,24 @@
       if (tab === 'district') {
         talukaGridWrap.style.display = 'none';
         selectedTopperTaluka = null;
+        renderDeclaredResultsOnDashboard();
       } else if (tab === 'taluka') {
         talukaGridWrap.style.display = 'block';
         gridLabel.innerHTML = `<i class="fa-solid fa-hand-pointer" style="color:var(--sky);"></i> ज्या तालुक्याचे Top 10 पाहायचे आहेत तो तालुका निवडा:`;
         selectedTopperTaluka = TALUKA_LIST[0];
         const firstBtn = document.getElementById(`btn-taluka-${selectedTopperTaluka}`);
         if (firstBtn) firstBtn.classList.add('active');
+        renderDeclaredResultsOnDashboard();
       } else if (tab === 'kendra') {
-        talukaGridWrap.style.display = 'none';
-        selectedTopperTaluka = null;
+        talukaGridWrap.style.display = 'block';
+        gridLabel.innerHTML = `<i class="fa-solid fa-hand-pointer" style="color:#d97706;"></i> प्रथम तालुका निवडा (ज्या केंद्राचे टॉपर्स पाहायचे आहेत):`;
+        if (!window.selectedKendraTaluka) {
+          window.selectedKendraTaluka = TALUKA_LIST[0];
+        }
+        const firstBtn = document.getElementById(`btn-taluka-${window.selectedKendraTaluka}`);
+        if (firstBtn) firstBtn.classList.add('active');
+        renderKendraViewForTaluka(window.selectedKendraTaluka);
       }
-
-      renderDeclaredResultsOnDashboard();
     }
 
     function handleTalukaSelection(tName, btn) {
@@ -2830,7 +2847,83 @@
 
       if (currentTriTab === 'taluka') {
         renderDeclaredResultsOnDashboard();
+      } else if (currentTriTab === 'kendra') {
+        window.selectedKendraTaluka = tName;
+        window.selectedTopperKendra = null; 
+        renderKendraViewForTaluka(tName);
       }
+    }
+
+    function renderKendraViewForTaluka(talukaName) {
+      const cont = document.getElementById('dashboard-toppers-container');
+      if (!cont) return;
+
+      const declaredCat = DECLARED_DATA_STORE[currentSelectedCategory];
+      const testKey = `test_${currentSelectedTest}`;
+      const testData = declaredCat ? declaredCat[testKey] : null;
+      const kendraMap = (testData && testData.kendraToppers) ? testData.kendraToppers : {};
+
+      let talukaKendras = [];
+      if (BEED_ALL_SCHOOLS && BEED_ALL_SCHOOLS.length > 0) {
+        const uniqueK = new Set();
+        BEED_ALL_SCHOOLS.forEach(s => {
+          if (s.t && s.t.toUpperCase() === talukaName.toUpperCase() && s.k) {
+            uniqueK.add(s.k);
+          }
+        });
+        talukaKendras = Array.from(uniqueK).sort();
+      }
+
+      if (talukaKendras.length === 0) {
+        cont.innerHTML = `<p style="text-align:center; color:#64748b; padding:16px;">या तालुक्यासाठी केंद्रांची माहिती उपलब्ध नाही.</p>`;
+        return;
+      }
+
+      if (!window.selectedTopperKendra || !talukaKendras.includes(window.selectedTopperKendra)) {
+        window.selectedTopperKendra = talukaKendras[0];
+      }
+
+      let html = `
+        <div style="background:#fffbeb; border:1.5px solid #fde68a; border-radius:12px; padding:10px; margin-bottom:12px;">
+          <p style="font-size:0.92rem; font-weight:800; color:#92400e; margin-bottom:6px;">
+            <i class="fa-solid fa-school-flag"></i> ${talukaName} तालुक्यातील केंद्र निवडा:
+          </p>
+          <div style="display:flex; flex-wrap:wrap; gap:6px;">
+      `;
+
+      talukaKendras.forEach(kName => {
+        const isActive = (kName === window.selectedTopperKendra);
+        html += `
+          <button class="app-btn ${isActive ? 'btn-gold' : 'btn-outline'}" style="width:auto; height:36px; padding:0 12px; font-size:0.85rem; border-radius:8px;" onclick="selectKendraTab('${kName}')">
+            ${kName} केंद्र
+          </button>
+        `;
+      });
+
+      html += `</div></div>`;
+
+      const maxM = getMaxMarksForTest(currentSelectedCategory, currentSelectedTest);
+      const kToppers = kendraMap[window.selectedTopperKendra] || [];
+
+      html += `
+        <div style="margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+          <strong style="color:#d97706; font-size:1.02rem;"><i class="fa-solid fa-award"></i> ${window.selectedTopperKendra} केंद्र Top 10 गुणवत्ता यादी</strong>
+        </div>
+      `;
+
+      cont.innerHTML = html;
+
+      if (kToppers.length === 0) {
+        cont.innerHTML += `<p style="text-align:center; color:#64748b; padding:20px; background:#f8fafc; border-radius:10px;">या केंद्राचा निकाल अद्याप जाहीर झालेला नाही.</p>`;
+        return;
+      }
+
+      renderStudentsCards(kToppers, maxM, `${window.selectedTopperKendra} केंद्रात क्रमांक`);
+    }
+
+    function selectKendraTab(kName) {
+      window.selectedTopperKendra = kName;
+      renderKendraViewForTaluka(window.selectedKendraTaluka);
     }
 
     function selectEntryCategory(cat) {
@@ -3694,16 +3787,7 @@
       cont.innerHTML = '';
 
       if (currentTriTab === 'kendra') {
-        cont.innerHTML = `
-          <div style="text-align:center; padding:30px 16px; background:#fffbeb; border-radius:12px; border:1.5px solid #fed7aa; margin:8px 0;">
-            <i class="fa-solid fa-circle-exclamation" style="font-size:2.4rem; color:#d97706; margin-bottom:10px;"></i>
-            <h4 style="font-size:1.08rem; color:#92400e; font-weight:800; margin-bottom:4px;">केंद्राचे निकाल संकलन सुरू आहे</h4>
-            <p style="font-size:0.94rem; color:#78350f; font-weight:600; line-height:1.45;">
-              📢 <strong>सूचना:</strong> सध्या केंद्राच्या टॉपर्ससाठी पुरेसा डेटा उपलब्ध नाही.<br>
-              <strong>पुढील चाचणीच्या निकालामध्ये केंद्राचे टॉपर्स जाहीर करण्यात येतील.</strong>
-            </p>
-          </div>
-        `;
+        renderKendraViewForTaluka(window.selectedKendraTaluka || TALUKA_LIST[0]);
         return;
       }
 
@@ -4184,9 +4268,13 @@
           const data = snap.val() || {};
           let allStudents = [];
           let talukaWise = {};
+          let kendraWise = {};
 
           Object.values(data).forEach(entry => {
             if (entry.students && Array.isArray(entry.students)) {
+              const schoolUdise = String(entry.udise).trim();
+              const kendraName = CLUSTER_MAPPING_MAP[schoolUdise] || entry.kendra || 'इतर';
+
               entry.students.forEach(st => {
                 if (st.marks !== '' && String(st.marks).toUpperCase() !== 'AB') {
                   const marksNum = parseFloat(st.marks) || 0;
@@ -4194,7 +4282,8 @@
                     name: st.name,
                     school: entry.school,
                     taluka: entry.taluka || 'इतर',
-                    udise: entry.udise || '-',
+                    kendra: kendraName,
+                    udise: schoolUdise,
                     marks: marksNum,
                     gender: st.gender || 'मुलगा'
                   };
@@ -4202,6 +4291,9 @@
 
                   if (!talukaWise[entry.taluka]) talukaWise[entry.taluka] = [];
                   talukaWise[entry.taluka].push(rec);
+
+                  if (!kendraWise[kendraName]) kendraWise[kendraName] = [];
+                  kendraWise[kendraName].push(rec);
                 }
               });
             }
@@ -4216,11 +4308,18 @@
             talukaToppers[tName] = getTop10WithTies(talukaWise[tName]);
           });
 
+          let kendraToppers = {};
+          Object.keys(kendraWise).forEach(kName => {
+            kendraWise[kName].sort((a,b) => b.marks - a.marks);
+            kendraToppers[kName] = getTop10WithTies(kendraWise[kName]);
+          });
+
           const payload = {
             declaredAt: new Date().toISOString(),
             maxMarks: maxM,
             districtToppers: districtToppers,
-            talukaToppers: talukaToppers
+            talukaToppers: talukaToppers,
+            kendraToppers: kendraToppers
           };
 
           db.ref(`declared_toppers/${cat}/test_${testNo}`).set(payload).then(() => {
