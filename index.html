@@ -1290,6 +1290,21 @@
         </p>
       </div>
 
+      <!-- वेबसाईट क्लिक्स व व्ह्यूज सांख्यिकी कक्ष -->
+      <div class="app-card" style="border-left: 5px solid #0284c7; background: #f0f9ff; margin-bottom: 12px;">
+        <div class="app-card-title"><i class="fa-solid fa-mouse-pointer" style="color:#0284c7;"></i> 🖱️ वेबसाईट क्लिक्स व व्ह्यूज सांख्यिकी</div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:8px;">
+          <div style="background:white; padding:10px; border-radius:8px; border:1px solid #bae6fd; text-align:center;">
+            <p style="font-size:0.82rem; color:#64748b; font-weight:700;">आज दिवसभरातील क्लिक्स</p>
+            <h3 id="stat-today-clicks" style="font-size:1.5rem; color:#0369a1; font-family:'Poppins', sans-serif; font-weight:800;">0</h3>
+          </div>
+          <div style="background:white; padding:10px; border-radius:8px; border:1px solid #bae6fd; text-align:center;">
+            <p style="font-size:0.82rem; color:#64748b; font-weight:700;">आतापर्यंतचे एकूण क्लिक्स</p>
+            <h3 id="stat-total-clicks" style="font-size:1.5rem; color:#059669; font-family:'Poppins', sans-serif; font-weight:800;">0</h3>
+          </div>
+        </div>
+      </div>
+      
       <!-- ०. चाचणी व्यवस्थापन -->
       <div class="app-card" style="border-left: 5px solid #0284c7;">
         <div class="app-card-title"><i class="fa-solid fa-list-check" style="color:var(--sky);"></i> ⚙️ चाचणी व्यवस्थापन (Active Test व नवीन चाचण्या)</div>
@@ -2769,6 +2784,8 @@
       cont.innerHTML = '';
       
       const tests = getTestsListForCategory(currentSelectedCategory);
+      const declaredCatData = DECLARED_DATA_STORE[currentSelectedCategory] || {};
+
       if (!tests.find(t => t.no === currentSelectedTest)) {
         currentSelectedTest = getInitialDeclaredTestForDashboard(currentSelectedCategory);
       }
@@ -2778,10 +2795,16 @@
         let title = parts[0].trim();
         let datePart = parts[1] ? 'दि. ' + parts[1].trim() : `चाचणी क्र. ${t.no}`;
 
+        const isDeclared = !!declaredCatData[`test_${t.no}`];
+        const isActive = (t.no === currentSelectedTest);
+
+        let opacityStyle = 'opacity: 1; cursor: pointer;';
+        let badgeIconBg = '';
+
         cont.innerHTML += `
-          <button id="pill-test-${t.no}" class="test-capsule-chip ${t.no === currentSelectedTest ? 'active' : ''}" onclick="selectTest(${t.no}, this)">
-            <div class="capsule-badge-icon">
-              <i class="fa-solid fa-calendar-check"></i>
+          <button id="pill-test-${t.no}" class="test-capsule-chip ${isActive ? 'active' : ''}" style="${opacityStyle}" onclick="selectTest(${t.no}, this)">
+            <div class="capsule-badge-icon" style="${badgeIconBg}">
+              <i class="fa-solid ${isDeclared ? 'fa-calendar-check' : 'fa-pen-to-square'}"></i>
             </div>
             <div class="capsule-text-wrap">
               <span class="capsule-text-title">${title}</span>
@@ -2789,10 +2812,17 @@
             </div>
           </button>`;
       });
+
       const banner = document.getElementById('navodaya-banner-tab');
       if (banner) banner.style.display = (currentSelectedCategory === 'navodaya') ? 'flex' : 'none';      
     }
 
+    function selectTest(no, el) {
+      document.querySelectorAll('#dash-test-pills .test-capsule-chip').forEach(c => c.classList.remove('active'));
+      if (el) el.classList.add('active');
+      currentSelectedTest = no;
+      listenLiveDashboardData();
+    }
     function buildEntryTestOptions() {
       const autoTest = getAutoActiveTest(currentEntryCategory);
       document.getElementById('entry-test-no').value = autoTest;
