@@ -4798,7 +4798,7 @@
       const container = document.getElementById('admin-certificate-stats-container');
       if (!container) return;
 
-      container.innerHTML = `<p style="text-align:center; color:#64748b; padding:10px;">डेटा तपासत आहे...</p>`;
+      container.innerHTML = `<p style="text-align:center; color:#64748b; padding:10px;">सर्व स्तरावरील प्रमाणपत्रे तपासत आहे...</p>`;
       const tests = getTestsListForCategory(cat);
       let html = '';
 
@@ -4818,7 +4818,32 @@
           const declaredSnap = res[0].val();
           const downloadSnap = res[1].val();
 
-          let issuedCount = (declaredSnap && declaredSnap.districtToppers) ? declaredSnap.districtToppers.length : 0;
+          let issuedCount = 0;
+          if (declaredSnap) {
+            // १. जिल्हा टॉपर्सची संख्या मोजा
+            if (declaredSnap.districtToppers && Array.isArray(declaredSnap.districtToppers)) {
+              issuedCount += declaredSnap.districtToppers.length;
+            }
+
+            // २. सर्व तालुक्यांमधील टॉपर्सची संख्या मोजा
+            if (declaredSnap.talukaToppers) {
+              Object.values(declaredSnap.talukaToppers).forEach(talukaList => {
+                if (Array.isArray(talukaList)) {
+                  issuedCount += talukaList.length;
+                }
+              });
+            }
+
+            // ३. सर्व केंद्रांमधील (Kendra/Cluster) टॉपर्सची संख्या मोजा
+            if (declaredSnap.kendraToppers) {
+              Object.values(declaredSnap.kendraToppers).forEach(kendraList => {
+                if (Array.isArray(kendraList)) {
+                  issuedCount += kendraList.length;
+                }
+              });
+            }
+          }
+
           let downloadedCount = downloadSnap ? Object.keys(downloadSnap).length : 0;
 
           grandTotalIssued += issuedCount;
@@ -4834,7 +4859,7 @@
 
         const summaryHtml = `
           <div style="background:#1e293b; color:white; border-radius:10px; padding:10px 14px; margin-bottom:10px; font-size:0.92rem;">
-            <strong>📌 सर्व चाचण्यांचा गोषवारा:</strong><br>
+            <strong>📌 सर्व चाचण्यांचा गोषवारा (जिल्हा + तालुका + केंद्र):</strong><br>
             📜 एकूण जारी (Issued): <span style="color:#34d399; font-weight:800;">${grandTotalIssued}</span> | 
             📥 एकूण डाऊनलोड (Downloaded): <span style="color:#60a5fa; font-weight:800;">${grandTotalDownloaded}</span>
           </div>
