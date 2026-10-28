@@ -1642,7 +1642,22 @@
         <div id="admin-lookup-result" style="background:#faf5ff; border:1.5px solid #d8b4fe; border-radius:10px; padding:10px; display:none; font-size:0.92rem; color:#4c1d95; line-height:1.5;">
         </div>
       </div>
-
+<!-- प्रमाणपत्र व डाऊनलोड सांख्यिकी कक्ष -->
+      <div class="app-card" style="border-left: 5px solid #2563eb; background: #f8fafc;">
+        <div class="app-card-title"><i class="fa-solid fa-chart-pie" style="color:#2563eb;"></i> 📊 प्रमाणपत्र व डाऊनलोड सांख्यिकी</div>
+        <div class="form-group" style="margin-bottom:10px;">
+          <label>परीक्षेचा प्रकार निवडा:</label>
+          <select class="form-control" id="admin-stats-category" onchange="loadAdminCertificateStats()">
+            <option value="navodaya">नवोदय प्रवेश परीक्षा (5 वी)</option>
+            <option value="4th">4 थी शिष्यवृत्ती परीक्षा</option>
+            <option value="7th">7 वी शिष्यवृत्ती परीक्षा</option>
+            <option value="nmms">NMMS शिष्यवृत्ती परीक्षा (8 वी)</option>
+          </select>
+        </div>
+        <div id="admin-certificate-stats-container">
+          <button class="app-btn btn-outline" style="height:38px; font-size:0.88rem;" onclick="loadAdminCertificateStats()">सांख्यिकी आकडेवारी पहा</button>
+        </div>
+      </div>
       <!-- ६. गुण भरा टॅब कस्टम मेसेज मॅनेजर (फक्त ॲडमिन पॅनेलमध्ये दिसेल) -->
       <div class="app-card" style="border-left: 5px solid #059669; margin-top: 12px;">
         <div class="app-card-title"><i class="fa-solid fa-message" style="color:#059669;"></i> गुण भरा टॅब कस्टम मेसेज मॅनेजर</div>
@@ -4542,10 +4557,19 @@
         pdf.addImage(imgData, 'JPEG', posX, posY, printW, printH);
         const cleanName = currentCertStudentName.replace(/\s+/g, '_');
         pdf.save(`Certificate_${cleanName}.pdf`);
+        
+        // --- स्वयंचलित सांख्यिकी नोंद (डायरेक्ट डाऊनलोड फंक्शनमध्येच समाविष्ट) ---
+        const cat = currentSelectedCategory;
+        const testNo = currentSelectedTest;
+        const safeKey = currentCertStudentName.trim().replace(/[.#$\/\[\]]/g, '_');
+        db.ref(`certificate_downloads/${cat}/test_${testNo}/${safeKey}`).set({
+          studentName: currentCertStudentName,
+          downloadedAt: new Date().toISOString()
+        });
+
         showToast('प्रमाणपत्र PDF डाऊनलोड झाले!');
       });
     }
-
     function openReportCardModal(studentId, studentName) {
       if (!selectedSchoolObj) return;
 
@@ -4767,6 +4791,56 @@
         showCustomAlert(val === '' ? 'कस्टम मेसेज काढून टाकण्यात आला आहे. आता गुण भरा टॅबवर कोणताच मेसेज दिसणार नाही.' : 'यशस्वी! गुण भरा टॅबवरील कस्टम मेसेज अपडेट झाला आहे.');
       }).catch(err => {
         showCustomAlert('त्रुटी: ' + err.message);
+      });
+    }
+    function loadAdminCertificateStats() {
+      const cat = document.getElementById('admin-stats-category') ? document.getElementById('admin-stats-category').value : 'navodaya';
+      const container = document.getElementById('admin-certificate-stats-container');
+      if (!container) return;
+
+      container.innerHTML = `<p style="text-align:center; color:#64748b; padding:10px;">डेटा तपासत आहे...</p>`;
+      const tests = getTestsListForCategory(cat);
+      let html = '';
+
+      let promises = tests.map(t => {
+        return Promise.all([
+          db.ref(`declared_toppers/${cat}/test_${t.no}`).once('value'),
+          db.ref(`certificate_downloads/${cat}/test_${t.no}`).once('value')
+        ]);
+      });
+
+      Promise.all(promises).then(results => {
+        let grandTotalIssued = 0;
+        let grandTotalDownloaded = 0;
+
+        results.forEach((res, idx) => {
+          const tItem = tests[idx];
+          const declaredSnap = res[0].val();
+          const downloadSnap = res[1].val();
+
+          let issuedCount = (declaredSnap && declaredSnap.districtToppers) ? declaredSnap.districtToppers.length : 0;
+          let downloadedCount = downloadSnap ? Object.keys(downloadSnap).length : 0;
+
+          grandTotalIssued += issuedCount;
+          grandTotalDownloaded += downloadedCount;
+
+          html += `
+            <div style="background:white; border:1px solid #cbd5e1; border-radius:8px; padding:8px 12px; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center; font-size:0.9rem;">
+              <span><strong>${tItem.name}</strong></span>
+              <span>Issued: <b style="color:#059669;">${issuedCount}</b> | Downloaded: <b style="color:#2563eb;">${downloadedCount}</b></span>
+            </div>
+          `;
+        });
+
+        const summaryHtml = `
+          <div style="background:#1e293b; color:white; border-radius:10px; padding:10px 14px; margin-bottom:10px; font-size:0.92rem;">
+            <strong>📌 सर्व चाचण्यांचा गोषवारा:</strong><br>
+            📜 एकूण जारी (Issued): <span style="color:#34d399; font-weight:800;">${grandTotalIssued}</span> | 
+            📥 एकूण डाऊनलोड (Downloaded): <span style="color:#60a5fa; font-weight:800;">${grandTotalDownloaded}</span>
+          </div>
+        `;
+
+        container.innerHTML = summaryHtml + html;
       });
     }
   </script>
