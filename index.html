@@ -4905,11 +4905,10 @@
       const container = document.getElementById('admin-certificate-stats-container');
       if (!container) return;
 
-      container.innerHTML = `<p style="text-align:center; color:#64748b; padding:10px;">जिल्हा, तालुका व केंद्रांचे सर्व गोषवारे तपासत आहे...</p>`;
+      container.innerHTML = `<p style="text-align:center; color:#64748b; padding:10px;">जिल्हा, तालुका व सर्व केंद्रांचे प्रमाणपत्र गोषवारे तपासत आहे...</p>`;
       const tests = getTestsListForCategory(cat);
       let html = '';
 
-      // ऑन-द-फ्लाय सर्व डेटा मोजण्यासाठी थेट निकाल डेटा फेच करूया
       let promises = tests.map(t => {
         return Promise.all([
           db.ref(`declared_toppers/${cat}/test_${t.no}`).once('value'),
@@ -4930,7 +4929,7 @@
 
           let issuedCount = 0;
 
-          // जर अधिकृत निकाल declare केला असेल किंवा ऑन-द-फ्लाय निकाल असेल
+          // जर अधिकृत निकाल declare केला असेल
           if (declaredSnap) {
             if (declaredSnap.districtToppers && Array.isArray(declaredSnap.districtToppers)) {
               issuedCount += declaredSnap.districtToppers.length;
@@ -4946,11 +4945,11 @@
               });
             }
           } else {
-            // ऑन-द-फ्लाय मोजणी (जिल्हा, तालुका आणि केंद्र पातळीवर)
+            // ऑन-द-फ्लाय मोजणी: जिल्हा, सर्व तालुके आणि सर्व केंद्रांचे टॉपर्स अचूक काढणे
             let allRecs = [];
             let talukaWiseTemp = {};
             let kendraWiseTemp = {};
-            const dataSource = (CLUSTER_SCHOOLS_DATA.length > 0) ? CLUSTER_SCHOOLS_DATA : BEED_ALL_SCHOOLS;
+            const dataSource = (typeof CLUSTER_SCHOOLS_DATA !== 'undefined' && CLUSTER_SCHOOLS_DATA.length > 0) ? CLUSTER_SCHOOLS_DATA : BEED_ALL_SCHOOLS;
 
             Object.values(rawResultData).forEach(entry => {
               if (entry.students && Array.isArray(entry.students)) {
@@ -4975,27 +4974,30 @@
               }
             });
 
-            // जिल्हा Top 10 with ties
+            // १. जिल्हा पातळीवरील Top 10 (टाई झालेल्या मुलांसह)
             allRecs.sort((a,b) => b.marks - a.marks);
-            issuedCount += getTop10WithTies(allRecs).length;
+            const districtList = getTop10WithTies(allRecs);
+            issuedCount += districtList.length;
 
-            // तालुका Top 10 with ties
+            // २. तालुका पातळीवरील Top 10 (प्रत्येक तालुक्याचे स्वतंत्र)
             Object.keys(talukaWiseTemp).forEach(tName => {
               talukaWiseTemp[tName].sort((a,b) => b.marks - a.marks);
-              issuedCount += getTop10WithTies(talukaWiseTemp[tName]).length;
+              const talukaList = getTop10WithTies(talukaWiseTemp[tName]);
+              issuedCount += talukaList.length;
             });
 
-            // केंद्र Top 3 with ties
+            // ३. केंद्र पातळीवरील Top 3 (प्रत्येक केंद्राचे स्वतंत्र, टाई झालेल्या मुलांसह)
             Object.keys(kendraWiseTemp).forEach(kName => {
               let sortedArr = kendraWiseTemp[kName];
               sortedArr.sort((a,b) => b.marks - a.marks);
               let distinctMarks = [...new Set(sortedArr.map(s => s.marks))].sort((a,b) => b.marks - a.marks);
-              let allowedMarks = distinctMarks.slice(0, 3);
+              let allowedMarks = distinctMarks.slice(0, 3); // फक्त पहिले 3 गुण स्तर
               let top3Ties = sortedArr.filter(s => allowedMarks.includes(s.marks));
               issuedCount += top3Ties.length;
             });
           }
 
+          // फायरबेसवरील डाउनलोड रेकॉर्ड्स मोजणे
           let downloadedCount = downloadSnap ? Object.keys(downloadSnap).length : 0;
 
           grandTotalIssued += issuedCount;
@@ -5011,7 +5013,7 @@
 
         const summaryHtml = `
           <div style="background:#1e293b; color:white; border-radius:10px; padding:10px 14px; margin-bottom:10px; font-size:0.92rem;">
-            <strong>📌 सर्व चाचण्यांचा गोषवारा (जिल्हा + तालुका + केंद्र):</strong><br>
+            <strong>📌 सर्व चाचण्यांचा एकत्रित गोषवारा (जिल्हा + सर्व तालुके + सर्व केंद्रे):</strong><br>
             📜 एकूण जारी (Issued): <span style="color:#34d399; font-weight:800;">${grandTotalIssued}</span> | 
             📥 एकूण डाऊनलोड (Downloaded): <span style="color:#60a5fa; font-weight:800;">${grandTotalDownloaded}</span>
           </div>
@@ -5020,6 +5022,7 @@
         container.innerHTML = summaryHtml + html;
       });
     }
+    
     // १. भविष्यातील चाचण्या अंधुक व अनक्लीकेबल करणारे फंक्शन
     function buildDashboardTestPills() {
       const cont = document.getElementById('dash-test-pills');
@@ -5033,25 +5036,32 @@
         currentSelectedTest = getInitialDeclaredTestForDashboard(currentSelectedCategory);
       }
 
+      // सिस्टीममधील सध्या चालू असलेली (Active Test) चाचणी क्रमांक शोधणे
+      let activeTestObj = (typeof ACTIVE_TEST_STORE !== 'undefined' && ACTIVE_TEST_STORE[currentSelectedCategory]) ? ACTIVE_TEST_STORE[currentSelectedCategory] : tests[tests.length - 1];
+      let activeTestNo = activeTestObj ? activeTestObj.no : 1;
+
       tests.forEach(t => {
         let parts = t.name.split('दिनांक');
         let title = parts[0].trim();
         let datePart = parts[1] ? 'दि. ' + parts[1].trim() : `चाचणी क्र. ${t.no}`;
 
         const isDeclared = !!declaredCatData[`test_${t.no}`];
-        const isActive = (t.no === currentSelectedTest);
+        const isActiveTest = (t.no <= activeTestNo); // जाहीर झालेल्या किंवा सध्या गुण भर सुरू असलेल्या चाचण्यांपर्यंत सर्व खुले राहतील
+        const isActiveTab = (t.no === currentSelectedTest);
 
-        let opacityStyle = isDeclared ? 'opacity: 1; cursor: pointer;' : 'opacity: 0.4; cursor: not-allowed; pointer-events: none; background: #f1f5f9;';
-        let badgeIconBg = isDeclared ? '' : 'background: #cbd5e1; color: #64748b;';
+        // जर चाचणी आधीची असेल किंवा चालू असेल तर ती पूर्ण ठळक व क्लिक करण्यायोग्य राहील, त्यानंतरच्या भविष्यातील चाचण्या अंधुक (Locked) होतील
+        let opacityStyle = (isDeclared || isActiveTest) ? 'opacity: 1; cursor: pointer;' : 'opacity: 0.4; cursor: not-allowed; pointer-events: none; background: #f1f5f9;';
+        let badgeIconBg = (isDeclared || isActiveTest) ? '' : 'background: #cbd5e1; color: #64748b;';
+        let iconClass = isDeclared ? 'fa-calendar-check' : (isActiveTest ? 'fa-pen-to-square' : 'fa-lock');
 
         cont.innerHTML += `
-          <button id="pill-test-${t.no}" class="test-capsule-chip ${isActive ? 'active' : ''}" style="${opacityStyle}" onclick="${isDeclared ? `selectTest(${t.no}, this)` : 'void(0)'}">
+          <button id="pill-test-${t.no}" class="test-capsule-chip ${isActiveTab ? 'active' : ''}" style="${opacityStyle}" onclick="${(isDeclared || isActiveTest) ? `selectTest(${t.no}, this)` : 'void(0)'}">
             <div class="capsule-badge-icon" style="${badgeIconBg}">
-              <i class="fa-solid ${isDeclared ? 'fa-calendar-check' : 'fa-lock'}"></i>
+              <i class="fa-solid ${iconClass}"></i>
             </div>
             <div class="capsule-text-wrap">
               <span class="capsule-text-title">${title}</span>
-              <span class="capsule-text-sub">${isDeclared ? datePart : 'निकाल अद्याप नाही'}</span>
+              <span class="capsule-text-sub">${(isDeclared || isActiveTest) ? datePart : 'अद्याप नाही'}</span>
             </div>
           </button>`;
       });
@@ -5059,7 +5069,6 @@
       const banner = document.getElementById('navodaya-banner-tab');
       if (banner) banner.style.display = (currentSelectedCategory === 'navodaya') ? 'flex' : 'none';      
     }
-
     function selectTest(no, el) {
       const declaredCatData = DECLARED_DATA_STORE[currentSelectedCategory] || {};
       if (!declaredCatData[`test_${no}`]) {
