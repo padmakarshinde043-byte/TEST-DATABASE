@@ -2599,6 +2599,7 @@
       initAdminPanelOptions();
       initAllDraggables();
       listenCustomNotice();
+      trackPageVisit();
 
       try { history.pushState({ page: 'home' }, ''); } catch(e) {}
     }
@@ -4967,6 +4968,78 @@
         `;
 
         container.innerHTML = summaryHtml + html;
+      });
+    }
+    // १. भविष्यातील चाचण्या अंधुक व अनक्लीकेबल करणारे फंक्शन
+    function buildDashboardTestPills() {
+      const cont = document.getElementById('dash-test-pills');
+      if (!cont) return;
+      cont.innerHTML = '';
+      
+      const tests = getTestsListForCategory(currentSelectedCategory);
+      const declaredCatData = DECLARED_DATA_STORE[currentSelectedCategory] || {};
+
+      if (!tests.find(t => t.no === currentSelectedTest)) {
+        currentSelectedTest = getInitialDeclaredTestForDashboard(currentSelectedCategory);
+      }
+
+      tests.forEach(t => {
+        let parts = t.name.split('दिनांक');
+        let title = parts[0].trim();
+        let datePart = parts[1] ? 'दि. ' + parts[1].trim() : `चाचणी क्र. ${t.no}`;
+
+        const isDeclared = !!declaredCatData[`test_${t.no}`];
+        const isActive = (t.no === currentSelectedTest);
+
+        let opacityStyle = isDeclared ? 'opacity: 1; cursor: pointer;' : 'opacity: 0.4; cursor: not-allowed; pointer-events: none; background: #f1f5f9;';
+        let badgeIconBg = isDeclared ? '' : 'background: #cbd5e1; color: #64748b;';
+
+        cont.innerHTML += `
+          <button id="pill-test-${t.no}" class="test-capsule-chip ${isActive ? 'active' : ''}" style="${opacityStyle}" onclick="${isDeclared ? `selectTest(${t.no}, this)` : 'void(0)'}">
+            <div class="capsule-badge-icon" style="${badgeIconBg}">
+              <i class="fa-solid ${isDeclared ? 'fa-calendar-check' : 'fa-lock'}"></i>
+            </div>
+            <div class="capsule-text-wrap">
+              <span class="capsule-text-title">${title}</span>
+              <span class="capsule-text-sub">${isDeclared ? datePart : 'निकाल अद्याप नाही'}</span>
+            </div>
+          </button>`;
+      });
+
+      const banner = document.getElementById('navodaya-banner-tab');
+      if (banner) banner.style.display = (currentSelectedCategory === 'navodaya') ? 'flex' : 'none';      
+    }
+
+    function selectTest(no, el) {
+      const declaredCatData = DECLARED_DATA_STORE[currentSelectedCategory] || {};
+      if (!declaredCatData[`test_${no}`]) {
+        showToast('या चाचणीचा निकाल अद्याप जाहीर झालेला नाही!');
+        return;
+      }
+      document.querySelectorAll('#dash-test-pills .test-capsule-chip').forEach(c => c.classList.remove('active'));
+      if (el) el.classList.add('active');
+      currentSelectedTest = no;
+      listenLiveDashboardData();
+    }
+
+    // २. वेबसाईट क्लिक्स व व्ह्यूज स्वयंचलित मोजणारे फंक्शन्स
+    function trackPageVisit() {
+      const todayStr = new Date().toISOString().split('T')[0];
+      db.ref('site_analytics/total_clicks').transaction(val => (val || 0) + 1);
+      db.ref(`site_analytics/daily_clicks/${todayStr}`).transaction(val => (val || 0) + 1);
+    }
+
+    function loadAdminClickStats() {
+      const todayStr = new Date().toISOString().split('T')[0];
+      db.ref('site_analytics/total_clicks').once('value', snap => {
+        const total = snap.val() || 0;
+        const totalEl = document.getElementById('stat-total-clicks');
+        if (totalEl) totalEl.innerText = total;
+      });
+      db.ref(`site_analytics/daily_clicks/${todayStr}`).once('value', snap => {
+        const todayCount = snap.val() || 0;
+        const todayEl = document.getElementById('stat-today-clicks');
+        if (todayEl) todayEl.innerText = todayCount;
       });
     }
   </script>
