@@ -5091,67 +5091,7 @@
         const todayEl = document.getElementById('stat-today-clicks');
         if (todayEl) todayEl.innerText = todayCount;
       });
-    }
-    function loadActiveTestProgressReport() {
-      const cat = document.getElementById('admin-report-category') ? document.getElementById('admin-report-category').value : 'navodaya';
-      const container = document.getElementById('admin-report-container');
-      if (!container) return;
-
-      container.innerHTML = `<p style="text-align:center; color:#64748b;">मागील व चालू सर्व डेटा तपासत आहे...</p>`;
-
-      // १. सिस्टीममधून सध्याची चालू चाचणी शोधणे (Active Test)
-      const tests = getTestsListForCategory(cat);
-      let activeTestObj = (typeof ACTIVE_TEST_STORE !== 'undefined' && ACTIVE_TEST_STORE[cat]) ? ACTIVE_TEST_STORE[cat] : tests[tests.length - 1];
       
-      let activeTestNo = activeTestObj ? activeTestObj.no : 1;
-      let activeTestName = activeTestObj ? activeTestObj.name : `चाचणी क्र. ${activeTestNo}`;
-
-      // २. परीक्षेनुसार पात्र शाळांची एकूण संख्या ठरवणे
-      const dataSource = (typeof CLUSTER_SCHOOLS_DATA !== 'undefined' && CLUSTER_SCHOOLS_DATA.length > 0) ? CLUSTER_SCHOOLS_DATA : (typeof BEED_ALL_SCHOOLS !== 'undefined' ? BEED_ALL_SCHOOLS : []);
-      let eligibleSchoolsCount = dataSource.length > 0 ? dataSource.length : 2574; 
-
-      // ३. फायरबेसवरील सर्व जुना व नवीन डेटा (Results) फेच करणे
-      db.ref(`results/${cat}/test_${activeTestNo}`).once('value', snap => {
-        const resultsData = snap.val() || {};
-        
-        // आतापर्यंत माहिती भरलेल्या युनिक शाळांची मोजणी (जुन्या नोंदींसह)
-        let submittedSchoolsSet = new Set();
-        let totalStudentsCount = 0;
-
-        Object.keys(resultsData).forEach(udise => {
-          const schoolEntry = resultsData[udise];
-          if (schoolEntry && schoolEntry.students && Array.isArray(schoolEntry.students)) {
-            let hasValidStudent = false;
-            schoolEntry.students.forEach(st => {
-              if (st.marks !== '' && String(st.marks).toUpperCase() !== 'AB') {
-                totalStudentsCount++;
-                hasValidStudent = true;
-              }
-            });
-            if (hasValidStudent) {
-              submittedSchoolsSet.add(udise);
-            }
-          }
-        });
-
-        const submittedSchoolsCount = submittedSchoolsSet.size;
-
-        container.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e2e8f0; padding-bottom:6px; margin-bottom:8px;">
-            <span><strong>चालू चाचणी:</strong> <span style="color:#2563eb; font-weight:700;">${activeTestName}</span></span>
-          </div>
-          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; text-align:center;">
-            <div style="background:#f8fafc; padding:8px; border-radius:6px; border:1px solid #cbd5e1;">
-              <p style="font-size:0.78rem; color:#64748b; font-weight:600;">माहिती भरलेल्या शाळा (जुना डेटा सह)</p>
-              <h4 style="color:#059669; font-size:1.2rem; margin:0;">${submittedSchoolsCount} / ${eligibleSchoolsCount}</h4>
-            </div>
-            <div style="background:#f8fafc; padding:8px; border-radius:6px; border:1px solid #cbd5e1;">
-              <p style="font-size:0.78rem; color:#64748b; font-weight:600;">विद्यार्थ्यांची एकूण माहिती (जुना डेटा सह)</p>
-              <h4 style="color:#2563eb; font-size:1.2rem; margin:0;">${totalStudentsCount}</h4>
-            </div>
-          </div>
-        `;
-      });
     }
   </script>
 </body>
