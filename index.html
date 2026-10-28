@@ -2615,6 +2615,7 @@
       initAllDraggables();
       listenCustomNotice();
       trackPageVisit();
+      loadAdminClickStats();
 
       try { history.pushState({ page: 'home' }, ''); } catch(e) {}
     }
@@ -2798,6 +2799,7 @@
         const isDeclared = !!declaredCatData[`test_${t.no}`];
         const isActive = (t.no === currentSelectedTest);
 
+        // सर्व चाचण्यांचे टॅब नेहमी ठळक आणि क्लिक करण्यायोग्य राहतील
         let opacityStyle = 'opacity: 1; cursor: pointer;';
         let badgeIconBg = '';
 
@@ -2816,7 +2818,6 @@
       const banner = document.getElementById('navodaya-banner-tab');
       if (banner) banner.style.display = (currentSelectedCategory === 'navodaya') ? 'flex' : 'none';      
     }
-
     function selectTest(no, el) {
       document.querySelectorAll('#dash-test-pills .test-capsule-chip').forEach(c => c.classList.remove('active'));
       if (el) el.classList.add('active');
