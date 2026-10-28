@@ -1304,6 +1304,25 @@
           </div>
         </div>
       </div>
+
+      <!-- चालू चाचणी प्रोग्रेस रिपोर्ट कक्ष -->
+      <div class="app-card" style="border-left: 5px solid #10b981; background: #f0fdf4; margin-bottom: 12px;">
+        <div class="app-card-title"><i class="fa-solid fa-chart-line" style="color:#10b981;"></i> 📊 चालू चाचणी माहिती भरणा प्रोग्रेस रिपोर्ट</div>
+        <div style="display:grid; grid-template-columns: 1fr; gap:8px; margin-top:8px;">
+          <div class="form-group" style="margin-bottom:6px;">
+            <label style="font-size:0.85rem; font-weight:700; color:#374151;">परीक्षा प्रकार निवडा:</label>
+            <select id="admin-report-category" class="form-control" onchange="loadActiveTestProgressReport()">
+              <option value="navodaya">नवोदय प्रवेश परीक्षा (५ वी)</option>
+              <option value="4th">४ थी स्कॉलरशिप परीक्षा</option>
+              <option value="8th">८ वी स्कॉलरशिप परीक्षा</option>
+              <option value="nmms">NMMS शिष्यवृत्ती परीक्षा (८ वी)</option>
+            </select>
+          </div>
+          <div id="admin-report-container" style="background:white; padding:12px; border-radius:8px; border:1px solid #bbf7d0; font-size:0.9rem;">
+            <!-- प्रोग्रेस माहिती इथे डायनॅमिकली लोड होईल -->
+          </div>
+        </div>
+      </div>
       
       <!-- ०. चाचणी व्यवस्थापन -->
       <div class="app-card" style="border-left: 5px solid #0284c7;">
@@ -5071,6 +5090,52 @@
         const todayCount = snap.val() || 0;
         const todayEl = document.getElementById('stat-today-clicks');
         if (todayEl) todayEl.innerText = todayCount;
+      });
+    }
+    function loadActiveTestProgressReport() {
+      const cat = document.getElementById('admin-report-category') ? document.getElementById('admin-report-category').value : 'navodaya';
+      const container = document.getElementById('admin-report-container');
+      if (!container) return;
+
+      container.innerHTML = `<p style="text-align:center; color:#64748b;">डेटा तपासत आहे...</p>`;
+
+      const tests = getTestsListForCategory(cat);
+      // सध्या चालू असलेली किंवा शेवटची चाचणी शोधणे
+      let activeTest = tests[tests.length - 1]; // किंवा तुमच्या नियमानुसार चालू चाचणी
+
+      db.ref(`results/${cat}/test_${activeTest.no}`).once('value', snap => {
+        const resultsData = snap.val() || {};
+        const submittedSchoolsCount = Object.keys(resultsData).length;
+
+        let totalStudentsCount = 0;
+        Object.values(resultsData).forEach(entry => {
+          if (entry.students && Array.isArray(entry.students)) {
+            entry.students.forEach(st => {
+              if (st.marks !== '' && String(st.marks).toUpperCase() !== 'AB') {
+                totalStudentsCount++;
+              }
+            });
+          }
+        });
+
+        // एकूण पात्र शाळांची संख्या (BEED_ALL_SCHOOLS मधून)
+        const totalEligibleSchools = (typeof BEED_ALL_SCHOOLS !== 'undefined') ? BEED_ALL_SCHOOLS.length : 3733;
+
+        container.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e2e8f0; padding-bottom:6px; margin-bottom:8px;">
+            <span><strong>चालू चाचणी:</strong> <span style="color:#2563eb;">${activeTest.name}</span></span>
+          </div>
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; text-align:center;">
+            <div style="background:#f8fafc; padding:8px; border-radius:6px; border:1px solid #cbd5e1;">
+              <p style="font-size:0.78rem; color:#64748b;">माहिती भरलेल्या शाळा</p>
+              <h4 style="color:#059669; font-size:1.2rem; margin:0;">${submittedSchoolsCount} / ${totalEligibleSchools}</h4>
+            </div>
+            <div style="background:#f8fafc; padding:8px; border-radius:6px; border:1px solid #cbd5e1;">
+              <p style="font-size:0.78rem; color:#64748b;">विद्यार्थ्यांची एकूण माहिती</p>
+              <h4 style="color:#2563eb; font-size:1.2rem; margin:0;">${totalStudentsCount}</h4>
+            </div>
+          </div>
+        `;
       });
     }
   </script>
