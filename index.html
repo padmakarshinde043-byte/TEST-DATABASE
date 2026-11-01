@@ -5150,9 +5150,7 @@
           runTransaction(totalRef, (current) => (current || 0) + 1).catch(err => console.log(err));
         }
 
-      } catch (err) {
-        console.error("Visitor tracker setup error:", err);
-      }
+
     }
 
     if (document.readyState === 'complete') {
