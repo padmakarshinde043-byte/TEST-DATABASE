@@ -5073,16 +5073,16 @@
     }
   </script>
 
-  <!-- ================= [LIVE VISITOR COUNTER ROBUST PATCH START] ================= -->
+<!-- ================= [LIVE VISITOR COUNTER SYNC PATCH START] ================= -->
   <footer style="background: #ffffff; border-top: 1.5px solid var(--gold-border); padding: 12px 10px; margin-top: 15px; margin-bottom: 70px; text-align: center; font-size: 13.5px; color: #475569; font-weight: 700; box-shadow: 0 -2px 10px rgba(0,0,0,0.03); width: 100%;">
     <div style="display: flex; justify-content: center; align-items: center; gap: 16px; flex-wrap: wrap;">
       <span style="background: #f1f5f9; padding: 6px 14px; border-radius: 25px; border: 1px solid #cbd5e1; display: inline-flex; align-items: center; gap: 7px;">
         <i class="fa-solid fa-calendar-day" style="color: var(--accent); font-size: 15px;"></i> आजच्या भेटी: 
-        <strong id="todayVisitorsCount" style="color: #0f2b48; font-size: 16px;">1</strong>
+        <strong id="todayVisitorsCount" style="color: #0f2b48; font-size: 16px;">...</strong>
       </span>
       <span style="background: #f1f5f9; padding: 6px 14px; border-radius: 25px; border: 1px solid #cbd5e1; display: inline-flex; align-items: center; gap: 7px;">
         <i class="fa-solid fa-users-viewfinder" style="color: var(--navy); font-size: 15px;"></i> एकूण भेटी: 
-        <strong id="totalVisitorsCount" style="color: #0f2b48; font-size: 16px;">1</strong>
+        <strong id="totalVisitorsCount" style="color: #0f2b48; font-size: 16px;">...</strong>
       </span>
     </div>
   </footer>
@@ -5111,29 +5111,33 @@
         const istDate = new Date(now.getTime() + (5.5 * 60 * 60 * 1000));
         const todayKey = istDate.toISOString().slice(0, 10);
 
-        const todayRef = ref(dbInstance, 'site_analytics/daily/' + todayKey);
-        const totalRef = ref(dbInstance, 'site_analytics/total_visits');
+        // तुमच्या फायरबेस डेटाबेसवरील मूळ आणि जुने पाथ्स
+        const todayRef = ref(dbInstance, 'daily_clicks/' + todayKey);
+        const totalRef = ref(dbInstance, 'total_clicks');
 
+        // आजच्या भेटी लाईव्ह वाचणे व दाखवणे
         onValue(todayRef, (snapshot) => {
           const val = snapshot.val();
           const el = document.getElementById('todayVisitorsCount');
           if (el) {
-            el.textContent = (val !== null && val !== undefined) ? Number(val).toLocaleString('en-IN') : '1';
+            el.textContent = (val !== null && val !== undefined) ? Number(val).toLocaleString('en-IN') : '0';
           }
         }, (error) => {
           console.error("Today read error:", error);
         });
 
+        // एकूण भेटी लाईव्ह वाचणे व दाखवणे (जुने आकडे गृहीत धरून)
         onValue(totalRef, (snapshot) => {
           const val = snapshot.val();
           const el = document.getElementById('totalVisitorsCount');
           if (el) {
-            el.textContent = (val !== null && val !== undefined) ? Number(val).toLocaleString('en-IN') : '1';
+            el.textContent = (val !== null && val !== undefined) ? Number(val).toLocaleString('en-IN') : '0';
           }
         }, (error) => {
           console.error("Total read error:", error);
         });
 
+        // प्रत्येक युजरच्या नवीन सत्रात (Session) आकडा एकदाच वाढवणे
         const sessionKey = 'savezpschools_visit_' + todayKey;
         if (!sessionStorage.getItem(sessionKey)) {
           sessionStorage.setItem(sessionKey, 'active');
@@ -5152,6 +5156,6 @@
       window.addEventListener('load', setupVisitorTracker);
     }
   </script>
-  <!-- ================= [LIVE VISITOR COUNTER ROBUST PATCH END] ================= -->
+  <!-- ================= [LIVE VISITOR COUNTER SYNC PATCH END] ================= -->
 </body>
 </html>
