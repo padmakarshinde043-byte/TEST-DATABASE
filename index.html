@@ -5094,63 +5094,92 @@
       
     }
   </script>
-  <!-- ================= [LIVE VISITOR COUNTER DIRECT PATCH] ================= -->
-  <footer style="background: #ffffff; border-top: 1.5px solid var(--gold-border); padding: 12px 10px; margin-top: 15px; margin-bottom: 60px; text-align: center; font-size: 13.5px; color: #475569; font-weight: 700; box-shadow: 0 -2px 10px rgba(0,0,0,0.03); width: 100%;">
+  <!-- ================= [LIVE VISITOR COUNTER ROBUST PATCH START] ================= -->
+  <footer style="background: #ffffff; border-top: 1.5px solid var(--gold-border); padding: 12px 10px; margin-top: 15px; margin-bottom: 70px; text-align: center; font-size: 13.5px; color: #475569; font-weight: 700; box-shadow: 0 -2px 10px rgba(0,0,0,0.03); width: 100%;">
     <div style="display: flex; justify-content: center; align-items: center; gap: 16px; flex-wrap: wrap;">
-      <span style="background: #f1f5f9; padding: 5px 12px; border-radius: 25px; border: 1px solid #cbd5e1; display: inline-flex; align-items: center; gap: 7px;">
-        <i class="fa-solid fa-calendar-day" style="color: var(--accent); font-size: 14px;"></i> आजच्या भेटी: 
-        <strong id="todayVisitorsCount" style="color: #0f2b48; font-size: 15px;">...</strong>
+      <span style="background: #f1f5f9; padding: 6px 14px; border-radius: 25px; border: 1px solid #cbd5e1; display: inline-flex; align-items: center; gap: 7px;">
+        <i class="fa-solid fa-calendar-day" style="color: var(--accent); font-size: 15px;"></i> आजच्या भेटी: 
+        <strong id="todayVisitorsCount" style="color: #0f2b48; font-size: 16px;">1</strong>
       </span>
-      <span style="background: #f1f5f9; padding: 5px 12px; border-radius: 25px; border: 1px solid #cbd5e1; display: inline-flex; align-items: center; gap: 7px;">
-        <i class="fa-solid fa-users-viewfinder" style="color: var(--navy); font-size: 14px;"></i> एकूण भेटी: 
-        <strong id="totalVisitorsCount" style="color: #0f2b48; font-size: 15px;">...</strong>
+      <span style="background: #f1f5f9; padding: 6px 14px; border-radius: 25px; border: 1px solid #cbd5e1; display: inline-flex; align-items: center; gap: 7px;">
+        <i class="fa-solid fa-users-viewfinder" style="color: var(--navy); font-size: 15px;"></i> एकूण भेटी: 
+        <strong id="totalVisitorsCount" style="color: #0f2b48; font-size: 16px;">1</strong>
       </span>
     </div>
   </footer>
 
   <script type="module">
-    import { ref, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    function initVisitorCounter() {
-      const db = window.rtdb || window.db;
-      if (!db) {
-        setTimeout(initVisitorCounter, 300);
-        return;
-      }
-
-      const now = new Date();
-      const istDate = new Date(now.getTime() + (5.5 * 60 * 60 * 1000));
-      const todayKey = istDate.toISOString().slice(0, 10);
-
-      const todayRef = ref(db, 'site_analytics/daily/' + todayKey);
-      const totalRef = ref(db, 'site_analytics/total_visits');
-
-      // लाईव्ह वाचन (Realtime Listening)
-      onValue(todayRef, (snap) => {
-        const val = snap.val() || 0;
-        document.getElementById('todayVisitorsCount').textContent = Number(val).toLocaleString('en-IN');
-      });
-
-      onValue(totalRef, (snap) => {
-        const val = snap.val() || 0;
-        document.getElementById('totalVisitorsCount').textContent = Number(val).toLocaleString('en-IN');
-      });
-
-      // भेट नोंदवणे (प्रत्येक वेळी किंवा नवीन टॅब उघडल्यावर खात्रीशीर वाढ होईल)
+    // तुमच्या वेबसाईटवर आधीच असलेला फायरबेस कॉन्फिग वापरणे किंवा ग्लोबल db वापरणे
+    function setupVisitorTracker() {
       try {
-        runTransaction(todayRef, (current) => (current || 0) + 1);
-        runTransaction(totalRef, (current) => (current || 0) + 1);
-      } catch (e) {
-        console.log("Counter increment error:", e);
+        // जर window.db किंवा window.rtdb आधीपासून उपलब्ध असेल तर ते वापरणे, अन्यथा स्वतः कनेक्ट होणे
+        let dbInstance = window.rtdb || window.db;
+        
+        if (!dbInstance) {
+          // तुमच्या प्रोजेक्टच्या कॉन्फिगनुसार किंवा थेट उपलब्ध इन्स्टन्स मधून घेणे
+          const existingApps = getApps();
+          if (existingApps.length > 0) {
+            dbInstance = getDatabase(existingApps[0]);
+          }
+        }
+
+        if (!dbInstance) {
+          // काही सेकंदानंतर पुन्हा प्रयत्न करणे
+          setTimeout(setupVisitorTracker, 500);
+          return;
+        }
+
+        const now = new Date();
+        const istDate = new Date(now.getTime() + (5.5 * 60 * 60 * 1000));
+        const todayKey = istDate.toISOString().slice(0, 10);
+
+        const todayRef = ref(dbInstance, 'site_analytics/daily/' + todayKey);
+        const totalRef = ref(dbInstance, 'site_analytics/total_visits');
+
+        // आजच्या भेटी लोड करणे
+        onValue(todayRef, (snapshot) => {
+          const val = snapshot.val();
+          const el = document.getElementById('todayVisitorsCount');
+          if (el) {
+            el.textContent = (val !== null && val !== undefined) ? Number(val).toLocaleString('en-IN') : '1';
+          }
+        }, (error) => {
+          console.error("Today read error:", error);
+        });
+
+        // एकूण भेटी लोड करणे
+        onValue(totalRef, (snapshot) => {
+          const val = snapshot.val();
+          const el = document.getElementById('totalVisitorsCount');
+          if (el) {
+            el.textContent = (val !== null && val !== undefined) ? Number(val).toLocaleString('en-IN') : '1';
+          }
+        }, (error) => {
+          console.error("Total read error:", error);
+        });
+
+        // भेट नोंदवून आकडा वाढवणे (प्रत्येक नवीन सत्रात)
+        const sessionKey = 'savezpschools_visit_' + todayKey;
+        if (!sessionStorage.getItem(sessionKey)) {
+          sessionStorage.setItem(sessionKey, 'active');
+          runTransaction(todayRef, (current) => (current || 0) + 1).catch(err => console.log(err));
+          runTransaction(totalRef, (current) => (current || 0) + 1).catch(err => console.log(err));
+        }
+
+      } catch (err) {
+        console.error("Visitor tracker setup error:", err);
       }
     }
 
     if (document.readyState === 'complete') {
-      initVisitorCounter();
+      setupVisitorTracker();
     } else {
-      window.addEventListener('load', initVisitorCounter);
+      window.addEventListener('load', setupVisitorTracker);
     }
   </script>
-  <!-- ================= [LIVE VISITOR COUNTER DIRECT PATCH END] ================= -->
+  <!-- ================= [LIVE VISITOR COUNTER ROBUST PATCH END] ================= -->
 </body>
 </html>
