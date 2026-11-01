@@ -5074,8 +5074,7 @@
 
    
     }
-  </script>
-  <!-- ================= [LIVE VISITOR COUNTER ROBUST PATCH START] ================= -->
+  </script><!-- ================= [LIVE VISITOR COUNTER ROBUST PATCH START] ================= -->
   <footer style="background: #ffffff; border-top: 1.5px solid var(--gold-border); padding: 12px 10px; margin-top: 15px; margin-bottom: 70px; text-align: center; font-size: 13.5px; color: #475569; font-weight: 700; box-shadow: 0 -2px 10px rgba(0,0,0,0.03); width: 100%;">
     <div style="display: flex; justify-content: center; align-items: center; gap: 16px; flex-wrap: wrap;">
       <span style="background: #f1f5f9; padding: 6px 14px; border-radius: 25px; border: 1px solid #cbd5e1; display: inline-flex; align-items: center; gap: 7px;">
@@ -5093,14 +5092,11 @@
     import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    // तुमच्या वेबसाईटवर आधीच असलेला फायरबेस कॉन्फिग वापरणे किंवा ग्लोबल db वापरणे
     function setupVisitorTracker() {
       try {
-        // जर window.db किंवा window.rtdb आधीपासून उपलब्ध असेल तर ते वापरणे, अन्यथा स्वतः कनेक्ट होणे
         let dbInstance = window.rtdb || window.db;
         
         if (!dbInstance) {
-          // तुमच्या प्रोजेक्टच्या कॉन्फिगनुसार किंवा थेट उपलब्ध इन्स्टन्स मधून घेणे
           const existingApps = getApps();
           if (existingApps.length > 0) {
             dbInstance = getDatabase(existingApps[0]);
@@ -5108,7 +5104,6 @@
         }
 
         if (!dbInstance) {
-          // काही सेकंदानंतर पुन्हा प्रयत्न करणे
           setTimeout(setupVisitorTracker, 500);
           return;
         }
@@ -5120,7 +5115,6 @@
         const todayRef = ref(dbInstance, 'site_analytics/daily/' + todayKey);
         const totalRef = ref(dbInstance, 'site_analytics/total_visits');
 
-        // आजच्या भेटी लोड करणे
         onValue(todayRef, (snapshot) => {
           const val = snapshot.val();
           const el = document.getElementById('todayVisitorsCount');
@@ -5131,7 +5125,6 @@
           console.error("Today read error:", error);
         });
 
-        // एकूण भेटी लोड करणे
         onValue(totalRef, (snapshot) => {
           const val = snapshot.val();
           const el = document.getElementById('totalVisitorsCount');
@@ -5142,7 +5135,6 @@
           console.error("Total read error:", error);
         });
 
-        // भेट नोंदवून आकडा वाढवणे (प्रत्येक नवीन सत्रात)
         const sessionKey = 'savezpschools_visit_' + todayKey;
         if (!sessionStorage.getItem(sessionKey)) {
           sessionStorage.setItem(sessionKey, 'active');
@@ -5150,7 +5142,9 @@
           runTransaction(totalRef, (current) => (current || 0) + 1).catch(err => console.log(err));
         }
 
-
+      } catch (err) {
+        console.error("Visitor tracker setup error:", err);
+      }
     }
 
     if (document.readyState === 'complete') {
