@@ -5073,7 +5073,7 @@
     }
   </script>
 
-<!-- ================= [LIVE VISITOR COUNTER LEGACY SYNC START] ================= -->
+<!-- ================= [LIVE VISITOR & CERTIFICATE COUNTER PATCH START] ================= -->
   <footer style="background: #ffffff; border-top: 1.5px solid var(--gold-border); padding: 12px 10px; margin-top: 15px; margin-bottom: 70px; text-align: center; font-size: 13.5px; color: #475569; font-weight: 700; box-shadow: 0 -2px 10px rgba(0,0,0,0.03); width: 100%;">
     <div style="display: flex; justify-content: center; align-items: center; gap: 16px; flex-wrap: wrap;">
       <span style="background: #f1f5f9; padding: 6px 14px; border-radius: 25px; border: 1px solid #cbd5e1; display: inline-flex; align-items: center; gap: 7px;">
@@ -5084,13 +5084,17 @@
         <i class="fa-solid fa-users-viewfinder" style="color: var(--navy); font-size: 15px;"></i> एकूण भेटी: 
         <strong id="totalVisitorsCount" style="color: #0f2b48; font-size: 16px;">...</strong>
       </span>
+      <span style="background: #f1f5f9; padding: 6px 14px; border-radius: 25px; border: 1px solid #cbd5e1; display: inline-flex; align-items: center; gap: 7px;">
+        <i class="fa-solid fa-certificate" style="color: var(--gold); font-size: 15px;"></i> प्रमाणपत्रे डाऊनलोड: 
+        <strong id="totalCertificatesCount" style="color: #0f2b48; font-size: 16px;">...</strong>
+      </span>
     </div>
   </footer>
 
   <script>
-    function initLegacyVisitorCounter() {
+    function initVisitorAndCertCounter() {
       if (typeof firebase === 'undefined' || typeof db === 'undefined') {
-        setTimeout(initLegacyVisitorCounter, 300);
+        setTimeout(initVisitorAndCertCounter, 300);
         return;
       }
 
@@ -5098,20 +5102,18 @@
       const istDate = new Date(now.getTime() + (5.5 * 60 * 60 * 1000));
       const todayStr = istDate.toISOString().split('T')[0];
 
-      // तुमच्या जुन्या डेटाबेस स्ट्रक्चरनुसार पाथ्स
-      const totalClicksRef = db.ref('site_analytics/total_clicks');
-      const dailyClicksRef = db.ref(`site_analytics/daily_clicks/${todayStr}`);
-      
-      // पर्यायी पाथ्स (जर डेटा रूटवर असेल तर खालीलप्रमाणे काम करेल)
-      const rootTotalRef = db.ref('total_clicks');
-      const rootDailyRef = db.ref(`daily_clicks/${todayStr}`);
+      // भेटींच्या संख्येचे पाथ्स
+      const totalClicksRef = db.ref('total_clicks');
+      const dailyClicksRef = db.ref(`daily_clicks/${todayStr}`);
+      const rootTotalRef = db.ref('site_analytics/total_clicks');
+      const rootDailyRef = db.ref(`site_analytics/daily_clicks/${todayStr}`);
 
       // एकूण भेटी लोड करणे
       totalClicksRef.on('value', (snap) => {
         let val = snap.val();
         if (val === null || val === undefined) {
           rootTotalRef.on('value', (rootSnap) => {
-            let rootVal = rootSnap.val() || 5049; // जुना डेटा सुरक्षित राखण्यासाठी
+            let rootVal = rootSnap.val() || 5049;
             document.getElementById('totalVisitorsCount').textContent = Number(rootVal).toLocaleString('en-IN');
           });
         } else {
@@ -5132,25 +5134,41 @@
         }
       });
 
-      // भेट नोंदवून आकडे वाढवणे
+      // फायरबेसवरील certificate_downloads मधून सर्व kategori व test मधील प्रमाणपत्रांची एकूण संख्या मोजणे
+      const certRef = db.ref('certificate_downloads');
+      certRef.on('value', (snapshot) => {
+        const data = snapshot.val() || {};
+        let totalCerts = 0;
+        Object.values(data).forEach(catObj => {
+          if (catObj && typeof catObj === 'object') {
+            Object.values(catObj).forEach(testObj => {
+              if (testObj && typeof testObj === 'object') {
+                totalCerts += Object.keys(testObj).length;
+              }
+            });
+          }
+        });
+        const certEl = document.getElementById('totalCertificatesCount');
+        if (certEl) {
+          certEl.textContent = Number(totalCerts).toLocaleString('en-IN');
+        }
+      });
+
+      // भेट नोंदवून आकडा वाढवणे
       const sessionKey = 'visited_sig_' + todayStr;
       if (!sessionStorage.getItem(sessionKey)) {
         sessionStorage.setItem(sessionKey, 'active');
-        
         totalClicksRef.transaction(val => (val || 5049) + 1);
         dailyClicksRef.transaction(val => (val || 0) + 1);
-        
-        rootTotalRef.transaction(val => (val || 5049) + 1);
-        rootDailyRef.transaction(val => (val || 0) + 1);
       }
     }
 
     if (document.readyState === 'complete') {
-      initLegacyVisitorCounter();
+      initVisitorAndCertCounter();
     } else {
-      window.addEventListener('load', initLegacyVisitorCounter);
+      window.addEventListener('load', initVisitorAndCertCounter);
     }
   </script>
-  <!-- ================= [LIVE VISITOR COUNTER LEGACY SYNC END] ================= -->
+  <!-- ================= [LIVE VISITOR & CERTIFICATE COUNTER PATCH END] ================= -->
 </body>
 </html>
