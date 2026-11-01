@@ -5073,7 +5073,7 @@
     }
   </script>
 
-<!-- ================= [LIVE VISITOR & CERTIFICATE COUNTER PATCH START] ================= -->
+<!-- ================= [LIVE VISITOR & CERTIFICATE COUNTER FIXED START] ================= -->
   <footer style="background: #ffffff; border-top: 1.5px solid var(--gold-border); padding: 12px 10px; margin-top: 15px; margin-bottom: 70px; text-align: center; font-size: 13.5px; color: #475569; font-weight: 700; box-shadow: 0 -2px 10px rgba(0,0,0,0.03); width: 100%;">
     <div style="display: flex; justify-content: center; align-items: center; gap: 16px; flex-wrap: wrap;">
       <span style="background: #f1f5f9; padding: 6px 14px; border-radius: 25px; border: 1px solid #cbd5e1; display: inline-flex; align-items: center; gap: 7px;">
@@ -5102,39 +5102,25 @@
       const istDate = new Date(now.getTime() + (5.5 * 60 * 60 * 1000));
       const todayStr = istDate.toISOString().split('T')[0];
 
-      // भेटींच्या संख्येचे पाथ्स
       const totalClicksRef = db.ref('total_clicks');
       const dailyClicksRef = db.ref(`daily_clicks/${todayStr}`);
-      const rootTotalRef = db.ref('site_analytics/total_clicks');
-      const rootDailyRef = db.ref(`site_analytics/daily_clicks/${todayStr}`);
+      const historicalBase = 5049; // तुमचे जुने एकूण भेटींचे आकडे सुरक्षित ठेवण्यासाठी बेस
 
-      // एकूण भेटी लोड करणे
+      // एकूण भेटी लोड करणे (जुना बेस + लाईव्ह डेटाबेस मधील वाढीव आकडे)
       totalClicksRef.on('value', (snap) => {
-        let val = snap.val();
-        if (val === null || val === undefined) {
-          rootTotalRef.on('value', (rootSnap) => {
-            let rootVal = rootSnap.val() || 5049;
-            document.getElementById('totalVisitorsCount').textContent = Number(rootVal).toLocaleString('en-IN');
-          });
-        } else {
-          document.getElementById('totalVisitorsCount').textContent = Number(val).toLocaleString('en-IN');
-        }
+        let val = snap.val() || 0;
+        // जर डेटाबेसवरील व्हॅल्यू जुन्या बेसपेक्षा खूपच कमी असेल तर बेस मिळून दाखवणे
+        let calculatedTotal = val > 500 ? val : (historicalBase + val);
+        document.getElementById('totalVisitorsCount').textContent = Number(calculatedTotal).toLocaleString('en-IN');
       });
 
       // आजच्या भेटी लोड करणे
       dailyClicksRef.on('value', (snap) => {
-        let val = snap.val();
-        if (val === null || val === undefined) {
-          rootDailyRef.on('value', (rootSnap) => {
-            let rootVal = rootSnap.val() || 1;
-            document.getElementById('todayVisitorsCount').textContent = Number(rootVal).toLocaleString('en-IN');
-          });
-        } else {
-          document.getElementById('todayVisitorsCount').textContent = Number(val).toLocaleString('en-IN');
-        }
+        let val = snap.val() || 1;
+        document.getElementById('todayVisitorsCount').textContent = Number(val).toLocaleString('en-IN');
       });
 
-      // फायरबेसवरील certificate_downloads मधून सर्व kategori व test मधील प्रमाणपत्रांची एकूण संख्या मोजणे
+      // सर्व परीक्षांची मिळून एकूण डाऊनलोड झालेली प्रमाणपत्रे मोजणे
       const certRef = db.ref('certificate_downloads');
       certRef.on('value', (snapshot) => {
         const data = snapshot.val() || {};
@@ -5154,11 +5140,11 @@
         }
       });
 
-      // भेट नोंदवून आकडा वाढवणे
+      // नवीन सत्रात भेट नोंदवून आकडे वाढवणे
       const sessionKey = 'visited_sig_' + todayStr;
       if (!sessionStorage.getItem(sessionKey)) {
         sessionStorage.setItem(sessionKey, 'active');
-        totalClicksRef.transaction(val => (val || 5049) + 1);
+        totalClicksRef.transaction(val => (val || 0) + 1);
         dailyClicksRef.transaction(val => (val || 0) + 1);
       }
     }
@@ -5169,6 +5155,6 @@
       window.addEventListener('load', initVisitorAndCertCounter);
     }
   </script>
-  <!-- ================= [LIVE VISITOR & CERTIFICATE COUNTER PATCH END] ================= -->
+  <!-- ================= [LIVE VISITOR & CERTIFICATE COUNTER FIXED END] ================= -->
 </body>
 </html>
