@@ -5095,24 +5095,21 @@
     }
   </script>
   <!-- ================= [LIVE VISITOR COUNTER SINGLE PATCH START] ================= -->
-  <!-- १. सुंदर फुटर डिझाइन -->
-  <footer style="background: #ffffff; border-top: 1.5px solid var(--gold-border); padding: 14px 10px; margin-top: 25px; text-align: center; font-size: 13.5px; color: #475569; font-weight: 700; box-shadow: 0 -2px 10px rgba(0,0,0,0.03); width: 100%;">
-    <div style="display: flex; justify-content: center; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: 6px;">
-      <span style="background: #f1f5f9; padding: 6px 14px; border-radius: 25px; border: 1px solid #cbd5e1; display: inline-flex; align-items: center; gap: 7px;">
-        <i class="fa-solid fa-calendar-day" style="color: var(--accent); font-size: 15px;"></i> आजच्या भेटी: 
-        <strong id="todayVisitorsCount" style="color: #0f2b48; font-size: 16px;">...</strong>
+  <!-- १. सुंदर फुटर डिझाइन (कॉपीराइट ओळ काढून टाकली आहे) -->
+  <footer style="background: #ffffff; border-top: 1.5px solid var(--gold-border); padding: 12px 10px; margin-top: 15px; margin-bottom: 60px; text-align: center; font-size: 13.5px; color: #475569; font-weight: 700; box-shadow: 0 -2px 10px rgba(0,0,0,0.03); width: 100%;">
+    <div style="display: flex; justify-content: center; align-items: center; gap: 16px; flex-wrap: wrap;">
+      <span style="background: #f1f5f9; padding: 5px 12px; border-radius: 25px; border: 1px solid #cbd5e1; display: inline-flex; align-items: center; gap: 7px;">
+        <i class="fa-solid fa-calendar-day" style="color: var(--accent); font-size: 14px;"></i> आजच्या भेटी: 
+        <strong id="todayVisitorsCount" style="color: #0f2b48; font-size: 15px;">1</strong>
       </span>
-      <span style="background: #f1f5f9; padding: 6px 14px; border-radius: 25px; border: 1px solid #cbd5e1; display: inline-flex; align-items: center; gap: 7px;">
-        <i class="fa-solid fa-users-viewfinder" style="color: var(--navy); font-size: 15px;"></i> एकूण भेटी: 
-        <strong id="totalVisitorsCount" style="color: #0f2b48; font-size: 16px;">...</strong>
+      <span style="background: #f1f5f9; padding: 5px 12px; border-radius: 25px; border: 1px solid #cbd5e1; display: inline-flex; align-items: center; gap: 7px;">
+        <i class="fa-solid fa-users-viewfinder" style="color: var(--navy); font-size: 14px;"></i> एकूण भेटी: 
+        <strong id="totalVisitorsCount" style="color: #0f2b48; font-size: 15px;">1</strong>
       </span>
-    </div>
-    <div style="font-size: 12px; color: #64748b;">
-      © 2026 savezpschools.in. सर्व हक्क राखीव.
     </div>
   </footer>
 
-  <!-- २. स्वयं-कार्यरत रिअलटाइम ट्रॅकिंग इंजिन -->
+  <!-- २. स्वयं-कार्यरत रिअलटाइम ट्रॅकिंग इंजिन (त्रुटी निवारणासह) -->
   <script type="module">
     import { ref, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
@@ -5130,24 +5127,30 @@
       const todayVisitsRef = ref(database, 'site_analytics/daily/' + todayKey);
       const totalVisitsRef = ref(database, 'site_analytics/total_visits');
 
+      // स्क्रीनवर लाईव्ह आकडे अपडेट करणे
       onValue(todayVisitsRef, (snap) => {
-        const val = snap.val() || 0;
+        const val = snap.val() || 1;
         const el = document.getElementById('todayVisitorsCount');
-        if (el) el.textContent = val.toLocaleString('en-IN');
+        if (el) el.textContent = Number(val).toLocaleString('en-IN');
+      }, (error) => {
+        console.error("Visitor counter error:", error);
       });
 
       onValue(totalVisitsRef, (snap) => {
-        const val = snap.val() || 0;
+        const val = snap.val() || 1;
         const el = document.getElementById('totalVisitorsCount');
-        if (el) el.textContent = val.toLocaleString('en-IN');
+        if (el) el.textContent = Number(val).toLocaleString('en-IN');
+      }, (error) => {
+        console.error("Total visitor counter error:", error);
       });
 
+      // युनिक व्हिजिट मोजणे (फक्त एका सत्रात एकदाच वाढेल)
       const sessionKey = 'savezpschools_visited_' + todayKey;
       if (!sessionStorage.getItem(sessionKey)) {
         sessionStorage.setItem(sessionKey, 'true');
 
-        runTransaction(todayVisitsRef, (curr) => (curr || 0) + 1);
-        runTransaction(totalVisitsRef, (curr) => (curr || 0) + 1);
+        runTransaction(todayVisitsRef, (curr) => (curr || 0) + 1).catch(err => console.log(err));
+        runTransaction(totalVisitsRef, (curr) => (curr || 0) + 1).catch(err => console.log(err));
       }
     }
 
