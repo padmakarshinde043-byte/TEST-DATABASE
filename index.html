@@ -5072,26 +5072,7 @@
       listenLiveDashboardData();
     }
 
-    // २. वेबसाईट क्लिक्स व व्ह्यूज स्वयंचलित मोजणारे फंक्शन्स
-    function trackPageVisit() {
-      const todayStr = new Date().toISOString().split('T')[0];
-      db.ref('site_analytics/total_clicks').transaction(val => (val || 0) + 1);
-      db.ref(`site_analytics/daily_clicks/${todayStr}`).transaction(val => (val || 0) + 1);
-    }
-
-    function loadAdminClickStats() {
-      const todayStr = new Date().toISOString().split('T')[0];
-      db.ref('site_analytics/total_clicks').once('value', snap => {
-        const total = snap.val() || 0;
-        const totalEl = document.getElementById('stat-total-clicks');
-        if (totalEl) totalEl.innerText = total;
-      });
-      db.ref(`site_analytics/daily_clicks/${todayStr}`).once('value', snap => {
-        const todayCount = snap.val() || 0;
-        const todayEl = document.getElementById('stat-today-clicks');
-        if (todayEl) todayEl.innerText = todayCount;
-      });
-      
+   
     }
   </script>
   <!-- ================= [LIVE VISITOR COUNTER ROBUST PATCH START] ================= -->
