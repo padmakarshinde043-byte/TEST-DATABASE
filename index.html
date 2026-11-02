@@ -4669,7 +4669,7 @@
         const cat = currentSelectedCategory;
         const testNo = currentSelectedTest;
         const safeKey = currentCertStudentName.trim().replace(/[.#$\/\[\]]/g, '_');
-        db.ref('stats/total_certificates_count').transaction(val => (val || 1685) + 1);
+        db.ref('stats/total_certificates_count').transaction(val => (val || 685) + 1);
 
         showToast('प्रमाणपत्र PDF डाऊनलोड झाले!');
       });
