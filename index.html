@@ -3900,12 +3900,12 @@
       db.ref('declared_toppers').on('value', (snap) => {
         DECLARED_DATA_STORE = snap.val() || {};
         localStorage.setItem('cache_declared_toppers', JSON.stringify(DECLARED_DATA_STORE));
-        
+
         currentSelectedTest = getInitialDeclaredTestForDashboard(currentSelectedCategory);
         buildDashboardTestPills();
         listenLiveDashboardData();
         renderDeclaredResultsOnDashboard();
-      });
+    });
     }
 
     function listenLiveDashboardData() {
