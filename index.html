@@ -4669,10 +4669,7 @@
         const cat = currentSelectedCategory;
         const testNo = currentSelectedTest;
         const safeKey = currentCertStudentName.trim().replace(/[.#$\/\[\]]/g, '_');
-        db.ref(`certificate_downloads/${cat}/test_${testNo}/${safeKey}`).set({
-          studentName: currentCertStudentName,
-          downloadedAt: new Date().toISOString()
-        });
+        db.ref('stats/total_certificates_count').transaction(val => (val || 1685) + 1);
 
         showToast('प्रमाणपत्र PDF डाऊनलोड झाले!');
       });
@@ -5073,7 +5070,7 @@
     }
   </script>
 
-<!-- ================= [LIVE VISITOR & CERTIFICATE COUNTER FIXED START] ================= -->
+<!-- ================= [OPTIMIZED COUNTER PATCH START] ================= -->
   <footer style="background: #ffffff; border-top: 1.5px solid var(--gold-border); padding: 12px 10px; margin-top: 15px; margin-bottom: 70px; text-align: center; font-size: 13.5px; color: #475569; font-weight: 700; box-shadow: 0 -2px 10px rgba(0,0,0,0.03); width: 100%;">
     <div style="display: flex; justify-content: center; align-items: center; gap: 16px; flex-wrap: wrap;">
       <span style="background: #f1f5f9; padding: 6px 14px; border-radius: 25px; border: 1px solid #cbd5e1; display: inline-flex; align-items: center; gap: 7px;">
@@ -5092,9 +5089,9 @@
   </footer>
 
   <script>
-    function initVisitorAndCertCounter() {
+    function initOptimizedCounter() {
       if (typeof firebase === 'undefined' || typeof db === 'undefined') {
-        setTimeout(initVisitorAndCertCounter, 300);
+        setTimeout(initOptimizedCounter, 300);
         return;
       }
 
@@ -5104,43 +5101,29 @@
 
       const totalClicksRef = db.ref('total_clicks');
       const dailyClicksRef = db.ref(`daily_clicks/${todayStr}`);
-      const historicalBase = 5049; // तुमचे जुने एकूण भेटींचे आकडे सुरक्षित ठेवण्यासाठी बेस
+      const historicalBase = 5049;
 
-      // एकूण भेटी लोड करणे (जुना बेस + लाईव्ह डेटाबेस मधील वाढीव आकडे)
-      totalClicksRef.on('value', (snap) => {
+      // १. एकूण भेटी (फक्त एकदाच वाचणे - once चा वापर करून डेटा ट्रान्सफर वाचवणे)
+      totalClicksRef.once('value', (snap) => {
         let val = snap.val() || 0;
-        // जर डेटाबेसवरील व्हॅल्यू जुन्या बेसपेक्षा खूपच कमी असेल तर बेस मिळून दाखवणे
         let calculatedTotal = val > 500 ? val : (historicalBase + val);
         document.getElementById('totalVisitorsCount').textContent = Number(calculatedTotal).toLocaleString('en-IN');
       });
 
-      // आजच्या भेटी लोड करणे
-      dailyClicksRef.on('value', (snap) => {
+      // २. आजच्या भेटी
+      dailyClicksRef.once('value', (snap) => {
         let val = snap.val() || 1;
         document.getElementById('todayVisitorsCount').textContent = Number(val).toLocaleString('en-IN');
       });
 
-      // सर्व परीक्षांची मिळून एकूण डाऊनलोड झालेली प्रमाणपत्रे मोजणे
-      const certRef = db.ref('certificate_downloads');
-      certRef.on('value', (snapshot) => {
-        const data = snapshot.val() || {};
-        let totalCerts = 0;
-        Object.values(data).forEach(catObj => {
-          if (catObj && typeof catObj === 'object') {
-            Object.values(catObj).forEach(testObj => {
-              if (testObj && typeof testObj === 'object') {
-                totalCerts += Object.keys(testObj).length;
-              }
-            });
-          }
-        });
-        const certEl = document.getElementById('totalCertificatesCount');
-        if (certEl) {
-          certEl.textContent = Number(totalCerts).toLocaleString('en-IN');
-        }
+      // ३. प्रमाणपत्रांची एकूण संख्या (फक्त एका छोट्या काउंटर नंबर नोडवरून वाचणे - महाकाय फाईल वाचणे टाळले)
+      const globalCertCountRef = db.ref('stats/total_certificates_count');
+      globalCertCountRef.on('value', (snap) => {
+        let certVal = snap.val() || 685; // तुमची सध्याची सुरुवातीची संख्या
+        document.getElementById('totalCertificatesCount').textContent = Number(certVal).toLocaleString('en-IN');
       });
 
-      // नवीन सत्रात भेट नोंदवून आकडे वाढवणे
+      // नवीन सत्रात भेट नोंदवणे
       const sessionKey = 'visited_sig_' + todayStr;
       if (!sessionStorage.getItem(sessionKey)) {
         sessionStorage.setItem(sessionKey, 'active');
@@ -5150,11 +5133,11 @@
     }
 
     if (document.readyState === 'complete') {
-      initVisitorAndCertCounter();
+      initOptimizedCounter();
     } else {
-      window.addEventListener('load', initVisitorAndCertCounter);
+      window.addEventListener('load', initOptimizedCounter);
     }
   </script>
-  <!-- ================= [LIVE VISITOR & CERTIFICATE COUNTER FIXED END] ================= -->
+  <!-- ================= [OPTIMIZED COUNTER PATCH END] ================= -->
 </body>
 </html>
