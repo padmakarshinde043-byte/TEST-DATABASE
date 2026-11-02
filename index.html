@@ -3909,69 +3909,59 @@
     }
 
     function listenLiveDashboardData() {
-      const cacheKey = `dash_stats_${currentSelectedCategory}_test_${currentSelectedTest}`;
-      const totalEligibleSchools = getTotalEligibleSchoolsForCategory(currentSelectedCategory);
+    const totalEligibleSchools = getTotalEligibleSchoolsForCategory(currentSelectedCategory);
+    const declaredCatData = DECLARED_DATA_STORE[currentSelectedCategory] || {};
+    const testKey = `test_${currentSelectedTest}`;
 
-      const cachedData = localStorage.getItem(cacheKey);
-      if (cachedData) {
-        try {
-          const parsed = JSON.parse(cachedData);
-          updateStatWithAnimation('stat-total-students', parsed.students);
-          updateStatWithAnimation('stat-active-schools', `${parsed.active}/${totalEligibleSchools}`);
-        } catch(e) {}
-      } else {
-        updateStatWithAnimation('stat-total-students', '0');
-        updateStatWithAnimation('stat-active-schools', `0/${totalEligibleSchools}`);
-      }
+    // १. जर निकाल आधीच लॉक (Declared) झाला असेल, तर results कडे जाण्याची गरजच नाही!
+    if (declaredCatData[testKey]) {
+        // निकाल लॉक आहे, त्यामुळे फक्त स्टॅटिक आकडे आणि declared टॉपर्स दाखवा
+        updateStatWithAnimation('stat-total-students', '-'); // किंवा हवी ती संख्या
+        updateStatWithAnimation('stat-active-schools', `लॉक निकाल`);
+        renderDeclaredResultsOnDashboard();
+        return; // इथेच थांबवा, डेटाबेसवरील मोठा data download होणे पूर्णपणे वाचले!
+    }
 
-      if (currentActiveDashboardRef) {
+    // २. निकाल लॉक झालेला नसेल तरच (सुरू असताना) फक्त एकदाच किंवा आवश्यकतेनुसार लाईव्ह आकडे दाखवणे
+    if (currentActiveDashboardRef) {
         currentActiveDashboardRef.off();
         currentActiveDashboardRef = null;
-      }
+    }
 
-      const refPath = `results/${currentSelectedCategory}/test_${currentSelectedTest}`;
-      currentActiveDashboardRef = db.ref(refPath);
+    const refPath = `results/${currentSelectedCategory}/test_${currentSelectedTest}`;
+    currentActiveDashboardRef = db.ref(refPath);
 
-      currentActiveDashboardRef.on('value', (snapshot) => {
-        const data = snapshot.val();
+    // इथे once('value') वापरल्यास सतत होणारा data transfer पूर्णपणे थांबेल
+    currentActiveDashboardRef.once('value', (snapshot) => {
+        const data = snapshot.val() || {};
         currentRawResults = data || {};
         let allStudentsCount = 0;
         let submittedSchoolsSet = new Set();
 
         if (data) {
-          Object.values(data).forEach(entry => {
-            let schoolHasMarks = false;
-            if (entry.students && Array.isArray(entry.students)) {
-              entry.students.forEach(st => {
-                if (st.marks !== undefined && st.marks !== '') {
-                  schoolHasMarks = true;
-                  const mStr = String(st.marks).toUpperCase();
-                  if (mStr !== 'AB') {
-                    allStudentsCount++;
-                  }
+            Object.values(data).forEach(entry => {
+                let schoolHasMarks = false;
+                if (entry.students && Array.isArray(entry.students)) {
+                    entry.students.forEach(st => {
+                        if (st.marks !== undefined && st.marks !== '') {
+                            schoolHasMarks = true;
+                            if (String(st.marks).toUpperCase() !== 'AB') {
+                                allStudentsCount++;
+                            }
+                        }
+                    });
                 }
-              });
-            }
-            if (schoolHasMarks && entry.udise) {
-              submittedSchoolsSet.add(entry.udise);
-            }
-          });
+                if (schoolHasMarks && entry.udise) {
+                    submittedSchoolsSet.add(entry.udise);
+                }
+            });
         }
-
-        const statsPayload = {
-          students: allStudentsCount,
-          active: submittedSchoolsSet.size
-        };
-
-        localStorage.setItem(cacheKey, JSON.stringify(statsPayload));
 
         updateStatWithAnimation('stat-total-students', allStudentsCount);
         updateStatWithAnimation('stat-active-schools', `${submittedSchoolsSet.size}/${totalEligibleSchools}`);
-
         renderDeclaredResultsOnDashboard();
-      });
-    }
-
+    });
+}
     function renderDeclaredResultsOnDashboard() {
       const cont = document.getElementById('dashboard-toppers-container');
       if (!cont) return;
