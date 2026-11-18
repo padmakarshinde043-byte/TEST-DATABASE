@@ -3914,13 +3914,20 @@
     const testKey = `test_${currentSelectedTest}`;
 
     // १. जर निकाल आधीच लॉक (Declared) झाला असेल, तर results कडे जाण्याची गरजच नाही!
-    if (declaredCatData[testKey]) {
-        // निकाल लॉक आहे, त्यामुळे फक्त स्टॅटिक आकडे आणि declared टॉपर्स दाखवा
-        updateStatWithAnimation('stat-total-students', '-'); // किंवा हवी ती संख्या
-        updateStatWithAnimation('stat-active-schools', `लॉक निकाल`);
-        renderDeclaredResultsOnDashboard();
-        return; // इथेच थांबवा, डेटाबेसवरील मोठा data download होणे पूर्णपणे वाचले!
-    }
+  if (declaredCatData[testKey]) {
+      const testDeclaredObj = declaredCatData[testKey];
+
+      // सेव्ह केलेले आकडे किंवा नसतील तर डिफाल्ट व्हॅल्यू सेट करणे
+      const dispStudents = testDeclaredObj.totalStudents !== undefined ? testDeclaredObj.totalStudents : '-';
+      const totalEligibleSchools = getTotalEligibleSchoolsForCategory(currentSelectedCategory);
+      const dispSchools = testDeclaredObj.activeSchoolsCount !== undefined ? `${testDeclaredObj.activeSchoolsCount}/${totalEligibleSchools}` : 'लॉक निकाल';
+
+      updateStatWithAnimation('stat-total-students', dispStudents);
+      updateStatWithAnimation('stat-active-schools', dispSchools);
+
+      renderDeclaredResultsOnDashboard();
+      return; // डेटाबेसवरील मोठा data download होणे पूर्णपणे वाचले!
+  }
 
     // २. निकाल लॉक झालेला नसेल तरच (सुरू असताना) फक्त एकदाच किंवा आवश्यकतेनुसार लाईव्ह आकडे दाखवणे
     if (currentActiveDashboardRef) {
@@ -4497,9 +4504,30 @@
             kendraToppers[kName] = getTop10WithTies(kendraWise[kName]);
           });
 
+          // एकूण विद्यार्थी व गुण भरलेल्या शाळा मोजणे
+          let totalStudentsCount = 0;
+          let submittedSchoolsSet = new Set();
+
+          Object.values(data).forEach(entry => {
+              let schoolHasMarks = false;
+              if (entry.students && Array.isArray(entry.students)) {
+                  entry.students.forEach(st => {
+                      if (st.marks !== undefined && st.marks !== '' && String(st.marks).toUpperCase() !== 'AB') {
+                          totalStudentsCount++;
+                          schoolHasMarks = true;
+                      }
+                  });
+              }
+              if (schoolHasMarks && entry.udise) {
+                  submittedSchoolsSet.add(entry.udise);
+              }
+          });
+          
           const payload = {
             declaredAt: new Date().toISOString(),
             maxMarks: maxM,
+            totalStudents: totalStudentsCount,          // <--- हे नवीन जोडा
+            activeSchoolsCount: submittedSchoolsSet.size,  // <--- हे नवीन जोडा
             districtToppers: districtToppers,
             talukaToppers: talukaToppers,
             kendraToppers: kendraToppers
