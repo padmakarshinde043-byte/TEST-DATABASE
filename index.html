@@ -4466,82 +4466,99 @@
           let allStudents = [];
           let talukaWise = {};
           let kendraWise = {};
-
-          Object.values(data).forEach(entry => {
-            if (entry.students && Array.isArray(entry.students)) {
-              const schoolUdise = String(entry.udise).trim();
-              const foundSchool = BEED_ALL_SCHOOLS.find(s => s.c === schoolUdise);
-              const kendraName = foundSchool ? foundSchool.k : (CLUSTER_MAPPING_MAP[schoolUdise] || entry.kendra || 'इतर');
-              const talukaName = foundSchool ? foundSchool.t : (entry.taluka || 'इतर');
-
-              entry.students.forEach(st => {
-                if (st.marks !== '' && String(st.marks).toUpperCase() !== 'AB') {
-                  const marksNum = parseFloat(st.marks) || 0;
-                  const rec = {
-                    name: st.name,
-                    school: entry.school,
-                    taluka: talukaName,
-                    kendra: kendraName,
-                    udise: schoolUdise,
-                    marks: marksNum,
-                    gender: st.gender || 'मुलगा'
-                  };
-                  allStudents.push(rec);
-
-                  if (!talukaWise[talukaName]) talukaWise[talukaName] = [];
-                  talukaWise[talukaName].push(rec);
-
-                  if (!kendraWise[kendraName]) kendraWise[kendraName] = [];
-                  kendraWise[kendraName].push(rec);
-                }
-              });
-            }
-          });
-
-          allStudents.sort((a,b) => b.marks - a.marks);
-          const districtToppers = getTop10WithTies(allStudents);
-
-          let talukaToppers = {};
-          Object.keys(talukaWise).forEach(tName => {
-            talukaWise[tName].sort((a,b) => b.marks - a.marks);
-            talukaToppers[tName] = getTop10WithTies(talukaWise[tName]);
-          });
-
-          let kendraToppers = {};
-          Object.keys(kendraWise).forEach(kName => {
-            kendraWise[kName].sort((a,b) => b.marks - a.marks);
-            kendraToppers[kName] = getTop10WithTies(kendraWise[kName]);
-          });
-
-          // एकूण विद्यार्थी व गुण भरलेल्या शाळा मोजणे
           let totalStudentsCount = 0;
           let submittedSchoolsSet = new Set();
 
+          function resolveSchoolMeta(entry) {
+            const udise = String(entry.udise || '').trim();
+            const fMain = BEED_ALL_SCHOOLS.find(s => s.c === udise);
+            const fCluster = (typeof CLUSTER_SCHOOLS_DATA !== 'undefined')
+              ? CLUSTER_SCHOOLS_DATA.find(s => s.c === udise)
+              : null;
+
+            return {
+              udise,
+              kendra: (
+                CLUSTER_MAPPING_MAP[udise] ||
+                (fCluster && fCluster.k) ||
+                entry.kendra ||
+                (fMain && fMain.k) ||
+                'इतर'
+              ).trim(),
+              taluka: (
+                (fCluster && fCluster.t) ||
+                (fMain && fMain.t) ||
+                entry.taluka ||
+                'इतर'
+              ).trim()
+            };
+          }
+
+          function sliceTopNWithTies(list, limitCount) {
+            const sorted = [...list].sort((a, b) => b.marks - a.marks);
+            if (sorted.length <= limitCount) return sorted;
+            const distinctScores = [...new Set(sorted.map(item => item.marks))].sort((a, b) => b.marks - a.marks);
+            const allowedScores = new Set(distinctScores.slice(0, limitCount));
+            return sorted.filter(item => allowedScores.has(item.marks));
+          }
+
           Object.values(data).forEach(entry => {
-              let schoolHasMarks = false;
-              if (entry.students && Array.isArray(entry.students)) {
-                  entry.students.forEach(st => {
-                      if (st.marks !== undefined && st.marks !== '' && String(st.marks).toUpperCase() !== 'AB') {
-                          totalStudentsCount++;
-                          schoolHasMarks = true;
-                      }
-                  });
+            if (!entry.students || !Array.isArray(entry.students)) return;
+
+            const meta = resolveSchoolMeta(entry);
+            let schoolHasMarks = false;
+
+            entry.students.forEach(st => {
+              if (st.marks !== undefined && st.marks !== '' && String(st.marks).toUpperCase() !== 'AB') {
+                const marksNum = parseFloat(st.marks) || 0;
+                schoolHasMarks = true;
+                totalStudentsCount++;
+
+                const rec = {
+                  name: st.name,
+                  school: entry.school,
+                  taluka: meta.taluka,
+                  kendra: meta.kendra,
+                  udise: meta.udise,
+                  marks: marksNum,
+                  gender: st.gender || 'मुलगा'
+                };
+
+                allStudents.push(rec);
+                if (!talukaWise[meta.taluka]) talukaWise[meta.taluka] = [];
+                talukaWise[meta.taluka].push(rec);
+
+                if (!kendraWise[meta.kendra]) kendraWise[meta.kendra] = [];
+                kendraWise[meta.kendra].push(rec);
               }
-              if (schoolHasMarks && entry.udise) {
-                  submittedSchoolsSet.add(entry.udise);
-              }
+            });
+
+            if (schoolHasMarks && meta.udise) {
+              submittedSchoolsSet.add(meta.udise);
+            }
           });
-          
+
+          const districtToppers = sliceTopNWithTies(allStudents, 10);
+
+          const talukaToppers = {};
+          Object.keys(talukaWise).forEach(tName => {
+            talukaToppers[tName] = sliceTopNWithTies(talukaWise[tName], 10);
+          });
+
+          const kendraToppers = {};
+          Object.keys(kendraWise).forEach(kName => {
+            kendraToppers[kName] = sliceTopNWithTies(kendraWise[kName], 3);
+          });
+
           const payload = {
             declaredAt: new Date().toISOString(),
             maxMarks: maxM,
-            totalStudents: totalStudentsCount,          // <--- हे नवीन जोडा
-            activeSchoolsCount: submittedSchoolsSet.size,  // <--- हे नवीन जोडा
-            districtToppers: districtToppers,
-            talukaToppers: talukaToppers,
-            kendraToppers: kendraToppers
+            totalStudents: totalStudentsCount,
+            activeSchoolsCount: submittedSchoolsSet.size,
+            districtToppers,
+            talukaToppers,
+            kendraToppers
           };
-
           db.ref(`declared_toppers/${cat}/test_${testNo}`).set(payload).then(() => {
             showCustomAlert(`अभिनंदन! ${getTestDisplayName(cat, testNo)} चे अधिकृत निकाल यशस्वीरित्या जाहीर व लॉक झाले आहेत!`);
             showToast('निकाल यशस्वीरित्या जाहीर झाले!');
