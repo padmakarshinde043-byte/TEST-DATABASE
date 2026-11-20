@@ -3095,7 +3095,16 @@
       html += `</div></div>`;
 
       const maxM = getMaxMarksForTest(currentSelectedCategory, currentSelectedTest);
-      const kToppers = kendraMap[window.selectedTopperKendra] || [];
+      let kToppers = [];
+
+      if (testData && testData.kendraToppers && testData.kendraToppers[window.selectedTopperKendra]) {
+        kToppers = testData.kendraToppers[window.selectedTopperKendra];
+      } else if (kendraMap[window.selectedTopperKendra]) {
+        const rawK = [...kendraMap[window.selectedTopperKendra]].sort((a, b) => b.marks - a.marks);
+        const distinctM = [...new Set(rawK.map(s => s.marks))].sort((a, b) => b.marks - a.marks);
+        const top3Marks = distinctM.slice(0, 3);
+        kToppers = rawK.filter(s => top3Marks.includes(s.marks));
+      }
 
       html += `
         <div style="margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
